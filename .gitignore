@@ -1,0 +1,12 @@
+# Documents internes — jamais sur GitHub
+# (prix, termes commerciaux, coordonnées du client, notes de recherche)
+*.pdf
+.research/
+.docs-internes/
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
