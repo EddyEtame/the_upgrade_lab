@@ -1,0 +1,41 @@
+/* The Upgrade Lab — brand layer.
+   Every value here was measured out of the client's logo, not chosen.
+   See src/data/brand.ts for the extraction and the reasoning. */
+
+:root{
+  /* the plateau: all three hues at s100%, l44-48%. That is why they read as a set. */
+  --blue:#0068E0;   /* h211 s100 l44 — the U, the L, the arrow, "UPGRADES" */
+  --rose:#F0005A;   /* h336 s100 l47 — the G, "LAB", outlines, hoop, arcs   */
+  --amber:#F89800;  /* h36  s100 l48 — court lines, the dashes beside "THE" */
+  --ball:#DC4600;   /* the basketball                                        */
+  --steel:#EEEEEE;  /* the net                                               */
+
+  --blue-deep:#0047A8; --blue-lift:#3A8CF0;
+  --rose-deep:#C4004A; --rose-lift:#FF3D82;
+  --amber-deep:#C67200; --amber-lift:#FFB53A;
+
+  /* black is the first brand colour — 63.7% of the logo canvas */
+  --black:#000000;
+  --ink:#F2F3F5;
+  --dim:#7E848C;
+  --panel:#0B0D11;
+  --line:#1A1E25;
+
+  /* motion: one curve, everywhere. Measured across patrontequila, immersive-g,
+     dogstudio, merci-michel and landonorris. Concentration is the signal. */
+  --ease:cubic-bezier(.19,1,.22,1);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--black);color:var(--ink)}
+img{max-width:100%;height:auto}
+
+/* The logo is a raster drawn to sit on black, with no usable knockout.
+   On any light surface it goes inside a black panel. That is the rule. */
+.ugl-badge{background:var(--black);padding:.5em;display:inline-block;line-height:0}
+
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
