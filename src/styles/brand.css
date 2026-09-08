@@ -3,27 +3,47 @@
    See src/data/brand.ts for the extraction and the reasoning. */
 
 :root{
-  /* the plateau: all three hues at s100%, l44-48%. That is why they read as a set. */
-  --blue:#0068E0;   /* h211 s100 l44 — the U, the L, the arrow, "UPGRADES" */
-  --rose:#F0005A;   /* h336 s100 l47 — the G, "LAB", outlines, hoop, arcs   */
-  --amber:#F89800;  /* h36  s100 l48 — court lines, the dashes beside "THE" */
-  --ball:#DC4600;   /* the basketball                                        */
-  --steel:#EEEEEE;  /* the net                                               */
+  /* --- LES TEINTES DU LOGO. Ce sont des APLATS, jamais du texte. --- */
+  --blue:#0068E0;   /* h211 — le U, le L, la fleche, "UPGRADES" */
+  --rose:#F0005A;   /* h336 — le G, "LAB", les contours, le cercle, les arcs */
+  --amber:#F89800;  /* h36  — les lignes du terrain, les tirets de "THE"      */
+  --ball:#DC4600;   /* le ballon                                              */
+  --steel:#EEEEEE;  /* le filet                                               */
 
-  --blue-deep:#0047A8; --blue-lift:#3A8CF0;
-  --rose-deep:#C4004A; --rose-lift:#FF3D82;
-  --amber-deep:#C67200; --amber-lift:#FFB53A;
+  /* --- CORRECTION 2026-09-08 ---
+     Une version precedente affirmait que ces trois teintes formaient un
+     plateau de clarte. C'etait mesure en HSL, qui n'est pas perceptuel.
+     En OKLCH : bleu L 0.542, rose L 0.609, ambre L 0.762 — 22 points
+     d'ecart. D'ou l'echec de contraste : le bleu tombe a 4.06:1 sur noir.
 
-  /* black is the first brand colour — 63.7% of the logo canvas */
+     La vraie loi : DEUX RAMPES a clarte OKLCH VERROUILLEE, technique prise
+     a motion.dev. Chroma maximale en gamut a L fixe. Ecart perceptuel
+     mesure : 0.0 point. Le texte ne prend JAMAIS une teinte de logo. */
+
+  /* rampe sombre — L=0.72 sur #000000 */
+  --blue-on-dark:#68A5FF;   /* 8.41:1 */
+  --rose-on-dark:#FF6D86;   /* 7.78:1 */
+  --amber-on-dark:#E68D00;  /* 8.17:1 */
+
+  /* rampe claire — L=0.50 sur #FAFAF8 */
+  --blue-on-light:#005DC9;  /* 5.89:1 */
+  --rose-on-light:#B90043;  /* 6.39:1 */
+  --amber-on-light:#8D5400; /* 5.91:1 */
+
+  /* le noir est la premiere couleur de marque : 63.7% du logo */
   --black:#000000;
+  --paper:#FAFAF8;
   --ink:#F2F3F5;
   --dim:#7E848C;
   --panel:#0B0D11;
   --line:#1A1E25;
 
-  /* motion: one curve, everywhere. Measured across patrontequila, immersive-g,
-     dogstudio, merci-michel and landonorris. Concentration is the signal. */
+  /* une seule courbe, partout. Mesuree sur patrontequila, immersive-g,
+     dogstudio, merci-michel et landonorris. La concentration est le signal. */
   --ease:cubic-bezier(.19,1,.22,1);
+
+  /* l'oblique du logo est une constante systeme */
+  --oblique:9deg;
 }
 
 *{box-sizing:border-box}
@@ -35,7 +55,7 @@ img{max-width:100%;height:auto}
    On any light surface it goes inside a black panel. That is the rule. */
 .ugl-badge{background:var(--black);padding:.5em;display:inline-block;line-height:0}
 
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+:focus-visible{outline:2px solid var(--blue-on-dark);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
