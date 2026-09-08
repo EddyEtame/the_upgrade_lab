@@ -1,0 +1,276 @@
+{
+  "version": "1.0.0",
+  "date": "2026-09-08",
+  "porte": "Registre de MOTIFS pour The Upgrade Lab — programme de developpement de basket a Douala (U10-U20). Un motif porte des fentes ({quartier}, {categorie}, {niveau}, {palier}, {acces}) : chaque page l'instancie sur ses faits. On ne copie jamais une liste : on genere depuis le registre de verite du programme. Transpose du systeme seo-keywords-satellites.json du reseau Boxing Center, elargi au bilingue parce que le Cameroun est bilingue.",
+
+  "lois": [
+    "Un motif n'entre dans une page que si la page repond reellement a la question qu'il porte. Pas de mur de mots.",
+    "Chaque motif prioritaire d'une page est verifie au build dans le texte VISIBLE (scripts/verifier.mjs). Un motif non trouve fait echouer le build, il ne fait pas un warning.",
+    "Un motif qui affirme un statut que le programme n'a pas encore ('academie', 'centre de formation agree', 'club affilie') est une INTENTION DE RECHERCHE, jamais une AFFIRMATION. La page y repond par ce qui est vrai aujourd'hui — 'un programme de developpement', 'un parcours en cinq niveaux' — jamais par le titre qu'on n'a pas.",
+    "Aucune page ville hors Douala. Le programme ne s'entraine pas a Yaounde : une page qui la cible serait une doorway page, et la sanction porte sur le domaine entier. La portee nationale s'obtient par de l'editorial qui sert vraiment ces requetes.",
+    "Une page quartier ne se cree qu'avec au moins 40 % de contenu propre — son acces reel, ses etablissements voisins, son fait local (test du remplacement). Sinon elle n'existe pas.",
+    "Les variantes orthographiques comptent : basket / basket-ball / basketball, U16 / moins de 16 ans / cadets, Douala / Duala. Une par page en titre, les autres dans le corps ou la FAQ.",
+    "ANNEXE A PRIME SUR LE SEO. Aucune adresse, aucun horaire d'entrainement publie a cote d'images de mineurs, meme si la requete existe et convertit. Le trafic ne vaut pas la securite d'un enfant.",
+    "VENTE_NEGATIVE : aucune page n'ouvre sur une absence. Jamais 'nous n'avons pas encore', 'il n'y a pas de'. On vend ce qui existe. La verite vit dans les faits, les donnees structurees et la FAQ — pas dans la proposition d'accroche.",
+    "Bilingue par construction : chaque intention prioritaire existe en francais ET en anglais, avec hreflang. Le francais porte les sponsors de Douala, l'anglais porte le fondateur, les regions anglophones, la diaspora et les recruteurs."
+  ],
+
+  "fentes": {
+    "{quartier}": "un quartier de Douala reellement desservi (Akwa, Bonanjo, Bonapriso, Deido, Bali, New Bell, Bonaberi, Makepe, Bonamoussadi, Bepanda, Logbaba, Ndokotti, Kotto, Ndogbong, Nyalla) — instancie UNIQUEMENT si le programme y a un acces ou un partenariat reel",
+    "{arrondissement}": "Douala I, Douala II, Douala III, Douala IV, Douala V",
+    "{categorie}": "U10, U12, U14, U16, U18, U20",
+    "{categorie_fr}": "moins de 10 ans, moins de 12 ans, poussins, benjamins, minimes, cadets, juniors",
+    "{niveau}": "Discover, Develop, Compete, Perform, Progress",
+    "{palier}": "Friend of the Lab, Bronze Partner, Silver Partner, Gold Partner, parrainage d'athlete",
+    "{acces}": "l'acces reel depuis le quartier (taxi jaune depuis Akwa, moto-taxi depuis Deido, a pied depuis les etablissements du secteur)",
+    "{gentile}": "Doualais, Doualaise",
+    "{region}": "Littoral",
+    "{langue}": "fr | en"
+  },
+
+  "motifs_prioritaires": {
+    "note": "Les intentions qui portent le trafic principal. Trois a cinq par page, jamais soixante.",
+    "liste": [
+      { "motif": "club de basket Douala", "page": "accueil", "role": "prioritaire", "langue": "fr" },
+      { "motif": "ecole de basket Douala", "page": "accueil", "role": "prioritaire", "langue": "fr" },
+      { "motif": "basket jeunes Douala", "page": "accueil", "role": "prioritaire", "langue": "fr" },
+      { "motif": "centre de formation basket Douala", "page": "le-programme", "role": "prioritaire", "langue": "fr", "verite": "INTENTION, pas affirmation. La page repond 'un programme de developpement en cinq niveaux', jamais 'centre de formation agree'." },
+      { "motif": "academie de basket Cameroun", "page": "le-parcours", "role": "prioritaire", "langue": "fr", "verite": "INTENTION. Le mot academie decrit l'ambition ecrite au document, la page ne se l'attribue pas comme statut." },
+      { "motif": "basketball academy Douala", "page": "en/programme", "role": "prioritaire", "langue": "en" },
+      { "motif": "youth basketball Cameroon", "page": "en/", "role": "prioritaire", "langue": "en" },
+      { "motif": "basketball club Douala", "page": "en/", "role": "prioritaire", "langue": "en" },
+      { "motif": "sponsoring sportif Douala", "page": "sponsors", "role": "prioritaire", "langue": "fr" },
+      { "motif": "parrainer un jeune sportif Cameroun", "page": "sponsors/bourse", "role": "prioritaire", "langue": "fr", "note": "faible concurrence, forte intention, contrepartie la plus facile a vendre du dossier" },
+      { "motif": "inscription basket Douala", "page": "rejoindre", "role": "prioritaire", "langue": "fr" },
+      { "motif": "detection basket Douala", "page": "rejoindre", "role": "prioritaire", "langue": "fr" }
+    ]
+  },
+
+  "motifs_elargis": {
+
+    "marque": {
+      "page": "toutes",
+      "role": "prioritaire",
+      "note": "Le logo dit UPGRADES-LAB, le texte dit The Upgrade Lab. On ecrit The Upgrade Lab partout et on cible la variante fautive comme requete, parce que des gens la taperont.",
+      "liste": ["The Upgrade Lab", "Upgrade Lab", "UGL basket", "UGL Douala", "The Upgrades Lab", "Upgrade Lab basket Douala", "Up-grade Lab"]
+    },
+
+    "categories_age": {
+      "page": "le-parcours/{niveau} et rejoindre",
+      "role": "secondaire",
+      "note": "Une categorie ne se cible que si un groupe existe reellement pour elle. Le registre de verite tranche.",
+      "liste": [
+        "basket {categorie} Douala", "basket enfant Douala", "basket ado Douala",
+        "basket {categorie_fr} Douala", "basket 10 ans Douala", "basket 12 ans Douala",
+        "basket 14 ans Douala", "basket 16 ans Douala", "basket 18 ans Douala",
+        "club basket enfant Littoral", "ou inscrire son enfant au basket a Douala",
+        "basket pour adolescent Douala", "sport pour jeune Douala", "activite sportive enfant Douala"
+      ]
+    },
+
+    "filles_feminin": {
+      "page": "le-programme et rejoindre",
+      "role": "secondaire",
+      "verite": "Le document promet des groupes filles ET garcons. Tant qu'un groupe feminin n'existe pas, ces motifs vivent en FAQ et en projet declare, jamais en affirmation d'un creneau qui n'existe pas.",
+      "liste": [
+        "basket fille Douala", "basket feminin Douala", "equipe feminine basket Cameroun",
+        "sport pour filles Douala", "basket jeune fille Littoral",
+        "girls basketball Cameroon", "women basketball Douala", "female athlete programme Cameroon"
+      ]
+    },
+
+    "debutant_et_detection": {
+      "page": "rejoindre et le-parcours/discover",
+      "role": "prioritaire",
+      "note": "L'intention la plus haute du site cote athlete. C'est la page qui doit convertir.",
+      "liste": [
+        "comment commencer le basket a Douala", "debuter le basket Douala", "essai basket Douala",
+        "detection basket Douala", "test basket Douala", "tryout basket Cameroun",
+        "portes ouvertes basket Douala", "stage decouverte basket Douala",
+        "premiere seance basket Douala", "que faut-il pour commencer le basket",
+        "basket sans experience Douala", "basket debutant Cameroun",
+        "how to join a basketball programme in Douala", "basketball tryouts Douala", "basketball trials Cameroon"
+      ]
+    },
+
+    "entrainement_technique": {
+      "page": "le-parcours/develop et le-parcours/perform",
+      "role": "secondaire",
+      "note": "Requetes informationnelles a fort volume, faible concurrence locale. Elles amenent des jeunes qui cherchent a progresser, pas encore a s'inscrire — et c'est le haut de tunnel.",
+      "liste": [
+        "entrainement de basket Douala", "exercices de basket debutant", "ameliorer son dribble basket",
+        "travail du tir basket", "preparation physique basket Cameroun", "detente verticale basket",
+        "musculation jeune basketteur", "prevention blessure basket", "etirements basket",
+        "programme entrainement basket jeune", "fondamentaux du basket",
+        "basketball drills for beginners", "basketball conditioning Africa", "vertical jump training basketball"
+      ]
+    },
+
+    "parcours_et_progression": {
+      "page": "le-parcours et ses cinq sous-pages",
+      "role": "prioritaire",
+      "note": "Le parcours en cinq niveaux est le meilleur actif du projet : une structure que personne d'autre ne publie. Chaque niveau a sa page et ses motifs propres.",
+      "liste": [
+        "parcours basket jeune Cameroun", "niveaux de formation basket",
+        "progression joueur de basket", "evaluation joueur basket Douala",
+        "{niveau} basket Douala", "passer au niveau superieur basket",
+        "basketball development pathway Africa", "player development programme Cameroon"
+      ]
+    },
+
+    "competition": {
+      "page": "le-parcours/compete",
+      "role": "secondaire",
+      "verite": "Ne citer une competition que si le programme y engage reellement une equipe. Sinon la page l'explique comme contexte, sans s'y rattacher.",
+      "liste": [
+        "tournoi basket Douala", "championnat basket Cameroun", "competition basket jeunes Douala",
+        "calendrier basket Littoral", "match amical basket Douala",
+        "ligue de basket du Littoral", "FECABASKET", "federation camerounaise de basketball",
+        "basketball tournament Cameroon", "youth basketball competition Africa"
+      ]
+    },
+
+    "sortie_et_avenir": {
+      "page": "le-parcours/progress",
+      "role": "prioritaire",
+      "note": "C'est le niveau qui donne son sens a tous les autres, et la requete que tapent les parents ambitieux ET les joueurs. Fort potentiel de citation par les moteurs de reponse.",
+      "verite": "Contexte informationnel. Le programme n'a aucune affiliation avec la NBA ni la BAL et ne le laissera jamais entendre.",
+      "liste": [
+        "devenir basketteur professionnel Cameroun", "bourse basket Afrique",
+        "academie NBA Afrique", "NBA Academy Africa", "Basketball Africa League",
+        "comment se faire reperer au basket", "recruteur basket Afrique",
+        "jouer au basket en Europe depuis le Cameroun", "sport etudes basket Cameroun",
+        "bourse sportive etudiant Cameroun", "basket universitaire etats-unis depuis l'Afrique",
+        "basketball scholarship Africa", "basketball scouting Central Africa", "NCAA from Cameroon"
+      ]
+    },
+
+    "bourse_et_parrainage": {
+      "page": "sponsors/bourse",
+      "role": "prioritaire",
+      "note": "Le motif dormant du dossier. Faible concurrence, forte intention, et c'est la seule contrepartie qui a un visage. A traiter comme une page de conversion a part entiere.",
+      "liste": [
+        "parrainer un jeune sportif Cameroun", "parrainage sportif Douala",
+        "bourse sportive basket Cameroun", "aider un jeune sportif Cameroun",
+        "sponsoriser un athlete Afrique", "don programme jeunesse Douala",
+        "soutenir le sport des jeunes Cameroun", "combien coute une saison de basket",
+        "sponsor a young athlete Cameroon", "fund a youth athlete Africa", "sports scholarship sponsorship Cameroon"
+      ]
+    },
+
+    "sponsoring_entreprise": {
+      "page": "sponsors et ses quatre sous-pages",
+      "role": "prioritaire",
+      "note": "La cible commerciale : banques, telecoms, brasseries, assureurs de Douala. Le vocabulaire est celui d'un directeur RSE, pas celui d'un supporter.",
+      "liste": [
+        "sponsoring sportif Douala", "mecenat sportif Cameroun", "partenariat sportif Douala",
+        "responsabilite societale entreprise Cameroun", "RSE Cameroun sport",
+        "visibilite marque sport Cameroun", "sponsor maillot equipe Cameroun",
+        "budget sponsoring sport Afrique", "contrepartie sponsoring sportif",
+        "rapport d'impact sponsoring", "investissement social entreprise Douala",
+        "corporate social responsibility Cameroon", "youth sport sponsorship Africa",
+        "brand visibility sport Cameroon", "CSR partnership Douala"
+      ]
+    },
+
+    "protection_des_mineurs": {
+      "page": "protection-des-mineurs",
+      "role": "prioritaire",
+      "note": "PERSONNE dans la region ne cible ces requetes, et toute ecole, ONG et entreprise serieuse les pose avant de signer. C'est un motif a fort effet de citation par les moteurs de reponse, et un differenciateur reel.",
+      "liste": [
+        "protection de l'enfance sport Cameroun", "encadrement des mineurs sport",
+        "consentement parental image mineur", "droit a l'image enfant sport",
+        "securite des enfants club sportif", "charte protection des mineurs sport",
+        "que demander a un club avant d'inscrire son enfant",
+        "safeguarding in youth sport", "child protection policy sports club", "parental consent minors media"
+      ]
+    },
+
+    "parents_questions": {
+      "page": "questions",
+      "role": "secondaire",
+      "note": "Chaque motif ici correspond a une reponse redigee en une phrase autonome, citable telle quelle par un moteur de reponse (voir SHORT_ANSWERS dans seo-map.ts).",
+      "liste": [
+        "a quel age commencer le basket", "le basket est-il dangereux pour un enfant",
+        "combien de fois par semaine s'entrainer au basket", "quel materiel pour commencer le basket",
+        "faut-il un certificat medical pour le basket", "combien coute le basket pour un enfant",
+        "le basket fait-il grandir", "concilier ecole et sport de haut niveau",
+        "mon enfant est-il trop petit pour le basket", "que faire si mon enfant n'a pas les moyens"
+      ]
+    },
+
+    "quartiers_et_acces": {
+      "page": "rejoindre",
+      "role": "secondaire",
+      "verite": "N'instancier {quartier} que sur les quartiers reellement desservis. Et jamais d'adresse ni d'horaire a cote d'images de mineurs — Annexe A prime.",
+      "liste": [
+        "basket {quartier}", "club de basket {quartier} Douala",
+        "basket pres de {quartier}", "terrain de basket {quartier}",
+        "basket {arrondissement}", "ou jouer au basket a Douala",
+        "terrain de basket Douala", "playground basket Douala"
+      ]
+    },
+
+    "sante_et_condition": {
+      "page": "le-parcours/perform",
+      "role": "tertiaire",
+      "note": "Haut de tunnel large. Amene des jeunes et des parents avant toute intention d'inscription.",
+      "liste": [
+        "nutrition jeune sportif Cameroun", "hydratation sport climat chaud",
+        "recuperation apres entrainement", "sommeil et performance sportive adolescent",
+        "blessure genou basket", "cheville basket prevention",
+        "croissance et sport chez l'adolescent"
+      ]
+    },
+
+    "anglophone": {
+      "page": "en/*",
+      "role": "prioritaire",
+      "note": "Le Cameroun est officiellement bilingue et le fondateur travaille en anglais. La version EN n'est pas une traduction de courtoisie : elle double la surface de requetes et sert la diaspora et les recruteurs.",
+      "liste": [
+        "basketball Douala", "basketball Cameroon", "basketball training Douala",
+        "join basketball team Douala", "basketball coaching Cameroon",
+        "basketball camp Cameroon", "basketball for kids Douala",
+        "sports programme Douala", "youth development Cameroon"
+      ]
+    }
+  },
+
+  "a_ne_pas_cibler": {
+    "note": "Retires volontairement du registre, et pourquoi. Cette liste vaut autant que les autres : c'est elle qui protege le domaine.",
+    "liste": [
+      { "motif": "basket Yaounde, basket Bafoussam, et toute ville hors Douala", "pourquoi": "le programme ne s'y entraine pas ; une page ville dupliquee est une doorway page et la sanction porte sur le domaine entier. La portee nationale passe par de l'editorial reel." },
+      { "motif": "noms de clubs concurrents de Douala", "pourquoi": "on ne cite jamais un concurrent dans nos pages ; ils vivent dans .recherche/concurrence-douala.md" },
+      { "motif": "prix chiffres de la cotisation", "pourquoi": "aucun montant d'inscription tant que le budget n'est pas calcule ; publier une estimation est la seule faute que le dossier ne peut pas se permettre" },
+      { "motif": "adresse exacte et horaires d'entrainement", "pourquoi": "Annexe A : visage + lieu + horaire est la combinaison a eviter. Ce sont des faits du registre communiques par e-mail, jamais des cibles publiques." },
+      { "motif": "affiliation FECABASKET, NBA, BAL presentee comme acquise", "pourquoi": "aucune affiliation n'existe ; les citer comme contexte informationnel est legitime, s'en reclamer est un FAIT_FAUX que le build doit refuser" },
+      { "motif": "palmares, classements, nombre de titres", "pourquoi": "le programme demarre ; aucune note autoattribuee, aucun palmares sans source" },
+      { "motif": "<meta name=keywords>", "pourquoi": "zero effet chez Google, signal de spam chez certains moteurs de reponse ; on ne l'emet pas" },
+      { "motif": "football, sports autres que le basket", "pourquoi": "le programme ne les propose pas ; les cibler serait mentir et diluerait l'entite" },
+      { "motif": "'academie de basket a Douala' en H1", "pourquoi": "affirme un statut que le programme n'a pas encore. On garde l'intention, on y repond par ce qui est vrai : un programme de developpement en cinq niveaux." }
+    ]
+  },
+
+  "generation": {
+    "note": "Un script instancie les fentes depuis le registre de verite du programme et ecrit src/data/mots-cles.ts : scripts/generer-mots-cles.mjs. Le resultat est RELU et coupe a la main : 3 a 5 prioritaires et 8 a 15 secondaires par page, jamais 60.",
+    "regles": [
+      "{quartier} -> uniquement les quartiers listes dans FAITS.quartiersDesservis ; {categorie} -> uniquement les categories qui ont un groupe reel ; {niveau} -> les cinq niveaux, toujours ; {palier} -> les cinq paliers du dossier",
+      "un motif 'filles' n'est genere que si un groupe feminin existe dans le registre de verite ; sinon il reste en FAQ comme projet declare",
+      "les motifs 'quartier' vont sur /rejoindre/ et jamais sur l'accueil ; aucune page /quartier/ n'est creee sans 40 % de contenu propre",
+      "tout motif prioritaire genere est verifie au build dans le texte VISIBLE de sa page ; absence = build rouge",
+      "chaque motif prioritaire francais a son miroir anglais avec hreflang reciproque",
+      "aucun motif marque verite:false ne part dans un build public (double verrou PUBLIC_SITE_INDEXABLE + PUBLIC_RELEASE_VALIDATED)"
+    ]
+  },
+
+  "mesure": {
+    "note": "Sans releve de positions, 'premier' est une opinion. Releve hebdomadaire.",
+    "intentions_suivies": [
+      "club de basket Douala", "ecole de basket Douala", "basket jeunes Douala",
+      "parrainer un jeune sportif Cameroun", "sponsoring sportif Douala",
+      "basketball academy Douala", "youth basketball Cameroon"
+    ],
+    "outils": ["Google Search Console", "Bing Webmaster Tools", "releve manuel en navigation privee depuis une IP camerounaise si possible"],
+    "geo": "Verifier aussi la citabilite : poser la question a un moteur de reponse ('quels programmes de basket pour jeunes a Douala ?') et regarder si le site est cite, et sur quel fait."
+  }
+}
