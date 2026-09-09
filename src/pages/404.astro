@@ -1,0 +1,31 @@
+---
+/**
+ * /404 — une phrase, un chemin de retour.
+ *
+ * Sans cette page, une adresse mal tapée tombe sur la page par défaut de
+ * l'hébergeur — hors marque, hors langue. Elle est refusée à l'indexation.
+ */
+import Base from '../layouts/Base.astro';
+import { NAV_ENTETE } from '../data/site';
+---
+
+<Base
+  titre="Page introuvable"
+  description="Cette adresse ne correspond à aucune page de The Upgrade Lab. Le plan du site est ci-dessous, et l’accueil à un clic."
+  noindex
+>
+  <section class="section ample">
+    <div class="conteneur etroit">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Erreur 404</p>
+      <h1><span class="obl">Cette adresse</span><br />ne mène nulle part</h1>
+      <p class="chapo">
+        La page a peut-être changé de nom, ou l’adresse a été mal recopiée. Le
+        terrain, lui, est toujours au même endroit.
+      </p>
+      <div class="rangee" style="--gap:.75rem;margin-top:var(--e5)">
+        <a class="bouton primaire" href="/">Retour à l’accueil <span class="chev" aria-hidden="true"></span></a>
+        {NAV_ENTETE.filter((l) => !l.action).map((l) => <a class="bouton fantome" href={l.href}>{l.libelle}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>

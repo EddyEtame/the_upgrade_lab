@@ -1,0 +1,260 @@
+---
+/**
+ * Tete.astro — tout ce qui part dans le <head> et qui décrit la page.
+ *
+ * Base.astro pose le charset, le viewport, les polices et la feuille de style.
+ * Ce composant pose l'IDENTITÉ de la page : titre, description, canonique,
+ * hreflang, Open Graph, et le @graph JSON-LD à pointeurs @id.
+ *
+ * ---------------------------------------------------------------------------
+ * LE VERROU. Deux variables d'environnement doivent être posées, et les deux :
+ * PUBLIC_SITE_INDEXABLE et PUBLIC_RELEASE_VALIDATED. Tant que ce n'est pas le
+ * cas, chaque page émet noindex,nofollow,noarchive,nosnippet — quoi que
+ * demande l'appelant. Le verrou est calculé une fois dans site.ts (INDEXABLE)
+ * et il ne se contourne pas depuis une page : `noindex` peut FORCER le refus
+ * d'indexation, jamais l'autoriser.
+ * ---------------------------------------------------------------------------
+ *
+ * Sur les données structurées : docs/SEO-GEO.md gèle jusqu'à validation
+ * l'adresse postale, les horaires, `sameAs` et toute note autoattribuée. Ce
+ * composant respecte ce gel — l'entité existe, ses coordonnées physiques non.
+ * Aucun nœud n'affirme ici un fait que le site n'écrit pas en clair ailleurs.
+ */
+
+import {
+  SITE, INDEXABLE, LANGUES, cheminMiroir, langueDuChemin,
+  EDITE_LE, MARQUE, FAITS,
+  type CodeLangue
+} from '../data/site';
+
+export interface Props {
+  /** Titre de la page, sans le nom du site : le suffixe est ajouté ici. */
+  titre: string;
+  /** 120 à 160 caractères, une vraie phrase. Jamais une liste de mots-clés. */
+  description: string;
+  /** Langue du document. Défaut : déduite du chemin (`/en/...` -> en). */
+  lang?: CodeLangue;
+  /** Chemin canonique. Défaut : le chemin réel de la page. */
+  chemin?: string;
+  /** Type de la page dans le graphe. Défaut : FAQPage si `faq`, sinon WebPage. */
+  typePage?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'FAQPage' | 'CollectionPage';
+  /** Image de partage. Défaut : le badge du logo, 512x512. */
+  ogImage?: string;
+  ogImageLargeur?: number;
+  ogImageHauteur?: number;
+  ogType?: 'website' | 'article';
+  /** Force le refus d'indexation pour cette page seule. Ne peut pas l'autoriser. */
+  noindex?: boolean;
+  /** Chemin miroir dans l'autre langue, si la déduction ne suffit pas. */
+  alternate?: string;
+  /** Fil d'Ariane, sans la page d'accueil : elle est ajoutée ici. */
+  fil?: { nom: string; href: string }[];
+  /** Questions-réponses de la page. Les fournir bascule le type en FAQPage. */
+  faq?: { q: string; a: string }[];
+  /** Supprime le suffixe « — The Upgrade Lab » (accueil, pages spéciales). */
+  titreBrut?: boolean;
+}
+
+const {
+  titre,
+  description,
+  lang: langProp,
+  chemin: cheminProp,
+  typePage,
+  ogImage = MARQUE.web.w512,
+  ogImageLargeur = 512,
+  ogImageHauteur = 512,
+  ogType = 'website',
+  noindex = false,
+  alternate,
+  fil,
+  faq,
+  titreBrut = false
+} = Astro.props;
+
+/* -- URL ------------------------------------------------------------------ */
+
+const base = (Astro.site?.href ?? `${SITE.url}/`).replace(/\/+$/, '');
+const chemin = cheminProp ?? Astro.url.pathname;
+/** trailingSlash: 'always' dans astro.config.mjs — la canonique s'y conforme. */
+const cheminPropre = chemin.endsWith('/') ? chemin : `${chemin}/`;
+const canonique = `${base}${cheminPropre}`;
+
+const lang: CodeLangue = langProp ?? langueDuChemin(cheminPropre);
+const estAccueil = cheminPropre === '/' || cheminPropre === '/en/';
+
+/* -- Titre ---------------------------------------------------------------- */
+
+const titreComplet =
+  titreBrut || titre.includes(SITE.nom) ? titre : `${titre} — ${SITE.nom}`;
+
+/* -- Indexabilité --------------------------------------------------------- */
+
+const indexable = INDEXABLE && !noindex;
+const robots = indexable
+  ? 'index,follow,max-image-preview:large,max-snippet:-1'
+  : 'noindex,nofollow,noarchive,nosnippet';
+
+/* -- Langues -------------------------------------------------------------- */
+
+const autre: CodeLangue = lang === 'fr' ? 'en' : 'fr';
+/** On n'émet un hreflang que vers une page qui existe. Un hreflang vers un 404
+ *  est pire que pas de hreflang : il apprend au moteur que le miroir est mort. */
+const miroirActif = LANGUES[autre].actif;
+const cheminMiroirFinal = alternate ?? cheminMiroir(cheminPropre, autre);
+const urlMiroir = `${base}${cheminMiroirFinal}`;
+const urlFr = lang === 'fr' ? canonique : urlMiroir;
+
+const localeOg = lang === 'fr' ? SITE.locale : SITE.localeEN;
+const descriptionSite = lang === 'fr' ? SITE.description : SITE.descriptionEN;
+
+/* -- Le graphe ------------------------------------------------------------ */
+
+const idOrg = `${base}/#organisation`;
+const idSite = `${base}/#site`;
+const idLogo = `${base}/#logo`;
+const idPage = `${canonique}#page`;
+
+const typeFinal = typePage ?? (faq && faq.length ? 'FAQPage' : 'WebPage');
+
+const organisation: Record<string, unknown> = {
+  '@type': 'SportsOrganization',
+  '@id': idOrg,
+  name: SITE.nom,
+  alternateName: [SITE.nomCourt, SITE.varianteFautive],
+  url: `${base}/`,
+  slogan: SITE.devise,
+  description: SITE.description,
+  sport: 'Basketball',
+  logo: { '@id': idLogo },
+  image: { '@id': idLogo },
+  founder: { '@type': 'Person', name: SITE.fondateur },
+  areaServed: {
+    '@type': 'City',
+    name: SITE.ville,
+    containedInPlace: {
+      '@type': 'AdministrativeArea',
+      name: SITE.region,
+      containedInPlace: { '@type': 'Country', name: SITE.pays }
+    }
+  },
+  knowsLanguage: ['fr', 'en'],
+  audience: {
+    '@type': 'PeopleAudience',
+    audienceType: 'Jeunes joueuses et joueurs de basket',
+    suggestedMinAge: FAITS.ageMin,
+    suggestedMaxAge: FAITS.ageMax
+  }
+  /* Volontairement absents jusqu'à validation, conformément à docs/SEO-GEO.md :
+     address, openingHoursSpecification, telephone, email, sameAs, et toute
+     note ou palmarès. Aucun de ces faits n'est confirmé ; en émettre un
+     inventerait une entité que personne ne pourrait vérifier. */
+};
+
+const graphe: Record<string, unknown>[] = [
+  organisation,
+  {
+    '@type': 'ImageObject',
+    '@id': idLogo,
+    url: `${base}${MARQUE.web.w512}`,
+    contentUrl: `${base}${MARQUE.web.w512}`,
+    width: 512,
+    height: 512,
+    caption: MARQUE.alt
+  },
+  {
+    '@type': 'WebSite',
+    '@id': idSite,
+    url: `${base}/`,
+    name: SITE.nom,
+    description: descriptionSite,
+    inLanguage: ['fr-CM', 'en-CM'],
+    publisher: { '@id': idOrg }
+  },
+  {
+    '@type': typeFinal,
+    '@id': idPage,
+    url: canonique,
+    name: titreComplet,
+    description,
+    isPartOf: { '@id': idSite },
+    about: { '@id': idOrg },
+    inLanguage: lang === 'fr' ? 'fr-CM' : 'en-CM',
+    dateModified: EDITE_LE,
+    ...(fil && fil.length ? { breadcrumb: { '@id': `${canonique}#fil` } } : {}),
+    ...(faq && faq.length
+      ? {
+          mainEntity: faq.map((e) => ({
+            '@type': 'Question',
+            name: e.q,
+            acceptedAnswer: { '@type': 'Answer', text: e.a }
+          }))
+        }
+      : {})
+  }
+];
+
+if (fil && fil.length) {
+  graphe.push({
+    '@type': 'BreadcrumbList',
+    '@id': `${canonique}#fil`,
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: lang === 'fr' ? 'Accueil' : 'Home',
+        item: `${base}${lang === 'fr' ? '/' : '/en/'}`
+      },
+      ...fil.map((e, i) => ({
+        '@type': 'ListItem',
+        position: i + 2,
+        name: e.nom,
+        item: `${base}${e.href}`
+      }))
+    ]
+  });
+}
+
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graphe });
+---
+
+<title>{titreComplet}</title>
+<meta name="description" content={description} />
+<meta name="robots" content={robots} />
+<meta name="googlebot" content={robots} />
+<link rel="canonical" href={canonique} />
+
+{/* Pas de <meta name="keywords"> : zéro effet chez Google, signal de spam
+    ailleurs. Le champ de requêtes vit dans src/data/seo-map.ts et se vérifie
+    dans le texte visible, pas dans une balise cachée. */}
+
+{miroirActif && (
+  <>
+    <link rel="alternate" hreflang={lang} href={canonique} />
+    <link rel="alternate" hreflang={autre} href={urlMiroir} />
+    <link rel="alternate" hreflang="x-default" href={urlFr} />
+  </>
+)}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.nom} />
+<meta property="og:title" content={titreComplet} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonique} />
+<meta property="og:locale" content={localeOg} />
+{miroirActif && (
+  <meta property="og:locale:alternate" content={lang === 'fr' ? SITE.localeEN : SITE.locale} />
+)}
+<meta property="og:image" content={`${base}${ogImage}`} />
+<meta property="og:image:width" content={String(ogImageLargeur)} />
+<meta property="og:image:height" content={String(ogImageHauteur)} />
+<meta property="og:image:alt" content={MARQUE.alt} />
+
+<meta name="twitter:card" content={ogImageLargeur >= 1200 ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={titreComplet} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={`${base}${ogImage}`} />
+
+{estAccueil && <meta name="author" content={SITE.nom} />}
+
+<script type="application/ld+json" is:inline set:html={jsonLd} />

@@ -1,0 +1,124 @@
+---
+/**
+ * /questions/ — les réponses, écrites pour être citées.
+ *
+ * Chaque réponse ouvre par une phrase complète et autonome qu'un moteur de
+ * réponse peut reprendre telle quelle ; l'élaboration vient après. Seules les
+ * réponses `verified: true` de seo-map.ts sont rendues ; les deux réponses en
+ * attente ne partent JAMAIS en sortie — leur question est posée, et la fente
+ * dit d'où viendra la réponse.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { FAITS, TERRAIN_3X3, attente, PROTECTION } from '../../data/site';
+import { SHORT_ANSWERS } from '../../data/seo-map';
+import { NB_SECTEURS_LETTRES } from '../../data/offre';
+
+const verifiees = SHORT_ANSWERS.filter((r) => r.verified);
+const enAttente = SHORT_ANSWERS.filter((r) => !r.verified);
+
+/* Questions supplémentaires, toutes vérifiables dans les faits du socle. */
+const complement = [
+  {
+    q: 'Faut-il un certificat médical pour jouer ?',
+    a: 'Les pièces demandées à l’inscription sont listées par écrit dans la réponse envoyée à la famille après le premier échange. Un parent ou un tuteur signe l’inscription : un mineur ne s’inscrit pas seul.'
+  },
+  {
+    q: 'Sur quel terrain le programme s’entraîne-t-il ?',
+    a: TERRAIN_3X3.phrase
+  },
+  {
+    q: 'Quelles garanties existent pour la protection des mineurs ?',
+    a: `Sept engagements écrits, dont quatre repris sur chaque page du site : ${PROTECTION.map((e) => e.replace(/\.$/, '')).join(' ; ')}. La page Protection des mineurs les détaille tous.`
+  },
+  {
+    q: 'Comment devenir sponsor du programme ?',
+    a: `Par un partenariat annuel sur l’un des ${NB_SECTEURS_LETTRES} secteurs d’activité proposés à Douala, en exclusivité à partir du palier Silver, ou par le parrainage d’un seul athlète pour une saison. Les contreparties sont écrites palier par palier sur la page Sponsors.`
+  },
+  {
+    q: 'Qui encadre les entraînements ?',
+    a: 'Des entraîneurs adultes, présents à chaque séance, qui corrigent une action et jamais une personne. Les noms, diplômes et certifications seront publiés sur la page L’encadrement le jour où ils sont confirmés, avec la date de vérification.'
+  }
+];
+
+const toutes = [...verifiees.map(({ q, a }) => ({ q, a })), ...complement];
+---
+
+<Base
+  titre="Questions des parents et des partenaires"
+  description="Les réponses aux questions qu’on pose à un club de basket à Douala : l’âge d’entrée, les filles, la détection, le terrain, la protection des mineurs, le parrainage et le sponsoring."
+  fil={[{ nom: 'Questions', href: '/questions/' }]}
+  faq={toutes}
+>
+  <section class="section">
+    <div class="conteneur etroit">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Questions</p>
+      <h1><span class="obl">Les questions qu’on nous pose,</span><br />et les réponses telles qu’on les donne</h1>
+      <p class="chapo">
+        Les questions qu’on pose à un club de basket à Douala : un parent, un
+        jeune de {FAITS.ageMin} à {FAITS.ageMax} ans, une entreprise. Chaque
+        réponse tient en une phrase d’abord, puis se déplie.
+      </p>
+    </div>
+  </section>
+
+  <section class="section sur-bloc" aria-label="Réponses">
+    <div class="conteneur etroit">
+      <dl class="faq">
+        {toutes.map((e, i) => (
+          <div class="faq__item" id={`q${i + 1}`}>
+            <dt><a href={`#q${i + 1}`} class="faq__ancre" aria-label="Lien vers cette question">#</a>{e.q}</dt>
+            <dd>{e.a}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  {enAttente.length > 0 && (
+    <section class="section serree" aria-labelledby="t-attente">
+      <div class="conteneur etroit">
+        <h2 id="t-attente">Deux réponses qui arrivent</h2>
+        <p class="mesure t-sourd">
+          Ces deux questions ont une réponse précise ; elle est en cours
+          d’établissement, et elle prendra sa place ici avec la date à laquelle
+          elle aura été vérifiée. En attendant, la question est posée et la source
+          est nommée — c’est plus honnête qu’une estimation.
+        </p>
+        <dl class="attente">
+          {enAttente.map((r) => {
+            const cle = /coûte|coute/i.test(r.q) ? 'cotisation' : 'terrain';
+            const f = attente(cle);
+            return (
+              <div class="attente__item">
+                <dt>{r.q}</dt>
+                <dd class="fente"><b>{f?.libelle}</b><span>{f?.source}</span></dd>
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+    </section>
+  )}
+
+  <section class="section serree sur-bloc">
+    <div class="conteneur etroit rangee" style="--gap:.75rem">
+      <a class="bouton primaire" href="/rejoindre/">Demander une séance d’essai <span class="chev" aria-hidden="true"></span></a>
+      <a class="bouton fantome" href="/sponsors/">Devenir partenaire</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq{margin:0;display:grid;gap:1px;background:var(--trait)}
+  .faq__item{background:var(--bg);padding:var(--e5) 0}
+  .faq dt{position:relative;font-weight:700;font-size:var(--t-h4);margin:0 0 .5em;padding-left:1.4em;line-height:1.3}
+  .faq__ancre{position:absolute;left:0;top:0;color:var(--t-bleu);text-decoration:none;opacity:.55}
+  .faq__ancre:hover,.faq__item:target .faq__ancre{opacity:1}
+  .faq dd{margin:0;padding-left:1.4em;color:var(--fg-dim);line-height:1.6}
+  .faq__item:target{background:var(--bloc);padding-inline:var(--e4);margin-inline:calc(-1 * var(--e4))}
+
+  .attente{margin:var(--e5) 0 0;display:grid;gap:var(--e4)}
+  .attente dt{font-weight:700;margin:0 0 .5em}
+  .attente dd{margin:0}
+</style>

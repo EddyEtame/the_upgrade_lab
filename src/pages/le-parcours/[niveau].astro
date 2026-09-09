@@ -1,0 +1,228 @@
+---
+/**
+ * /le-parcours/[niveau]/ — une page par niveau, cinq au total.
+ *
+ * Tout le texte vient de parcours.ts ; cette page ne fait que le poser dans
+ * l'ordre où ses trois lecteurs le lisent : le jeune (séance, apprentissages,
+ * passage), le parent, l'entreprise. Les fentes listées par le niveau sont
+ * dessinées depuis EN_ATTENTE — jamais devinées.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { attente } from '../../data/site';
+import { NIVEAUX, voisins, type NiveauComplet } from '../../data/parcours';
+
+export function getStaticPaths() {
+  return NIVEAUX.map((n) => ({ params: { niveau: n.key }, props: { n } }));
+}
+
+const { n } = Astro.props as { n: NiveauComplet };
+const { precedent, suivant } = voisins(n.key);
+const fentes = n.fentes.map(attente).filter(Boolean);
+
+/* La phrase qui répond à l'intention de recherche de ce niveau (PAGE_INTENTS),
+   en vrai français, sous l'accroche. Une requête se répond dans une phrase,
+   jamais en liste de mots. */
+const PHRASE: Record<string, string> = {
+  discover: 'Discover, c’est l’initiation au basket pour un enfant à Douala : la première prise de ballon, sans niveau requis.',
+  develop: 'Develop, c’est l’entraînement de basket des jeunes à Douala qui transforme un geste réussi une fois en geste fiable.',
+  compete: 'Compete, c’est la compétition de basket pour les jeunes au Cameroun : le score, l’arbitrage, et ce que l’émotion fait à un geste appris.',
+  perform: 'Perform, c’est la préparation physique du basket au Cameroun appliquée à une saison entière : régularité, sommeil, discipline.',
+  progress: 'Progress, c’est la sortie du programme vers une bourse et une académie de basket en Afrique, ou vers un club supérieur au Cameroun.'
+};
+---
+
+<Base
+  titre={n.titre}
+  description={n.description}
+  fil={[{ nom: 'Le parcours', href: '/le-parcours/' }, { nom: n.label, href: n.href }]}
+  faq={n.faq}
+>
+  <div class="niveau" style={`--fill:${n.fill};--sur:${n.surFill};--txt:${n.texteSurNoir}`}>
+
+    <section class="section ouverture">
+      <div class="conteneur">
+        <p class="balise">
+          <span class="chevs" aria-hidden="true">
+            {Array.from({ length: n.chevrons }).map(() => <i class="chev"></i>)}
+          </span>
+          Niveau {n.rang} sur 5
+        </p>
+        <h1 class="ouverture__titre"><span class="obl">{n.label}</span></h1>
+        <p class="chapo mesure">{n.accroche}</p>
+        <p class="mesure ouverture__intention">{PHRASE[n.key]}</p>
+        <div class="ouverture__corps prose">
+          {n.ouverture.map((p) => <p>{p}</p>)}
+        </div>
+        <p class="signal cut" style="--c:14px">
+          <b>{n.signal.valeur}</b>
+          <span>{n.signal.libelle}</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="section sur-bloc" aria-labelledby="t-seance">
+      <div class="conteneur">
+        <h2 id="t-seance">{n.seance.titre}</h2>
+        <p class="mesure t-sourd">{n.seance.intro}</p>
+        <ol class="phases" role="list">
+          {n.seance.phases.map((ph, i) => (
+            <li class="phase">
+              <span class="phase__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <div><h3>{ph.titre}</h3><p>{ph.texte}</p></div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="t-apprend">
+      <div class="conteneur">
+        <h2 id="t-apprend">{n.apprentissages.titre}</h2>
+        <p class="mesure t-sourd">{n.apprentissages.intro}</p>
+        <div class="grille" style="--min:16rem;--gap:var(--e4)">
+          {n.apprentissages.liste.map((a) => (
+            <article class="carte" style="--c:12px">
+              <h3 class="apprend__titre">{a.titre}</h3>
+              <p class="apprend__texte">{a.texte}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section sur-bloc" aria-labelledby="t-passage">
+      <div class="conteneur">
+        <div class="grille-2" style="--gap:2.5rem">
+          <div>
+            <h2 id="t-passage">{n.passage.titre}</h2>
+            <p class="mesure">{n.passage.intro}</p>
+            <p class="petit t-sourd mesure">{n.passage.note}</p>
+          </div>
+          <ol class="criteres" role="list">
+            {n.passage.criteres.map((c) => (
+              <li><span class="chev" aria-hidden="true"></span><span>{c}</span></li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section serree" aria-labelledby="t-terrain">
+      <div class="conteneur">
+        <h2 id="t-terrain">Le terrain, <span class="obl t-ambre">à ce niveau</span></h2>
+        <p class="mesure">{n.terrain}</p>
+      </div>
+    </section>
+
+    {n.blocs.map((b) => (
+      <section class="section serree sur-bloc">
+        <div class="conteneur">
+          <h2>{b.titre}</h2>
+          <div class="prose">{b.paragraphes.map((p) => <p>{p}</p>)}</div>
+          {b.portes && (
+            <div class="grille" style="--min:16rem;--gap:var(--e4);margin-top:var(--e5)">
+              {b.portes.map((po) => (
+                <article class="carte-trait" style="--c:12px">
+                  <div class="dedans"><h3 class="porte__titre">{po.titre}</h3><p class="porte__texte">{po.texte}</p></div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    ))}
+
+    <section class="section" aria-label="Pour les familles et les partenaires">
+      <div class="conteneur">
+        <div class="grille-2" style="--gap:2.5rem">
+          <div>
+            <p class="etiquette t-rose">Aux familles</p>
+            <h2>{n.parents.titre}</h2>
+            <div class="prose">{n.parents.paragraphes.map((p) => <p>{p}</p>)}</div>
+          </div>
+          <div>
+            <p class="etiquette t-ambre">Aux entreprises</p>
+            <h2>{n.partenaire.titre}</h2>
+            <div class="prose">{n.partenaire.paragraphes.map((p) => <p>{p}</p>)}</div>
+            <a class="bouton fantome" href="/sponsors/" style="margin-top:var(--e4)">Devenir partenaire <span class="chev" aria-hidden="true"></span></a>
+          </div>
+        </div>
+        {fentes.length > 0 && (
+          <div class="grille" style="--min:16rem;--gap:1px;margin-top:var(--e6)">
+            {fentes.map((f) => <p class="fente"><b>{f!.libelle}</b><span>{f!.source}</span></p>)}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="section serree sur-bloc" aria-labelledby="t-faq">
+      <div class="conteneur etroit">
+        <h2 id="t-faq">Questions sur {n.label}</h2>
+        <dl class="faq">
+          {n.faq.map((e) => (
+            <div class="faq__item"><dt>{e.q}</dt><dd>{e.a}</dd></div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    <nav class="section serree voisins" aria-label="Niveau précédent et suivant">
+      <div class="conteneur rangee entre">
+        {precedent ? (
+          <a href={precedent.href} class="voisin voisin--prec" style={`--txt:${precedent.texteSurNoir}`}>
+            <span class="etiquette">Niveau {precedent.rang}</span>
+            <b>{precedent.label}</b>
+          </a>
+        ) : <a href="/le-parcours/" class="voisin"><span class="etiquette">Sommaire</span><b>Le parcours</b></a>}
+        {suivant ? (
+          <a href={suivant.href} class="voisin voisin--suiv" style={`--txt:${suivant.texteSurNoir}`}>
+            <span class="etiquette">Niveau {suivant.rang}</span>
+            <b>{suivant.label} <i class="chev" aria-hidden="true"></i></b>
+          </a>
+        ) : <a href="/rejoindre/" class="voisin voisin--suiv"><span class="etiquette">Et après</span><b>Rejoindre le programme <i class="chev" aria-hidden="true"></i></b></a>}
+      </div>
+    </nav>
+  </div>
+</Base>
+
+<style>
+  .ouverture{border-top:10px solid var(--fill)}
+  .ouverture .chev{width:.55em;height:.55em;color:var(--txt)}
+  .ouverture__titre{color:var(--txt);font-size:var(--t-geant)}
+  .ouverture__intention{color:var(--fg-dim);font-weight:600;margin:0}
+  .ouverture__corps{margin-top:var(--e5)}
+  .signal{display:inline-grid;gap:.25em;margin:var(--e6) 0 0;padding:var(--e4) var(--e5);
+    background:var(--fill);color:var(--sur);max-width:var(--l-mesure)}
+  .signal b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1}
+  .signal span{font-size:var(--t-petit);line-height:1.45;font-weight:600}
+
+  .phases{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px}
+  .phase{display:grid;grid-template-columns:3.5rem 1fr;gap:var(--e4);background:var(--bg);padding:var(--e4)}
+  .phase__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--txt)}
+  .phase h3{margin:0 0 .3em;font-size:var(--t-h4)}
+  .phase p{margin:0;color:var(--fg-dim);line-height:1.5;font-size:var(--t-petit)}
+
+  .apprend__titre{margin:0 0 .4em;font-size:var(--t-h4);color:var(--txt)}
+  .apprend__texte{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+
+  .criteres{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px;align-self:start}
+  .criteres li{display:flex;gap:.8em;align-items:flex-start;background:var(--bg);padding:var(--e4);font-weight:600;line-height:1.4}
+  .criteres .chev{flex:none;width:.6em;height:.6em;margin-top:.35em;color:var(--txt)}
+
+  .porte__titre{margin:0 0 .4em;font-size:var(--t-h4);color:var(--t-ambre)}
+  .porte__texte{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+
+  .faq{margin:var(--e5) 0 0;display:grid;gap:1px;background:var(--trait)}
+  .faq__item{background:var(--bloc);padding:var(--e4) 0}
+  .faq dt{font-weight:700;margin:0 0 .4em}
+  .faq dd{margin:0;color:var(--fg-dim);line-height:1.55}
+
+  .voisin{display:grid;gap:.2em;text-decoration:none;color:var(--fg)}
+  .voisin b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h3);
+    line-height:1;color:var(--txt,var(--fg));display:inline-flex;gap:.3em;align-items:center}
+  .voisin .chev{width:.5em;height:.5em}
+  .voisin--suiv{text-align:right;justify-items:end}
+</style>

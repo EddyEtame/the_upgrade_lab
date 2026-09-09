@@ -1,0 +1,121 @@
+---
+/**
+ * Base.astro — la mise en page, et il n'y en a qu'une.
+ *
+ * Toutes les pages du site passent par ici. Ce fichier possède le document :
+ * l'élément <html>, le <head>, l'en-tête, le pied, et le lien d'évitement.
+ * Une page ne pose jamais son propre <head> — elle passe des props.
+ *
+ * ---------------------------------------------------------------------------
+ * LE BUDGET, parce que c'est une contrainte de conception et pas une
+ * optimisation tardive. 3G lente à Douala : ~50 Ko/s, 400 ms de RTT, 79 % du
+ * trafic sur mobile. Le chemin critique tenu ici :
+ *
+ *   HTML + CSS inliné (build.inlineStylesheets:'always')  ~26 Ko
+ *   Deux familles Google Fonts, latin, display=swap        ~34 Ko
+ *   JavaScript                                                0 Ko
+ *
+ * Soit ~60 Ko, environ 2 s jusqu'au premier rendu complet. Chaque page est
+ * ENTIÈRE et lisible sans une ligne de script : ce qui viendrait après ne peut
+ * être qu'un rehaussement, jamais une condition.
+ * ---------------------------------------------------------------------------
+ */
+
+import '../styles/base.css';
+import Tete from '../components/Tete.astro';
+import Entete from '../components/Entete.astro';
+import Pied from '../components/Pied.astro';
+import { SITE, langueDuChemin, type CodeLangue } from '../data/site';
+
+export interface Props {
+  /** Titre de la page, sans le nom du site. Obligatoire. */
+  titre: string;
+  /** 120 à 160 caractères, une vraie phrase de français. Obligatoire. */
+  description: string;
+  /** Langue du document. Défaut : déduite du chemin (`/en/...` -> en). */
+  lang?: CodeLangue;
+  /** Surface du <main>. « noir » par défaut, « papier » pour les longs textes. */
+  fond?: 'noir' | 'papier';
+  /** Chemin canonique, si différent du chemin réel. */
+  chemin?: string;
+  /** Type de la page dans le graphe JSON-LD. */
+  typePage?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'FAQPage' | 'CollectionPage';
+  /** Fil d'Ariane, sans l'accueil : il est ajouté par Tete.astro. */
+  fil?: { nom: string; href: string }[];
+  /** Questions-réponses de la page : bascule le type en FAQPage. */
+  faq?: { q: string; a: string }[];
+  /** Image de partage, si la page en a une meilleure que le badge du logo. */
+  ogImage?: string;
+  ogImageLargeur?: number;
+  ogImageHauteur?: number;
+  /** Force le refus d'indexation. Ne peut jamais l'autoriser : le double
+   *  verrou d'environnement reste au-dessus. */
+  noindex?: boolean;
+  /** Chemin miroir dans l'autre langue, si la déduction ne suffit pas. */
+  alternate?: string;
+  /** Supprime le suffixe « — The Upgrade Lab » du <title>. */
+  titreBrut?: boolean;
+  /** Classes ajoutées au <main>, pour une page qui veut sa propre surface. */
+  classeMain?: string;
+}
+
+const {
+  lang: langProp,
+  fond = 'noir',
+  classeMain,
+  ...seo
+} = Astro.props;
+
+const lang: CodeLangue = langProp ?? langueDuChemin(Astro.url.pathname);
+const surface = fond === 'papier' ? 'sur-papier' : 'sur-noir';
+---
+
+<!doctype html>
+<html lang={lang === 'fr' ? 'fr-CM' : 'en-CM'}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  {/* Le noir n'est pas le fond, c'est la première couleur de la marque :
+      63,7 % de la toile du logo. La barre du navigateur la prolonge. */}
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark light" />
+
+  {/* Les polices. Big Shoulders Display pour le titrage — terminaisons coupées
+      à plat, ossature athlétique condensée, la correspondance la plus proche du
+      lettrage du logo sur Google Fonts. Public Sans pour le corps. Deux graisses
+      de titrage seulement : au-delà, on paie des octets pour rien. */}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+  />
+
+  {/* Icônes : on ne pointe que vers des fichiers qui existent réellement dans
+      public/brand/. Un favicon vectoriel dédié, tracé depuis le monogramme,
+      reste une fente ouverte — voir la note de contrat. */}
+  <link rel="icon" href="/brand/ugl-logo-96.webp" type="image/webp" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/brand/ugl-logo.png" />
+
+  <Tete {...seo} lang={lang} />
+
+  {/* Fente d'en-tête : une page qui a besoin d'un style ou d'un lien
+      supplémentaire dans le <head> le pose ici. Pas de script bloquant. */}
+  <slot name="tete" />
+</head>
+
+<body>
+  <a class="saut" href="#contenu">
+    {lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}
+  </a>
+
+  <Entete lang={lang} />
+
+  <main id="contenu" class:list={[surface, classeMain]} tabindex="-1">
+    <slot />
+  </main>
+
+  <Pied lang={lang} />
+</body>
+</html>

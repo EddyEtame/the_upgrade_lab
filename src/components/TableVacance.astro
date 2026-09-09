@@ -1,0 +1,78 @@
+---
+/**
+ * TableVacance.astro — les huit secteurs, ouverts ou pris.
+ *
+ * Le mécanisme commercial du site : un directeur RSE à qui l'on propose un
+ * secteur qu'un concurrent peut prendre arbitre contre ses concurrents, pas
+ * contre les autres demandes de dons. Le tableau ne ment jamais dans le sens
+ * qui arrangerait — la donnée vit dans offre.ts, un seul champ à changer le
+ * jour d'une signature.
+ *
+ * Un vrai <table> : un secteur, un statut, un argument, une réserve. Lisible
+ * par un robot de réponse comme par un humain, et il s'imprime.
+ */
+
+import { SECTEURS, VACANCE_A_JOUR_LE, VACANCE_A_JOUR_LE_FR, NB_OUVERTS, NB_SECTEURS, PALIER_EXCLUSIVITE } from '../data/offre';
+
+export interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+
+<div class="vacance">
+  <table class="tv">
+    <caption class="vh">Vacance des {NB_SECTEURS} secteurs de partenariat, vérifiée le {VACANCE_A_JOUR_LE_FR}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Secteur</th>
+        <th scope="col">Statut</th>
+        {!compact && <th scope="col">Pourquoi ce secteur</th>}
+      </tr>
+    </thead>
+    <tbody>
+      {SECTEURS.map((s) => (
+        <tr class={`tv__ligne tv__ligne--${s.statut}`}>
+          <th scope="row">
+            <span class="tv__nom">{s.nom}</span>
+            {!compact && <span class="tv__ex">{s.exemples}</span>}
+          </th>
+          <td class="tv__statut">
+            <span class="tv__pastille">{s.statut === 'ouvert' ? 'Ouvert' : 'Pris'}</span>
+            {s.statut === 'pris' && s.depuis && <span class="tv__depuis">depuis <time datetime={s.depuis}>{s.depuis}</time></span>}
+          </td>
+          {!compact && (
+            <td class="tv__arg">
+              <p>{s.argument}</p>
+              {s.reserve && <p class="tv__reserve"><b>Réserve écrite au contrat.</b> {s.reserve}</p>}
+            </td>
+          )}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="petit t-sourd tv__pied">
+    {NB_OUVERTS} secteurs sur {NB_SECTEURS} ouverts au <time datetime={VACANCE_A_JOUR_LE}>{VACANCE_A_JOUR_LE_FR}</time>.
+    L’exclusivité de secteur est acquise à partir du palier {PALIER_EXCLUSIVITE.charAt(0).toUpperCase() + PALIER_EXCLUSIVITE.slice(1)}.
+    Un secteur passe à « pris » le jour d’une signature, jamais avant.
+  </p>
+</div>
+
+<style>
+  .vacance{overflow-x:auto}
+  .tv{width:100%;border-collapse:collapse;font-size:var(--t-petit)}
+  .tv thead th{text-align:left;font-size:var(--t-micro);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--fg-dim);font-weight:700;padding:0 var(--e3) var(--e3) 0;border-bottom:2px solid var(--fg)}
+  .tv tbody th,.tv tbody td{padding:var(--e4) var(--e3) var(--e4) 0;border-bottom:1px solid var(--trait);vertical-align:top;text-align:left}
+  .tv__nom{display:block;font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h4);line-height:1;color:var(--fg)}
+  .tv__ex{display:block;margin-top:.4em;color:var(--fg-dim);font-weight:400;line-height:1.45}
+  .tv__statut{white-space:nowrap}
+  .tv__pastille{display:inline-block;padding:.35em .7em .3em;font-size:var(--t-micro);font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;clip-path:var(--chanfrein);--c:6px}
+  .tv__ligne--ouvert .tv__pastille{background:var(--amber);color:#000}
+  .tv__ligne--pris .tv__pastille{background:var(--bloc);color:var(--fg-dim)}
+  .tv__ligne--pris .tv__nom{color:var(--fg-dim)}
+  .tv__depuis{display:block;margin-top:.4em;color:var(--fg-dim)}
+  .tv__arg p{margin:0;line-height:1.5;max-width:52ch}
+  .tv__reserve{margin-top:.6em!important;color:var(--fg-dim)}
+  .tv__reserve b{color:var(--t-rose)}
+  .tv__pied{margin-top:var(--e4)}
+</style>

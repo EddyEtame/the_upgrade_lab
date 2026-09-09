@@ -1,0 +1,225 @@
+---
+/**
+ * Entete.astro — l'en-tête du site.
+ *
+ * Le monogramme est INLINÉ, pas chargé : 3,5 Ko gzip contre 50 Ko pour le
+ * badge raster le plus petit, net à 32 px comme à l'impression, et zéro
+ * requête réseau. Sur 3G lente à Douala, une requête vaut 400 ms de RTT avant
+ * le premier octet — la supprimer est plus efficace que compresser ce qu'elle
+ * transporte.
+ *
+ * Le mark porte ses propres teintes de logo. Ce sont des APLATS de vecteur,
+ * pas du texte : la règle « les teintes du logo ne portent jamais de type »
+ * est respectée, ici il n'y a pas de type du tout. Le nom, lui, est composé —
+ * en Big Shoulders, penché de 9 degrés, exactement comme l'original.
+ *
+ * Zéro JavaScript. La navigation ne se replie pas dans un tiroir : elle passe
+ * à la ligne. Un menu caché derrière un bouton coûte du script, casse sans lui,
+ * et enterre cinq liens que le site a intérêt à montrer.
+ */
+
+import { NAV_ENTETE, SITE, LANGUES, cheminMiroir, langueDuChemin, type CodeLangue } from '../data/site';
+import marqueBrute from '../../public/brand/ugl-mark.svg?raw';
+
+export interface Props {
+  /** Langue courante. Défaut : déduite du chemin. */
+  lang?: CodeLangue;
+}
+
+const chemin = Astro.url.pathname;
+const lang: CodeLangue = Astro.props.lang ?? langueDuChemin(chemin);
+
+/** Le lien porte déjà le nom accessible ; le SVG redevient décoratif pour ne
+ *  pas annoncer deux fois la même chose au lecteur d'écran. */
+const marque = marqueBrute
+  .replace('role="img" aria-label="The Upgrade Lab"', 'aria-hidden="true" focusable="false"')
+  .replace('<svg ', '<svg class="marque__signe" ');
+
+const liens = NAV_ENTETE.filter((l) => !l.action);
+const action = NAV_ENTETE.find((l) => l.action);
+
+/** Une section est active si l'URL est dedans, pas seulement égale à elle :
+ *  /le-parcours/develop/ allume « Le parcours ». */
+const actif = (href: string) => chemin === href || chemin.startsWith(href);
+
+const autre: CodeLangue = lang === 'fr' ? 'en' : 'fr';
+const bascule = LANGUES[autre];
+const racineAccueil = lang === 'fr' ? '/' : '/en/';
+---
+
+<header class="entete sur-noir">
+  <div class="conteneur entete__rang">
+
+    <a class="marque" href={racineAccueil} aria-label={`${SITE.nom} — ${lang === 'fr' ? 'accueil' : 'home'}`}>
+      <span class="marque__boite" set:html={marque} />
+      <span class="marque__nom">
+        <span class="obl">The&nbsp;Upgrade&nbsp;Lab</span>
+        <span class="marque__lieu">{SITE.ville} · {SITE.pays}</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label={lang === 'fr' ? 'Navigation principale' : 'Main navigation'}>
+      <ul class="nav__liste" role="list">
+        {liens.map((l) => (
+          <li>
+            <a
+              class:list={['nav__lien', { actif: actif(l.href) }]}
+              href={l.href}
+              title={l.note}
+              aria-current={actif(l.href) ? 'page' : undefined}
+            >
+              <span class="chev nav__chev" aria-hidden="true"></span>
+              <span>{lang === 'fr' ? l.libelle : l.en}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="entete__fin">
+      {/* La bascule de langue n'apparaît que lorsque le miroir existe
+          réellement. Un sélecteur qui mène à un 404 est pire que pas de
+          sélecteur. L'agent qui livre /en/ bascule LANGUES.en.actif. */}
+      {bascule.actif && (
+        <a class="langue" href={cheminMiroir(chemin, autre)} hreflang={autre} lang={autre}>
+          {bascule.abrege}
+        </a>
+      )}
+      {action && (
+        <a class="bouton primaire entete__action" href={action.href}>
+          <span>{lang === 'fr' ? action.libelle : action.en}</span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      )}
+    </div>
+
+  </div>
+</header>
+
+<style>
+  .entete{
+    border-bottom:1px solid var(--trait);
+    padding-block:var(--e3);
+    position:relative;
+    z-index:10;
+  }
+  .entete__rang{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:var(--e3) var(--e5);
+  }
+
+  /* --- la marque --- */
+  .marque{
+    display:flex;
+    align-items:center;
+    gap:.7rem;
+    text-decoration:none;
+    color:var(--fg);
+    flex:none;
+  }
+  .marque__boite{
+    display:block;
+    line-height:0;
+    flex:none;
+  }
+  .marque :global(.marque__signe){
+    display:block;
+    height:2.375rem;
+    width:auto;
+  }
+  .marque__nom{
+    display:flex;
+    flex-direction:column;
+    gap:.12em;
+    line-height:1;
+  }
+  .marque__nom > .obl{
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:1.375rem;
+    letter-spacing:-.005em;
+    line-height:.94;
+  }
+  .marque__lieu{
+    font-size:.625rem;
+    font-weight:700;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+  }
+
+  /* --- la navigation --- */
+  .nav{flex:1 1 18rem}
+  .nav__liste{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.35rem 1.35rem;
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .nav__lien{
+    display:inline-flex;
+    align-items:center;
+    gap:.35em;
+    font-family:var(--f-titre);
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:1rem;
+    letter-spacing:.03em;
+    line-height:1;
+    padding-block:.3em;
+    text-decoration:none;
+    color:var(--fg);
+    transition:color .3s var(--ease);
+  }
+  .nav__chev{
+    width:.5em;
+    height:.5em;
+    color:var(--t-bleu);
+    opacity:0;
+    transform:translateY(.25em);
+    transition:opacity .35s var(--ease),transform .35s var(--ease);
+  }
+  .nav__lien:hover,.nav__lien.actif{color:var(--t-bleu)}
+  .nav__lien:hover .nav__chev,.nav__lien.actif .nav__chev{opacity:1;transform:none}
+
+  /* --- fin de rang --- */
+  .entete__fin{
+    display:flex;
+    align-items:center;
+    gap:var(--e4);
+    margin-left:auto;
+    flex:none;
+  }
+  .langue{
+    font-family:var(--f-corps);
+    font-size:var(--t-micro);
+    font-weight:700;
+    letter-spacing:var(--l-etiquette);
+    text-decoration:none;
+    color:var(--fg-dim);
+    padding:.4em .55em;
+  }
+  .langue:hover{color:var(--fg)}
+  .entete__action{font-size:.9375rem;padding:.7em 1.05em .62em}
+  .entete__action .chev{width:.55em;height:.55em}
+
+  /* --- petits écrans : 79 % du trafic --- */
+  @media (max-width:47.99em){
+    .entete__rang{gap:var(--e3)}
+    .marque :global(.marque__signe){height:2rem}
+    .marque__nom > .obl{font-size:1.125rem}
+    .nav{flex:1 0 100%;order:3}
+    .nav__liste{gap:.3rem 1rem}
+    .nav__lien{font-size:.9375rem}
+    .entete__fin{gap:var(--e3)}
+    .entete__action{font-size:.875rem;padding:.65em .9em .58em}
+  }
+  @media (max-width:22.5em){
+    .marque__lieu{display:none}
+  }
+</style>

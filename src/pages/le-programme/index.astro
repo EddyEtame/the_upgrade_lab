@@ -1,0 +1,208 @@
+---
+/**
+ * /le-programme/ — ce qu'est The Upgrade Lab, pour qui, et sur quel terrain.
+ *
+ * Intention : « école de basket Douala », et « centre de formation basket
+ * Douala » traitée comme une INTENTION DE RECHERCHE — jamais comme un statut
+ * que le programme s'attribuerait. La page répond par ce qui est vrai :
+ * un programme de développement en cinq niveaux, en lancement.
+ *
+ * Aucun effectif, aucun tarif, aucune affiliation. Les composantes du
+ * programme viennent du document fondateur ; les valeurs aussi. Le statut
+ * « en lancement » est un FAIT et il se vend : un partenaire qui entre
+ * maintenant entre au premier jour.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { SITE, FAITS, PARCOURS, TERRAIN_3X3, attente } from '../../data/site';
+
+const composantes = [
+  { titre: 'L’entraînement', texte: 'Technique et tactique, à chaque séance, selon le niveau du groupe et non selon l’âge.' },
+  { titre: 'Le développement physique', texte: 'Force, mobilité, vitesse, prévention des blessures — adaptés à des corps qui grandissent.' },
+  { titre: 'La détection', texte: 'Repérer le potentiel, pas seulement le niveau du jour. Une séance d’essai, jamais un chronomètre.' },
+  { titre: 'La compétition', texte: 'Matchs amicaux, tournois, plateaux : apprendre à jouer sous pression, à perdre, puis à ne plus perdre.' },
+  { titre: 'L’école', texte: 'Suivi de la scolarité et habitudes de travail. On ne progresse pas sur le terrain en reculant en classe.' },
+  { titre: 'Les compétences de vie', texte: 'Communication, discipline, confiance, décision. Ce qui reste quand le basket s’arrête.' },
+  { titre: 'Le mentorat', texte: 'Des entraîneurs, d’anciens joueurs, des professionnels : des adultes qui répondent aux questions qu’on n’ose pas poser.' },
+  { titre: 'L’exposition', texte: 'Des occasions de montrer ce qu’on sait faire devant d’autres clubs, d’autres coachs, d’autres villes.' },
+  { titre: 'La communauté', texte: 'Cliniques ouvertes, visites d’écoles, tournois de quartier. Un programme qui rend à l’endroit où il s’entraîne.' }
+];
+
+const valeurs = [
+  ['Excellence', 'On cherche à faire mieux, chaque semaine, sans attendre qu’on nous le demande.'],
+  ['Discipline', 'L’effort régulier et la responsabilité personnelle sont la base de tout le reste.'],
+  ['Croissance', 'Chaque jeune doit pouvoir progresser, quel que soit son point de départ.'],
+  ['Équipe', 'Un talent seul va vite ; un talent dans une équipe va loin.'],
+  ['Respect', 'Des coéquipiers, des entraîneurs, des adversaires, des arbitres, des familles, du terrain.'],
+  ['Intégrité', 'On fait ce qu’on a dit, et on écrit ce qu’on fait.'],
+  ['Inclusion', 'Filles et garçons, quel que soit le quartier ou les moyens de la famille.'],
+  ['Résilience', 'On apprend d’un match perdu, et on revient.']
+];
+
+const fenteEffectifs = attente('effectifs');
+const fenteEncadrants = attente('encadrants');
+
+const faq = [
+  {
+    q: 'The Upgrade Lab est-il un club ou une école de basket ?',
+    a: 'Un programme de développement : une structure qui prend des jeunes de 10 à 20 ans, les entraîne selon un parcours écrit en cinq niveaux, et les accompagne vers des clubs supérieurs, des académies et des bourses. Le programme est en lancement à Douala.'
+  },
+  {
+    q: 'Le programme est-il affilié à une fédération ?',
+    a: 'Aucune affiliation fédérale n’existe à ce jour. Le programme le dit clairement : s’en réclamer serait un fait faux, et les affiliations seront annoncées sur cette page le jour où elles existent.'
+  },
+  {
+    q: 'À qui s’adresse le programme ?',
+    a: `Aux filles et aux garçons de ${FAITS.ageMin} à ${FAITS.ageMax} ans, en six catégories : ${FAITS.categories.join(', ')}. L’entrée se fait au niveau Discover, quel que soit l’âge, et sans niveau préalable.`
+  }
+];
+---
+
+<Base
+  titre="Le programme"
+  description="The Upgrade Lab, école de basket à Douala pour les 10-20 ans : neuf composantes, huit valeurs, un parcours en cinq niveaux, et un terrain réglementaire de discipline olympique."
+  typePage="AboutPage"
+  fil={[{ nom: 'Le programme', href: '/le-programme/' }]}
+  faq={faq}
+>
+  <section class="section">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Le programme · {FAITS.statut}</p>
+      <h1><span class="obl">Une école de basket à Douala</span><br />qui écrit ce qu’elle fait</h1>
+      <p class="chapo mesure">
+        The Upgrade Lab est un programme de développement de basket à Douala.
+        Il prend des jeunes de {FAITS.ageMin} à {FAITS.ageMax} ans, filles et
+        garçons, les fait passer par cinq niveaux, et les accompagne vers des
+        clubs supérieurs, des académies et des bourses.
+      </p>
+      <p class="mesure">
+        Beaucoup de jeunes à Douala ont le talent. Ce qui leur manque n’est pas
+        l’envie : c’est un entraînement régulier, un encadrement qualifié, du
+        matériel, de la compétition, et quelqu’un qui suive leur progression.
+        Sans ça, le talent reste du potentiel et s’éteint. Le programme répond
+        par une méthode — un parcours écrit, des critères observables — et non
+        par des promesses.
+      </p>
+      <p class="mesure">
+        Un partenaire ne finance donc pas une équipe. Il finance un mécanisme
+        qui transforme du potentiel en performance, et qui produit au passage
+        des jeunes disciplinés, scolarisés et employables.
+      </p>
+    </div>
+  </section>
+
+  <section class="section sur-bloc" aria-labelledby="t-comp">
+    <div class="conteneur">
+      <h2 id="t-comp">Neuf composantes, <span class="obl">un seul programme</span></h2>
+      <p class="mesure t-sourd">
+        Basket, préparation physique, école, mentorat, compétition, exposition :
+        rien de tout cela ne tient seul. C’est l’articulation qui fait le
+        centre de formation qu’un parent cherche quand il tape ces mots.
+      </p>
+      <ol class="composantes" role="list">
+        {composantes.map((c, i) => (
+          <li class="carte composante">
+            <p class="composante__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+            <h3>{c.titre}</h3>
+            <p>{c.texte}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-parcours">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div>
+          <h2 id="t-parcours">Le parcours, <span class="obl">en cinq niveaux</span></h2>
+          <p class="mesure">
+            Un jeune n’« entre » pas dans le programme : il entre à un niveau,
+            et il le traverse. Chaque palier a un contenu, un objectif et une
+            sortie, publiés sur sa page.
+          </p>
+          <a class="bouton fantome" href="/le-parcours/">Le parcours, niveau par niveau <span class="chev" aria-hidden="true"></span></a>
+        </div>
+        <ol class="bande" role="list">
+          {PARCOURS.map((n) => (
+            <li style={`--fill:${n.fill};--txt:${n.texteSurNoir}`}>
+              <a href={n.href}><b>{n.label}</b><span>{n.promesse}</span></a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sur-bloc" aria-labelledby="t-terrain">
+    <div class="conteneur">
+      <h2 id="t-terrain">Le terrain : <span class="obl t-ambre">réglementaire, et olympique</span></h2>
+      <p class="mesure">{TERRAIN_3X3.phrase}</p>
+      <p class="mesure">
+        {TERRAIN_3X3.etude.auteurs}, <cite>{TERRAIN_3X3.etude.revue}</cite>
+        {' '}({TERRAIN_3X3.etude.annee}), {TERRAIN_3X3.etudesRevues ?? TERRAIN_3X3.etude.etudesRevues} études,
+        {' '}{TERRAIN_3X3.etude.enfants} enfants : adapter l’aire de jeu améliore
+        l’acquisition des habiletés. Un terrain plus court n’est pas un terrain
+        diminué. Pour un enfant, c’est un meilleur terrain.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-valeurs">
+    <div class="conteneur">
+      <h2 id="t-valeurs">Huit valeurs, <span class="obl">écrites une fois</span></h2>
+      <dl class="valeurs">
+        {valeurs.map(([v, t]) => (
+          <div class="valeur">
+            <dt>{v}</dt>
+            <dd>{t}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section serree sur-bloc" aria-labelledby="t-chiffres">
+    <div class="conteneur">
+      <h2 id="t-chiffres">Ce que cette page dira bientôt</h2>
+      <p class="mesure t-sourd">
+        Deux informations sont en cours d’établissement et prendront leur
+        place ici, avec la date à laquelle elles ont été vérifiées.
+      </p>
+      <div class="grille" style="--min:16rem;--gap:1px">
+        {[fenteEffectifs, fenteEncadrants].filter(Boolean).map((f) => (
+          <p class="fente"><b>{f!.libelle}</b><span>{f!.source}</span></p>
+        ))}
+      </div>
+      <p class="petit t-sourd" style="margin-top:var(--e4)">
+        Le programme n’a aucune affiliation fédérale à ce jour ; il le dit plutôt
+        que de le laisser supposer.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .composantes{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);
+    grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+  .composante{--c:14px}
+  .composante__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;
+    color:var(--t-bleu);margin:0 0 .35em}
+  .composante h3{margin:0 0 .35em;font-size:var(--t-h4)}
+  .composante p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+
+  .bande{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px}
+  .bande li{background:var(--bg);border-left:6px solid var(--fill)}
+  .bande a{display:grid;gap:.15em;padding:var(--e4);text-decoration:none;color:var(--fg)}
+  .bande a:hover{background:var(--bloc)}
+  .bande b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h4);color:var(--txt);line-height:1}
+  .bande span{font-size:var(--t-petit);color:var(--fg-dim)}
+
+  .valeurs{margin:var(--e6) 0 0;display:grid;gap:1px;background:var(--trait);
+    grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));clip-path:var(--chanfrein);--c:12px}
+  .valeur{background:var(--bg);padding:var(--e4)}
+  .valeur dt{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h4);
+    color:var(--t-ambre);margin:0 0 .3em;line-height:1}
+  .valeur dd{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+</style>

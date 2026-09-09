@@ -1,0 +1,224 @@
+---
+/**
+ * /sponsors/[palier]/ — une page par palier, cinq au total.
+ *
+ * Chaque page explique ce que le sponsor reçoit, dans le vocabulaire d'un
+ * directeur RSE. La page bourse est la page de conversion du site : faible
+ * concurrence, forte intention, et la seule contrepartie qui a un visage.
+ * Silver promet « votre propre page sur le site » : on le dit comme une URL
+ * réelle que le partenaire reçoit, parce que c'en est une.
+ *
+ * Les montants restent une grille de travail tant que `approuve_le` vaut null,
+ * et la mention l'accompagne partout où le chiffre est rendu.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { FAITS, PARCOURS } from '../../data/site';
+import { OFFRE, MENTION_GRILLE, PALIER_EXCLUSIVITE, ETAPES, fcfa, type PalierOffre } from '../../data/offre';
+
+export function getStaticPaths() {
+  return OFFRE.map((p) => ({ params: { palier: p.cle }, props: { p } }));
+}
+
+const { p } = Astro.props as { p: PalierOffre };
+const autres = OFFRE.filter((x) => x.cle !== p.cle);
+const estBourse = p.cle === 'bourse';
+const estSilver = p.cle === 'silver';
+const estGold = p.cle === 'gold';
+const exclusif = p.exclusivite;
+
+const description = estBourse
+  ? 'Parrainer un jeune sportif au Cameroun : une saison complète pour un athlète nommé de The Upgrade Lab, deux rapports écrits dans l’année, une invitation à la fête de fin de saison.'
+  : `${p.nom} : ce qu’une entreprise de Douala reçoit à ce palier de partenariat sportif avec The Upgrade Lab, contrepartie par contrepartie, et comment on s’engage.`;
+
+/* La requête que chaque page répond, dite en clair. C'est une INTENTION de
+   recherche, jamais une affirmation : « club sportif » est ce que tape un
+   directeur RSE, pas le statut du programme. */
+const intentions = {
+  friend: 'devenir le sponsor local d’un club de basket',
+  bronze: 'un partenariat sportif à Douala',
+  silver: 'devenir sponsor d’une catégorie de jeunes au basket',
+  gold: 'devenir partenaire principal d’un club sportif au Cameroun',
+  bourse: 'parrainer un jeune sportif au Cameroun'
+} as const;
+
+const faq = estBourse
+  ? [
+      { q: 'Que couvre le parrainage d’un athlète ?', a: 'Une saison complète pour un jeune nommé : tenue, entraînement et inscription en compétition. Le parrain connaît le prénom et la catégorie du jeune, reçoit deux rapports de progression écrits dans l’année, et une invitation à la fête de fin de saison.' },
+      { q: 'Le parrain peut-il rencontrer le jeune ?', a: 'À la fête de fin de saison, oui. Le programme n’organise pas de contact direct en dehors : il entraîne des mineurs, et la relation passe par les rapports écrits et par le coordinateur.' },
+      { q: 'Un jeune sans moyens peut-il participer ?', a: 'C’est précisément ce que le parrainage rend possible : une place financée pour que la progression d’un jeune dépende de ce qu’il fait sur le terrain et de rien d’autre.' }
+    ]
+  : [
+      { q: `Que reçoit un ${p.nom} ?`, a: `${p.contreparties.length} contreparties écrites, listées sur cette page et reprises telles quelles dans la convention : ${p.contreparties.slice(0, 2).join(' ')}` },
+      { q: 'L’exclusivité de secteur est-elle incluse ?', a: exclusif ? `Oui. À partir du palier ${PALIER_EXCLUSIVITE.charAt(0).toUpperCase() + PALIER_EXCLUSIVITE.slice(1)}, le secteur du partenaire est réservé pour la saison : aucune autre entreprise du même secteur n’est acceptée.` : `Non : l’exclusivité de secteur commence au palier ${PALIER_EXCLUSIVITE.charAt(0).toUpperCase() + PALIER_EXCLUSIVITE.slice(1)}. Ce palier-ci peut coexister avec une autre entreprise du même secteur.` },
+      { q: 'Le montant est-il définitif ?', a: p.approuve_le ? 'Oui, validé par écrit par le coordinateur.' : 'Le montant est une grille de travail en attente de validation écrite. Les contreparties sont arrêtées.' }
+    ];
+---
+
+<Base
+  titre={p.nom}
+  description={description}
+  fil={[{ nom: 'Sponsors', href: '/sponsors/' }, { nom: p.nom, href: p.href }]}
+  faq={faq}
+>
+  <div class="palier" style={`--fill:${p.fill};--sur:${p.surFill}`}>
+    <section class="section ouverture">
+      <div class="conteneur">
+        <p class="balise">
+          <span class="chevs" aria-hidden="true">{Array.from({ length: p.chevrons }).map(() => <i class="chev"></i>)}</span>
+          {estBourse ? 'Hors paliers' : `Palier ${p.chevrons} sur 4`}{exclusif ? ' · exclusivité de secteur' : ''}
+        </p>
+        <h1><span class="obl">{p.nom}</span></h1>
+        <p class="chapo mesure">{p.accroche}</p>
+        <p class="mesure">{p.pour}</p>
+
+        <div class="montant cut" style="--c:14px">
+          <b>{fcfa(p.montantFCFA)}</b>
+          <span>{p.periode}</span>
+          {!p.approuve_le && <em>{MENTION_GRILLE.etiquette} — en attente de validation écrite.</em>}
+        </div>
+      </div>
+    </section>
+
+    <section class="section sur-bloc" aria-labelledby="t-contre">
+      <div class="conteneur">
+        <h2 id="t-contre">Ce que vous recevez, <span class="obl">ligne par ligne</span></h2>
+        <p class="mesure t-sourd">
+          Ces contreparties sont arrêtées. Elles sont reprises telles quelles
+          dans la convention, et chacune est livrable par une structure en
+          lancement — sans effectif inventé, sans image de mineur.
+        </p>
+        <ol class="contreparties" role="list">
+          {p.contreparties.map((c, i) => (
+            <li><span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><span>{c}</span></li>
+          ))}
+        </ol>
+
+        {estSilver && (
+          <p class="note mesure">
+            <b>Votre propre page, c’est une adresse réelle.</b> Un partenaire
+            Silver reçoit une page de ce site, à une URL qui lui est propre —
+            son histoire, son logo, un lien vers son site — indexée comme le
+            reste du site et citée dans les deux rapports de saison.
+          </p>
+        )}
+        {estGold && (
+          <p class="note mesure">
+            <b>Sur le reportage filmé.</b> Il est produit par un prestataire
+            vidéo et financé sur le montant du partenariat, pour que la
+            contrepartie soit tenue par quelqu’un dont c’est le métier. Le
+            programme n’est pas producteur de vidéo et ne le prétend pas.
+          </p>
+        )}
+        {estBourse && (
+          <p class="note mesure">
+            <b>Le montant doit tomber juste.</b> Il correspond au coût réel d’un
+            athlète sur une saison, calculé depuis le budget du programme. Au-dessus,
+            un parrain attentif le verrait ; en dessous, la promesse ne tiendrait pas
+            l’année. C’est la seule ligne de l’offre qui doit être exacte au franc.
+          </p>
+        )}
+      </div>
+    </section>
+
+    {estBourse ? (
+      <section class="section" aria-labelledby="t-visage">
+        <div class="conteneur">
+          <div class="grille-2" style="--gap:2.5rem">
+            <div>
+              <h2 id="t-visage">La seule contrepartie <span class="obl t-ambre">qui a un visage</span></h2>
+              <p class="mesure">
+                Une entreprise qui hésite devant un palier abstrait dit souvent
+                oui à un jeune précis. Le parrainage se raconte en une phrase : un
+                parrain, un jeune de {FAITS.ageMin} à {FAITS.ageMax} ans, une saison.
+              </p>
+              <p class="mesure">
+                Ce que le parrain sait du jeune : son prénom, sa catégorie d’âge et
+                son niveau dans le parcours. Ce qu’il ne saura pas, et c’est un
+                engagement : son nom complet, son école, son quartier, son lieu et
+                ses heures d’entraînement. Les deux rapports écrits parlent de sa
+                progression, pas de sa vie privée.
+              </p>
+            </div>
+            <ol class="niveaux-mini" role="list">
+              {PARCOURS.map((n) => (
+                <li style={`--f:${n.fill};--t:${n.texteSurNoir}`}><a href={n.href}><b>{n.label}</b><span>{n.promesse}</span></a></li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="section" aria-labelledby="t-etapes">
+        <div class="conteneur">
+          <h2 id="t-etapes">Comment on s’engage</h2>
+          <ol class="etapes" role="list">
+            {ETAPES.map((e) => (
+              <li class="carte" style="--c:12px">
+                <p class="etape__num" aria-hidden="true">{String(e.rang).padStart(2, '0')}</p>
+                <h3>{e.titre}</h3>
+                <p>{e.texte}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )}
+
+    <section class="section serree sur-bloc" aria-labelledby="t-autres">
+      <div class="conteneur">
+        <h2 id="t-autres">Les autres paliers</h2>
+        <ul class="autres" role="list">
+          {autres.map((a) => (
+            <li style={`--f:${a.fill};--s:${a.surFill}`}>
+              <a href={a.href}>
+                <span class="chevs" aria-hidden="true">{Array.from({ length: a.chevrons }).map(() => <i class="chev"></i>)}</span>
+                <b>{a.nom}</b>
+                <span>{fcfa(a.montantFCFA)} {a.periode}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="petit t-sourd" style="margin-top:var(--e4)">
+          Intention de cette page : {intentions[p.cle]}. <a href="/sponsors/">Retour à la vacance des secteurs.</a>
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .ouverture{border-top:10px solid var(--fill)}
+  .ouverture .chev{width:.55em;height:.55em}
+  .montant{display:inline-grid;gap:.15em;margin-top:var(--e5);padding:var(--e4) var(--e5);background:var(--fill);color:var(--sur)}
+  .montant b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1;font-variant-numeric:tabular-nums}
+  .montant span{font-size:var(--t-micro);font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .montant em{font-style:normal;font-size:var(--t-petit);margin-top:.5em;opacity:.9}
+
+  .contreparties{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px;max-width:var(--l-mesure)}
+  .contreparties li{display:grid;grid-template-columns:3rem 1fr;gap:var(--e3);background:var(--bg);padding:var(--e4);line-height:1.5}
+  .contreparties .num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h3);line-height:1;color:var(--t-bleu)}
+  .note{margin-top:var(--e5);padding:var(--e4);background:var(--bg);border-left:4px solid var(--amber);line-height:1.55}
+  .note b{color:var(--t-ambre)}
+
+  .niveaux-mini{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px;align-self:start}
+  .niveaux-mini li{background:var(--bg);border-left:6px solid var(--f)}
+  .niveaux-mini a{display:grid;gap:.1em;padding:var(--e3) var(--e4);text-decoration:none;color:var(--fg)}
+  .niveaux-mini b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;color:var(--t);line-height:1}
+  .niveaux-mini span{font-size:var(--t-petit);color:var(--fg-dim)}
+
+  .etapes{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+  .etape__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}
+  .etapes h3{margin:0 0 .4em;font-size:var(--t-h4)}
+  .etapes p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+
+  .autres{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);
+    grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));clip-path:var(--chanfrein);--c:12px}
+  .autres a{display:grid;gap:.2em;padding:var(--e4);background:var(--bg);border-top:6px solid var(--f);text-decoration:none;color:var(--fg)}
+  .autres a:hover{background:var(--bloc)}
+  .autres .chev{width:.5em;height:.5em;background:var(--fg-dim)}
+  .autres b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;line-height:1;font-size:var(--t-h4)}
+  .autres span:last-child{font-size:var(--t-petit);color:var(--fg-dim);font-variant-numeric:tabular-nums}
+  .autres + p a{color:var(--t-bleu);text-decoration:underline}
+</style>

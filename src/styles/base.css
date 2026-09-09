@@ -1,0 +1,377 @@
+@import './brand.css';
+
+/* ============================================================================
+   The Upgrade Lab — couche de base.
+
+   brand.css porte les JETONS MESURÉS (les teintes du logo, les deux rampes,
+   la courbe, l'oblique). Ce fichier ne les redéfinit jamais : il ajoute
+   l'échelle typographique, les primitives de mise en page, et les deux
+   mécanismes tirés du lettrage — le chanfrein et la flèche.
+
+   ---------------------------------------------------------------------------
+   LE MÉCANISME ANTI-BUG, et c'est la partie à comprendre avant d'écrire une
+   page. La faute qui a déjà été livrée une fois, c'est du texte peint avec une
+   teinte de logo. Ici, une couleur de texte ne se choisit plus : elle est
+   HÉRITÉE DE LA SURFACE.
+
+     <section class="sur-noir">   -> --t-bleu vaut #68A5FF (8.41:1)
+     <section class="sur-papier"> -> --t-bleu vaut #005DC9 (5.89:1)
+
+   Une page écrit `class="t-bleu"` et obtient la bonne valeur des deux côtés,
+   sans y penser. `--blue` (#0068E0) reste disponible, mais uniquement pour un
+   APLAT : background, remplissage SVG, bande. Jamais `color`.
+   ---------------------------------------------------------------------------
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+   1. JETONS AJOUTÉS
+   ------------------------------------------------------------------------ */
+
+:root{
+  /* -- polices -- */
+  --f-titre:'Big Shoulders Display','Big Shoulders',Impact,'Haettenschweiler',
+            'Arial Narrow Bold',system-ui,sans-serif;
+  --f-corps:'Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,
+            'Helvetica Neue',Arial,sans-serif;
+
+  /* -- échelle typographique, fluide et bornée --
+     Bornes calculées pour un écran de 360 px (79 % de mobile) et pour 1440 px.
+     Le corps ne descend jamais sous 16 px : en dessous, iOS zoome sur les
+     champs de formulaire et le lecteur perd sa place. */
+  --t-micro:.75rem;                                   /* 12 px — étiquettes  */
+  --t-petit:.875rem;                                  /* 14 px — légendes    */
+  --t-corps:clamp(1rem,.96rem + .18vw,1.0625rem);     /* 16 -> 17 px         */
+  --t-chapo:clamp(1.1875rem,1.06rem + .55vw,1.4375rem);/* 19 -> 23 px        */
+  --t-h4:clamp(1.25rem,1.12rem + .58vw,1.5rem);
+  --t-h3:clamp(1.5rem,1.24rem + 1.15vw,2.125rem);
+  --t-h2:clamp(2rem,1.5rem + 2.2vw,3.25rem);
+  --t-h1:clamp(2.625rem,1.7rem + 4.1vw,5rem);
+  --t-geant:clamp(3.25rem,1.6rem + 7.3vw,8.5rem);     /* accroche plein écran*/
+
+  /* -- interlignes et interlettrage --
+     Le titrage condensé se serre ; le corps respire. */
+  --i-titre:.92;
+  --i-h:1.06;
+  --i-corps:1.62;
+  --l-titre:-.005em;
+  --l-etiquette:.14em;
+
+  /* -- rythme vertical -- */
+  --e1:.25rem; --e2:.5rem;  --e3:.75rem; --e4:1rem;
+  --e5:1.5rem; --e6:2rem;   --e7:3rem;   --e8:4.5rem;
+  --e9:clamp(3.5rem,2rem + 6vw,7.5rem);   /* respiration de section */
+
+  /* -- largeurs -- */
+  --l-page:78rem;      /* 1248 px */
+  --l-etroit:52rem;
+  --l-mesure:64ch;     /* longueur de ligne confortable en Public Sans */
+  --marge:clamp(1.125rem,.6rem + 2.4vw,3rem);
+
+  /* -- le chanfrein : deux coins coupés, en haut à gauche et en bas à droite,
+        exactement la construction du monogramme. Une seule forme, une seule
+        variable, tout le site. -- */
+  --c:14px;
+  --chanfrein:polygon(
+    var(--c) 0, 100% 0, 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, 0 100%, 0 var(--c));
+
+  /* -- la flèche : le jambage gauche du U du logo -- */
+  --fleche:polygon(50% 0,100% 52%,74% 52%,74% 100%,26% 100%,26% 52%,0 52%);
+
+  /* -- surface par défaut : le noir, parce que le logo est dessiné pour lui -- */
+  --bg:var(--black);
+  --fg:var(--ink);
+  --fg-dim:var(--dim);
+  --trait:var(--line);
+  --bloc:var(--panel);
+  --t-bleu:var(--blue-on-dark);
+  --t-rose:var(--rose-on-dark);
+  --t-ambre:var(--amber-on-dark);
+  --focus:var(--blue-on-dark);
+}
+
+/* ---------------------------------------------------------------------------
+   2. LES DEUX SURFACES
+   ------------------------------------------------------------------------ */
+
+.sur-noir{
+  --bg:var(--black); --fg:var(--ink); --fg-dim:var(--dim);
+  --trait:var(--line); --bloc:var(--panel);
+  --t-bleu:var(--blue-on-dark); --t-rose:var(--rose-on-dark);
+  --t-ambre:var(--amber-on-dark); --focus:var(--blue-on-dark);
+  background:var(--bg); color:var(--fg);
+}
+
+/* Le papier existe parce que ce contenu se fait imprimer et photocopier à
+   Douala, et parce qu'un long texte se lit mieux en noir sur clair. */
+.sur-papier{
+  --bg:var(--paper); --fg:#08090B; --fg-dim:#585F6A;
+  --trait:#D9DCE1; --bloc:#EFF1F4;
+  --t-bleu:var(--blue-on-light); --t-rose:var(--rose-on-light);
+  --t-ambre:var(--amber-on-light); --focus:var(--blue-on-light);
+  background:var(--bg); color:var(--fg);
+}
+
+/* Un cran entre les deux : le noir légèrement relevé des blocs. */
+.sur-bloc{
+  --bg:var(--panel); --fg:var(--ink); --fg-dim:var(--dim);
+  --trait:var(--line); --bloc:#12151B;
+  --t-bleu:var(--blue-on-dark); --t-rose:var(--rose-on-dark);
+  --t-ambre:var(--amber-on-dark); --focus:var(--blue-on-dark);
+  background:var(--bg); color:var(--fg);
+}
+
+.t-bleu{color:var(--t-bleu)}
+.t-rose{color:var(--t-rose)}
+.t-ambre{color:var(--t-ambre)}
+.t-fort{color:var(--fg)}
+.t-sourd{color:var(--fg-dim)}
+
+/* Les aplats. Jamais de petit texte posé dessus sans ratio vérifié. */
+.a-bleu{background:var(--blue)}
+.a-rose{background:var(--rose)}
+.a-ambre{background:var(--amber)}
+.a-noir{background:var(--black)}
+
+/* ---------------------------------------------------------------------------
+   3. TYPOGRAPHIE
+   ------------------------------------------------------------------------ */
+
+body{
+  font-family:var(--f-corps);
+  font-size:var(--t-corps);
+  line-height:var(--i-corps);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,h4,.d1,.d2,.d3{
+  font-family:var(--f-titre);
+  font-weight:900;
+  line-height:var(--i-h);
+  letter-spacing:var(--l-titre);
+  text-transform:uppercase;
+  margin:0 0 var(--e4);
+  text-wrap:balance;
+}
+h1,.d1{font-size:var(--t-h1);line-height:var(--i-titre)}
+h2,.d2{font-size:var(--t-h2);line-height:var(--i-titre)}
+h3,.d3{font-size:var(--t-h3)}
+h4{font-size:var(--t-h4);font-weight:700}
+.d0{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;
+    font-size:var(--t-geant);line-height:.86;letter-spacing:-.02em;margin:0}
+
+p,ul,ol,dl,figure,blockquote,table{margin:0 0 var(--e5)}
+p:last-child,ul:last-child,ol:last-child{margin-bottom:0}
+
+/* Le chapô : une seule phrase, plus grande, jamais un paragraphe entier. */
+.chapo{font-size:var(--t-chapo);line-height:1.42;color:var(--fg);
+  max-width:34ch;text-wrap:pretty}
+
+.petit{font-size:var(--t-petit);line-height:1.5}
+.micro{font-size:var(--t-micro);line-height:1.45}
+
+/* L'étiquette : capitales espacées, en Public Sans pour rester lisible à 12 px
+   là où le condensé se referme. */
+.etiquette{font-family:var(--f-corps);font-size:var(--t-micro);font-weight:700;
+  text-transform:uppercase;letter-spacing:var(--l-etiquette);line-height:1.2;
+  color:var(--fg-dim)}
+
+a{color:inherit;text-underline-offset:.18em;
+  text-decoration-thickness:from-font;
+  transition:color .25s var(--ease)}
+a:hover{color:var(--t-bleu)}
+
+/* Un lien dans du texte courant doit se voir sans la couleur : le soulignement
+   fait le travail, la couleur ne fait que le confirmer. */
+.prose a{color:var(--t-bleu);text-decoration:underline}
+.prose a:hover{color:var(--fg)}
+.prose{max-width:var(--l-mesure)}
+.prose h2{margin-top:var(--e7)}
+.prose h3{margin-top:var(--e6)}
+
+strong,b{font-weight:700;color:var(--fg)}
+em,i{font-style:italic}
+abbr[title]{text-decoration:underline dotted;cursor:help}
+hr{border:0;border-top:1px solid var(--trait);margin:var(--e7) 0}
+::selection{background:var(--rose);color:#fff}
+
+/* ---------------------------------------------------------------------------
+   4. LES DEUX MÉCANISMES, tirés du lettrage
+   ------------------------------------------------------------------------ */
+
+/* Le chanfrein. `--c` règle la coupe : `style="--c:24px"` sur l'élément. */
+.cut{clip-path:var(--chanfrein)}
+.cut-s{--c:8px}
+.cut-l{--c:24px}
+.cut-xl{--c:36px}
+
+/* L'oblique. 9 degrés, la construction exacte du logo — pas un effet. */
+.obl{display:inline-block;transform:skewX(calc(-1 * var(--oblique)));
+  transform-origin:0 100%}
+
+/* La flèche. `.chev` seule, ou `.chevs` pour compter les paliers franchis. */
+.chev{display:inline-block;width:.7em;height:.7em;flex:none;
+  background:currentColor;clip-path:var(--fleche)}
+.chevs{display:inline-flex;gap:.18em;align-items:center;line-height:1}
+
+/* Puce de liste : la flèche remplace le point. */
+.liste-fleche{list-style:none;padding:0;margin:0 0 var(--e5)}
+.liste-fleche li{position:relative;padding-left:1.5em;margin-bottom:var(--e3)}
+.liste-fleche li::before{content:'';position:absolute;left:0;top:.52em;
+  width:.62em;height:.62em;background:var(--t-bleu);clip-path:var(--fleche)}
+
+/* ---------------------------------------------------------------------------
+   5. PRIMITIVES DE MISE EN PAGE
+   ------------------------------------------------------------------------ */
+
+.conteneur{width:100%;max-width:var(--l-page);margin-inline:auto;
+  padding-inline:var(--marge)}
+.conteneur.etroit{max-width:var(--l-etroit)}
+.mesure{max-width:var(--l-mesure)}
+
+.section{padding-block:var(--e9)}
+.section.serree{padding-block:var(--e7)}
+.section.ample{padding-block:calc(var(--e9) * 1.5)}
+
+/* Empilement vertical à gouttière réglable : `style="--gap:2rem"`. */
+.pile{display:flex;flex-direction:column;gap:var(--gap,var(--e4))}
+.rangee{display:flex;flex-wrap:wrap;gap:var(--gap,var(--e4));align-items:center}
+.rangee.entre{justify-content:space-between}
+.rangee.bout{align-items:flex-end}
+
+/* Grille qui se replie toute seule : `style="--min:20rem"`. */
+.grille{display:grid;gap:var(--gap,var(--e5));
+  grid-template-columns:repeat(auto-fit,minmax(min(var(--min,17rem),100%),1fr))}
+.grille-2{display:grid;gap:var(--gap,var(--e5));grid-template-columns:1fr}
+.grille-3{display:grid;gap:var(--gap,var(--e5));grid-template-columns:1fr}
+@media (min-width:48em){
+  .grille-2{grid-template-columns:repeat(2,1fr)}
+  .grille-3{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Rail horizontal — pour une série qui ne doit pas se replier sur mobile. */
+.rail{display:flex;gap:var(--gap,var(--e4));overflow-x:auto;
+  scroll-snap-type:x proximity;padding-bottom:var(--e2);
+  scrollbar-width:thin}
+.rail > *{scroll-snap-align:start;flex:none}
+
+/* ---------------------------------------------------------------------------
+   6. BLOCS
+   ------------------------------------------------------------------------ */
+
+.carte{background:var(--bloc);padding:var(--e5);clip-path:var(--chanfrein);
+  position:relative;display:flow-root}
+
+/* Carte cerclée : le trait est l'élément, le fond est le pseudo-élément.
+   C'est le seul moyen d'obtenir un contour chanfreiné à zéro octet. */
+.carte-trait{background:var(--trait);padding:1px;clip-path:var(--chanfrein);
+  position:relative;isolation:isolate}
+.carte-trait > .dedans{background:var(--bg);padding:calc(var(--e5) - 1px);
+  clip-path:var(--chanfrein);display:flow-root}
+
+/* Le cartouche : petite pastille chanfreinée, pour un niveau, un palier,
+   une catégorie d'âge. */
+.balise{display:inline-flex;align-items:center;gap:.45em;
+  font-family:var(--f-corps);font-size:var(--t-micro);font-weight:700;
+  text-transform:uppercase;letter-spacing:var(--l-etiquette);
+  padding:.42em .8em .38em;clip-path:var(--chanfrein);--c:6px;
+  background:var(--bloc);color:var(--fg)}
+
+/* La bande de parcours. Plancher typographique délibéré : sur l'aplat rose, le
+   blanc mesure 4.35:1 — conforme en GRAND texte seulement. La taille minimale
+   et la graisse 700 sont donc une règle d'accessibilité, pas un goût. */
+.bande-parcours{display:block;padding:var(--e4) var(--e4) calc(var(--e4) - .2em);
+  clip-path:var(--chanfrein);--c:10px;
+  font-family:var(--f-titre);font-weight:900;text-transform:uppercase;
+  font-size:max(1.25rem,var(--t-h4));line-height:1;letter-spacing:.01em;
+  text-decoration:none;transition:transform .4s var(--ease)}
+.bande-parcours:hover{transform:translateY(-3px)}
+
+/* ---------------------------------------------------------------------------
+   7. BOUTONS
+   ------------------------------------------------------------------------ */
+
+.bouton{display:inline-flex;align-items:center;gap:.6em;
+  font-family:var(--f-titre);font-weight:900;text-transform:uppercase;
+  font-size:1.0625rem;letter-spacing:.02em;line-height:1;
+  padding:.85em 1.35em .75em;clip-path:var(--chanfrein);--c:10px;
+  text-decoration:none;cursor:pointer;border:0;
+  background:var(--fg);color:var(--bg);
+  transition:transform .4s var(--ease),background-color .3s var(--ease)}
+.bouton:hover{transform:translateY(-2px);color:var(--bg)}
+.bouton .chev{transition:transform .4s var(--ease)}
+.bouton:hover .chev{transform:translateY(-2px)}
+
+/* Le bouton primaire est ROSE, un aplat de logo, avec du blanc dessus :
+   blanc sur #F0005A = 4.35:1, conforme au seuil grand texte, et le bouton est
+   en 17 px / 900 condensé. Aucun texte de logo n'est peint ici — c'est un fond. */
+.bouton.primaire{background:var(--rose);color:#fff}
+.bouton.primaire:hover{background:var(--ball);color:#fff}
+
+.bouton.fantome{background:transparent;color:var(--fg);
+  box-shadow:inset 0 0 0 1.5px var(--trait)}
+.bouton.fantome:hover{box-shadow:inset 0 0 0 1.5px var(--t-bleu);color:var(--t-bleu)}
+
+/* ---------------------------------------------------------------------------
+   8. LA FENTE — ce qui n'est pas encore confirmé
+   ------------------------------------------------------------------------ */
+
+/* Une donnée manquante ne se devine pas et ne se cache pas : elle se DESSINE,
+   pour qu'on la voie et qu'on la remplisse. Contour pointillé, étiquette ambre,
+   et le libellé de ce qu'on attend. Voir EN_ATTENTE dans src/data/site.ts. */
+.fente{display:block;padding:var(--e4);
+  border:1.5px dashed var(--trait);
+  background:color-mix(in srgb,var(--amber) 6%,transparent)}
+.fente .etiquette{color:var(--t-ambre);display:block;margin-bottom:.35em}
+.fente p{margin:0;color:var(--fg-dim);font-size:var(--t-petit)}
+
+/* ---------------------------------------------------------------------------
+   9. ACCESSIBILITÉ ET SQUELETTE
+   ------------------------------------------------------------------------ */
+
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;
+  border:0}
+
+/* Le lien d'évitement. Visible dès qu'il prend le focus, et il est le premier
+   élément du document. */
+.saut{position:absolute;left:var(--marge);top:-6rem;z-index:100;
+  background:var(--ink);color:var(--black);
+  font-weight:700;padding:.7em 1.1em;clip-path:var(--chanfrein);--c:8px;
+  text-decoration:none;transition:top .3s var(--ease)}
+.saut:focus{top:var(--e3);color:var(--black)}
+
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+main:focus{outline:none}
+
+/* Le contenu pousse le pied en bas, même sur une page courte. */
+#contenu{flex:1 0 auto;display:block}
+
+/* Le mouvement réduit est déjà neutralisé dans brand.css ; on y ajoute le
+   défilement, que la règle de brand.css ne couvre pas. */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .bande-parcours:hover,.bouton:hover{transform:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth}
+}
+
+/* ---------------------------------------------------------------------------
+   10. IMPRESSION
+   ------------------------------------------------------------------------ */
+
+@media print{
+  :root{--bg:#fff;--fg:#000;--fg-dim:#444;--trait:#bbb;--bloc:#f2f2f2;
+        --t-bleu:#004a9e;--t-rose:#96003a;--t-ambre:#6e4200}
+  body{background:#fff;color:#000}
+  .entete,.parcours-bande,.pied__plan,.saut,.bouton{display:none!important}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:.8em;color:#555}
+  .carte,.cut,.balise{clip-path:none;border:1px solid #bbb}
+}

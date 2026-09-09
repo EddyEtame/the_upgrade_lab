@@ -1,0 +1,261 @@
+---
+/**
+ * / — l'accueil.
+ *
+ * La thèse est dans le hero : quinze mètres sur onze, un panier, une discipline
+ * olympique. Le reste de la page ne répète pas la thèse, il la déplie pour ses
+ * trois lecteurs, dans cet ordre : le jeune (le parcours), le parent (les
+ * engagements), l'entreprise (la vacance).
+ *
+ * Intentions prioritaires de la page (seo-map.ts, PAGE_INTENTS) — toutes
+ * présentes dans le texte VISIBLE, dans de vraies phrases, jamais en liste :
+ *   « club de basket Douala », « école de basket Douala », « basket jeunes Douala ».
+ *
+ * Aucune photographie. Aucun chiffre non confirmé : les effectifs et le tarif
+ * sont EN_ATTENTE et n'apparaissent pas sur l'accueil — l'accueil vend ce qui
+ * existe, le reste vit sur les pages qui le documentent.
+ */
+
+import Base from '../layouts/Base.astro';
+import HeroAccueil from '../components/HeroAccueil.astro';
+import { SITE, FAITS, PARCOURS, TERRAIN_3X3, PROTECTION } from '../data/site';
+import { NB_OUVERTS, NB_SECTEURS_LETTRES, SECTEURS, VACANCE_A_JOUR_LE, VACANCE_A_JOUR_LE_FR } from '../data/offre';
+
+const faq = [
+  {
+    q: 'Qu’est-ce que The Upgrade Lab ?',
+    a: `Un programme de développement de basket à Douala pour les jeunes de ${FAITS.ageMin} à ${FAITS.ageMax} ans, filles et garçons, organisé en cinq niveaux — Discover, Develop, Compete, Perform, Progress — de la découverte du ballon jusqu’aux clubs supérieurs, aux académies et aux bourses.`
+  },
+  {
+    q: 'Sur quel terrain le programme s’entraîne-t-il ?',
+    a: TERRAIN_3X3.phrase
+  },
+  {
+    q: 'Comment une entreprise peut-elle soutenir le programme ?',
+    a: `Par un partenariat annuel sur l’un des ${NB_SECTEURS_LETTRES} secteurs d’activité proposés à Douala, ou par le parrainage d’un seul athlète pour une saison complète. Les contreparties sont écrites palier par palier sur la page Sponsors.`
+  }
+];
+---
+
+<Base
+  titre="The Upgrade Lab — basket jeunes à Douala"
+  titreBrut
+  description={SITE.description}
+  typePage="WebPage"
+  faq={faq}
+>
+  <HeroAccueil />
+
+  <!-- ====================================================================
+       1 · LE PARCOURS. Cinq niveaux, cinq aplats, et l'on voit où l'on en est.
+       ================================================================= -->
+  <section class="section" aria-labelledby="t-parcours">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Le parcours</p>
+      <h2 id="t-parcours"><span class="obl">Cinq niveaux,</span> et jamais de doute sur le suivant</h2>
+      <p class="chapo mesure">
+        Une école de basket à Douala qui écrit ce qu’elle attend d’un jeune à
+        chaque étape, et ce qui le fait passer à la suivante. On n’y monte pas
+        avec l’âge : on y monte sur des critères que l’on voit à l’œil nu.
+      </p>
+
+      <ol class="niveaux" role="list">
+        {PARCOURS.map((n) => (
+          <li class="niveau cut" style={`--fill:${n.fill};--sur:${n.surFill};--txt:${n.texteSurNoir}`}>
+            <a href={n.href} class="niveau__lien">
+              <span class="niveau__rang" aria-hidden="true">
+                <span class="chevs">
+                  {Array.from({ length: n.chevrons }).map(() => <i class="chev"></i>)}
+                </span>
+              </span>
+              <span class="niveau__nom">{n.label}</span>
+              <span class="niveau__promesse">{n.promesse}</span>
+              <span class="niveau__resume">{n.resume}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      <p class="petit t-sourd niveaux__note mesure">
+        Les six catégories — {FAITS.categories.join(', ')} — disent l’âge. Les
+        cinq niveaux disent l’état du jeu. Un jeune de dix-sept ans qui débute
+        entre à Discover ; un jeune de treize ans peut déjà être à Compete.
+        <a href="/le-parcours/">Le parcours, niveau par niveau.</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       2 · LE TERRAIN. La légitimité, sourcée — pas la thèse répétée.
+       ================================================================= -->
+  <section class="section sur-bloc" aria-labelledby="t-terrain">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div>
+          <p class="balise"><span class="chev" aria-hidden="true"></span>Le terrain</p>
+          <h2 id="t-terrain">Une dalle, un panier, <span class="obl t-ambre">une discipline olympique</span></h2>
+          <p class="mesure">
+            Le format FIBA 3x3 fait {TERRAIN_3X3.longueurM} mètres sur
+            {' '}{TERRAIN_3X3.largeurM}, un panier, une raquette réglementaire, une
+            ligne de lancer franc réglementaire, et l’arc à
+            {' '}{String(TERRAIN_3X3.arcM).replace('.', ',')} m qui sert de ligne
+            à deux points. Il est olympique depuis {TERRAIN_3X3.premiereOlympiade}.
+            Une dalle à Douala qui porte ces lignes n’est pas un demi-terrain :
+            c’est un terrain réglementaire d’une discipline olympique.
+          </p>
+          <p class="mesure">
+            Et ce n’est pas un arrangement avec la réalité. {TERRAIN_3X3.etude.auteurs},
+            dans <cite>{TERRAIN_3X3.etude.revue}</cite> ({TERRAIN_3X3.etude.annee}),
+            ont revu {TERRAIN_3X3.etude.etudesRevues} études et
+            {' '}{TERRAIN_3X3.etude.enfants} enfants : {TERRAIN_3X3.etude.conclusion.replace('À l’échelle de 25 études et 989 enfants, a', 'a')}
+          </p>
+        </div>
+        <div class="carte-trait" style="--c:18px">
+          <div class="dedans">
+            <p class="etiquette t-ambre">Ce que ça change pour un jeune</p>
+            <ul class="liste-fleche" role="list">
+              <li>Un seul panier, cinq à six joueurs sur l’aire : chacun touche le ballon bien plus souvent que sur un terrain complet.</li>
+              <li>Les lignes sont celles du vrai jeu — la raquette, le lancer franc, l’arc — et le geste appris ici est le geste attendu partout ailleurs.</li>
+              <li>Le 3x3 a son circuit, sa Coupe du monde et son classement mondial : c’est une porte de sortie à part entière, pas un format d’attente.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       3 · LES ENGAGEMENTS. Un parent lit ceci avant tout le reste.
+       ================================================================= -->
+  <section class="section serree" aria-labelledby="t-engagements">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div>
+          <p class="balise"><span class="chev" aria-hidden="true"></span>Aux familles</p>
+          <h2 id="t-engagements">Un club de basket à Douala qui écrit ses engagements avant qu’on les lui demande</h2>
+          <p class="mesure">
+            La plupart des visages de ce programme appartiennent à des enfants.
+            Ce seul fait impose des règles, et elles tiennent sur toutes les
+            pages du site — pas seulement sur celle qui les détaille.
+          </p>
+          <a class="bouton fantome" href="/protection-des-mineurs/">
+            Les engagements, en entier <span class="chev" aria-hidden="true"></span>
+          </a>
+        </div>
+        <ul class="engagements" role="list">
+          {PROTECTION.map((e) => (
+            <li class="engagement">
+              <span class="chev t-rose" aria-hidden="true"></span>
+              <span>{e}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       4 · LA VACANCE. À une entreprise, on ne demande pas un don : on lui
+           propose un secteur qu’un concurrent peut prendre.
+       ================================================================= -->
+  <section class="section sur-bloc" aria-labelledby="t-vacance">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Aux entreprises</p>
+      <h2 id="t-vacance"><span class="obl">{NB_SECTEURS_LETTRES.charAt(0).toUpperCase() + NB_SECTEURS_LETTRES.slice(1)} secteurs,</span> {NB_OUVERTS} encore ouverts</h2>
+      <p class="chapo mesure">
+        Un partenariat de secteur est exclusif pour la saison. Le tableau dit ce
+        qui est libre, et il ne ment jamais dans le sens qui arrangerait :
+        aucun secteur n’est déclaré pris pour fabriquer de la rareté.
+      </p>
+
+      <ul class="secteurs" role="list">
+        {SECTEURS.map((s) => (
+          <li class={`secteur secteur--${s.statut}`}>
+            <span class="secteur__nom">{s.court}</span>
+            <span class="secteur__etat">{s.statut === 'ouvert' ? 'ouvert' : 'pris'}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="rangee entre bout" style="--gap:1.25rem">
+        <p class="petit t-sourd">
+          Vacance vérifiée le <time datetime={VACANCE_A_JOUR_LE}>{VACANCE_A_JOUR_LE_FR}</time>.
+          Un secteur passe à « pris » le jour d’une signature, jamais avant.
+        </p>
+        <a class="bouton primaire" href="/sponsors/">
+          Les paliers et les contreparties <span class="chev" aria-hidden="true"></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       5 · LA PORTE. Une seule action, en fin de page, jamais une sortie.
+       ================================================================= -->
+  <section class="section" aria-labelledby="t-porte">
+    <div class="conteneur etroit">
+      <h2 id="t-porte" class="porte__titre"><span class="obl">Tout commence</span> par une séance d’essai</h2>
+      <p class="chapo">
+        Pour un jeune de {FAITS.ageMin} à {FAITS.ageMax} ans à Douala : une
+        séance entière avec le groupe de son âge, un retour direct à la fin, et
+        rien à payer ni à prouver avant.
+      </p>
+      <div class="rangee" style="--gap:.75rem">
+        <a class="bouton primaire" href="/rejoindre/">Rejoindre le programme <span class="chev" aria-hidden="true"></span></a>
+        <a class="bouton fantome" href="/questions/">Les questions des parents</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* --- les niveaux --- */
+  .niveaux{
+    list-style:none;margin:var(--e6) 0 0;padding:0;
+    display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:14px;
+  }
+  @media (min-width:52em){.niveaux{grid-template-columns:repeat(5,1fr)}}
+  .niveau{background:var(--bg);--c:0}
+  .niveau__lien{
+    display:grid;gap:.45em;align-content:start;
+    padding:var(--e5) var(--e4) var(--e5);min-height:100%;
+    text-decoration:none;color:var(--fg);
+    border-top:6px solid var(--fill);
+    transition:background .5s var(--ease);
+  }
+  .niveau__lien:hover,.niveau__lien:focus-visible{background:var(--bloc)}
+  .niveau__rang .chev{width:.55em;height:.55em;color:var(--txt)}
+  .niveau__nom{
+    font-family:var(--f-titre);font-weight:900;text-transform:uppercase;
+    font-size:var(--t-h3);line-height:1;color:var(--txt);
+    transform:skewX(calc(-1 * var(--oblique)));display:inline-block;transform-origin:0 100%;
+  }
+  .niveau__promesse{font-weight:700;line-height:1.3}
+  .niveau__resume{font-size:var(--t-petit);line-height:1.45;color:var(--fg-dim)}
+  .niveaux__note{margin-top:var(--e5)}
+  .niveaux__note a{color:var(--t-bleu);text-decoration:underline}
+
+  /* --- les engagements --- */
+  .engagements{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px;align-self:start}
+  .engagement{display:flex;gap:.8em;align-items:flex-start;background:var(--bg);
+    padding:var(--e4);font-weight:600;line-height:1.4}
+  .engagement .chev{flex:none;width:.6em;height:.6em;margin-top:.35em}
+
+  /* --- la vacance --- */
+  .secteurs{list-style:none;margin:var(--e6) 0 var(--e5);padding:0;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--trait);
+    clip-path:var(--chanfrein);--c:12px}
+  @media (min-width:40em){.secteurs{grid-template-columns:repeat(4,1fr)}}
+  .secteur{background:var(--bg);padding:var(--e4);display:flex;justify-content:space-between;
+    align-items:baseline;gap:.5em}
+  .secteur__nom{font-family:var(--f-titre);font-weight:700;text-transform:uppercase;
+    font-size:var(--t-h4);line-height:1}
+  .secteur__etat{font-size:var(--t-micro);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .secteur--ouvert .secteur__etat{color:var(--t-ambre)}
+  .secteur--pris .secteur__etat{color:var(--fg-dim)}
+  .secteur--pris .secteur__nom{color:var(--fg-dim);text-decoration:line-through}
+
+  .porte__titre{text-wrap:balance}
+</style>

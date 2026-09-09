@@ -1,0 +1,61 @@
+---
+/**
+ * AngleEntree.astro — la géométrie de l'angle d'entrée, en un dessin fixe.
+ *
+ * Le ballon fait 24,3 cm de diamètre ; l'anneau, 45 cm. Vu selon l'angle de
+ * descente θ, l'anneau se présente comme une ellipse dont le petit axe vaut
+ * 45·sin(θ). Le ballon passe « propre » quand ce petit axe dépasse 24,3 cm,
+ * soit sin(θ) > 0,54, soit θ ≈ 32,7°. En dessous, la marge se réduit — le
+ * ballon peut encore rentrer en touchant l'anneau, ce n'est pas impossible,
+ * c'est plus étroit. On le dit avec ces mots-là, et pas autrement.
+ *
+ * ~400 octets, zéro JavaScript, aucun capteur, aucune permission. Dessiné pour
+ * θ = 45°, l'angle qu'on enseigne.
+ */
+
+export interface Props { angle?: number; largeur?: string }
+const { angle = 45, largeur = '100%' } = Astro.props;
+
+const D_BALLON = 24.3;
+const D_ANNEAU = 45;
+const seuil = (Math.asin(D_BALLON / D_ANNEAU) * 180) / Math.PI; /* ≈ 32,7° */
+const petitAxe = D_ANNEAU * Math.sin((angle * Math.PI) / 180);
+const marge = petitAxe - D_BALLON;
+
+/* Échelle : 4 px par cm. */
+const S = 4;
+const cx = 130, cy = 70;
+---
+
+<figure class="angle" style={`max-width:${largeur}`}>
+  <svg viewBox="0 0 260 140" role="img" aria-labelledby="ang-t ang-d">
+    <title id="ang-t">L’ouverture apparente de l’anneau selon l’angle d’entrée</title>
+    <desc id="ang-d">Vu à {angle} degrés, un anneau de 45 cm se présente comme une ellipse de {petitAxe.toFixed(1)} cm de petit axe ; le ballon de 24,3 cm y passe avec {marge.toFixed(1)} cm de marge.</desc>
+    <ellipse class="anneau" cx={cx} cy={cy} rx={(D_ANNEAU / 2) * S} ry={(petitAxe / 2) * S} />
+    <circle class="ballon" cx={cx} cy={cy} r={(D_BALLON / 2) * S} />
+    <line class="cote" x1={cx - (D_ANNEAU / 2) * S} y1={cy + 42} x2={cx + (D_ANNEAU / 2) * S} y2={cy + 42} />
+    <text class="t" x={cx} y={cy + 54} text-anchor="middle">anneau 45 cm</text>
+    <line class="cote cote--v" x1={cx + (D_ANNEAU / 2) * S + 14} y1={cy - (petitAxe / 2) * S} x2={cx + (D_ANNEAU / 2) * S + 14} y2={cy + (petitAxe / 2) * S} />
+    <text class="t" x={cx + (D_ANNEAU / 2) * S + 20} y={cy + 3}>{petitAxe.toFixed(1)} cm à {angle}°</text>
+    <text class="t t--ballon" x={cx} y={cy + 3} text-anchor="middle">24,3</text>
+  </svg>
+  <figcaption class="micro t-sourd">
+    Vu à {angle}°, l’anneau de 45 cm se présente comme une ouverture de
+    {' '}{petitAxe.toFixed(1)} cm : le ballon de 24,3 cm y passe avec
+    {' '}{marge.toFixed(1)} cm de marge. En dessous de {seuil.toFixed(1)}° environ, l’ouverture
+    apparente devient plus étroite que le ballon — il peut encore rentrer en
+    touchant l’anneau, mais la marge a disparu. C’est pourquoi on enseigne un
+    tir haut.
+  </figcaption>
+</figure>
+
+<style>
+  .angle{margin:0}
+  .angle svg{display:block;width:100%;height:auto}
+  .angle .anneau{fill:none;stroke:var(--ball);stroke-width:3}
+  .angle .ballon{fill:var(--ball);opacity:.9}
+  .angle .cote{stroke:var(--fg-dim);stroke-width:.8}
+  .angle .t{font-family:var(--f-corps);font-size:8px;font-weight:700;fill:var(--fg-dim)}
+  .angle .t--ballon{fill:#000;font-size:9px}
+  .angle figcaption{margin-top:var(--e3);max-width:52ch}
+</style>

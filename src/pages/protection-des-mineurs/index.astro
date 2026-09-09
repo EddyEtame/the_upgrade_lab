@@ -1,0 +1,615 @@
+---
+/**
+ * /protection-des-mineurs/ — l'Annexe A, rendue publique.
+ *
+ * Cette page est un différenciateur réel : personne dans la région ne publie
+ * cette politique, et toute école, toute ONG et toute entreprise sérieuse la
+ * demande avant de signer. Elle est donc écrite pour être lue en entier par
+ * trois personnes différentes — un parent, un directeur RSE, un jeune — et
+ * pour être citable phrase par phrase par un moteur de réponse.
+ *
+ * Trois règles tenues ici :
+ *   1. Chaque engagement s'ouvre sur une phrase autonome, opposable, au
+ *      présent. Pas de « nous nous efforçons de ».
+ *   2. Aucune photographie de mineur, aucun nom complet, aucun lieu, aucun
+ *      horaire — la page applique sa propre règle avant de la décrire.
+ *   3. Le nom du référent n'est pas confirmé : c'est une FENTE, pas une
+ *      invention. Le rôle est un engagement, le nom attend le questionnaire.
+ *
+ * Surface : papier. Ce document se fait imprimer et photocopier — c'est celui
+ * qu'un parent emporte et qu'un service juridique annote.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { SITE, FAITS, PROTECTION, attente } from '../../data/site';
+
+const fenteEmail = attente('email');
+
+/* Les sept engagements. `cle` est la phrase citable : elle répond seule,
+   sans le paragraphe qui la suit. `corps` accepte du HTML (liens internes). */
+const engagements: { n: string; titre: string; cle: string; corps: string[] }[] = [
+  {
+    n: '01',
+    titre: 'Le consentement précède l’image',
+    cle: 'Aucune image d’un mineur n’est prise, conservée ou diffusée sans le consentement écrit et préalable de son parent ou de son tuteur légal.',
+    corps: [
+      'Le consentement est demandé avant la séance, pas après la publication. Il est écrit, en français ou en anglais, et il précise ce à quoi il s’applique : quel usage, quelle durée, quel support.',
+      'Un accord donné pour le rapport annuel destiné à un partenaire ne vaut pas pour une affiche, et ne vaut pas pour un réseau social. Quand l’usage change, la question se repose. C’est plus lent, et c’est la seule façon qu’un consentement veuille dire quelque chose.'
+    ]
+  },
+  {
+    n: '02',
+    titre: 'Jamais un nom complet à côté d’un visage',
+    cle: 'Le nom complet d’un mineur n’apparaît jamais à côté de son visage, sur aucun support produit par le programme.',
+    corps: [
+      'Un prénom et une initiale suffisent à raconter une progression. Un nom complet posé à côté d’un visage suffit à retrouver quelqu’un — dans un moteur de recherche, dans un quartier, devant un établissement scolaire.',
+      'Le rapport envoyé au parrain d’un athlète fait exception à la discrétion, jamais à la règle : c’est un document privé, remis à une personne identifiée, avec l’accord écrit de la famille. Il ne devient pas une publication. <a href="/sponsors/bourse/">Le parrainage d’athlète</a> est construit autour de cette distinction.'
+    ]
+  },
+  {
+    n: '03',
+    titre: 'Ni adresse d’entraînement, ni horaire',
+    cle: 'Le lieu et les horaires des séances ne sont publiés nulle part : ils sont communiqués par écrit aux familles inscrites.',
+    corps: [
+      'Cet engagement coûte quelque chose de mesurable. Une adresse et des horaires publiés se référencent mieux, rassurent plus vite et remplissent un formulaire de contact plus souvent. Nous ne les publions pas, et la section suivante explique exactement pourquoi.',
+      'Les familles inscrites reçoivent le lieu, les horaires et tout changement par écrit. Une question sur l’accès depuis un quartier de Douala se pose au programme et reçoit une réponse — en privé, à une famille, pas à un moteur de recherche.'
+    ]
+  },
+  {
+    n: '04',
+    titre: 'Les fichiers sortent lavés de leurs coordonnées',
+    cle: 'Toute donnée de localisation est retirée des fichiers avant qu’ils quittent le programme.',
+    corps: [
+      'Un téléphone inscrit dans chaque photo l’endroit et l’instant où elle a été prise. Ces métadonnées — latitude, longitude, date, appareil, ce qu’on appelle l’EXIF — sont effacées de chaque fichier avant tout envoi : vers un partenaire, vers un imprimeur, vers un journaliste.',
+      'Sans elles, une image ne dit plus où se trouve le terrain. C’est l’engagement le plus technique de cette page, et c’est celui que presque personne ne tient, parce qu’il ne se voit pas.'
+    ]
+  },
+  {
+    n: '05',
+    titre: 'La diffusion est nominative, et révocable',
+    cle: 'Les fichiers contenant l’image d’un mineur ne sont accessibles qu’à des personnes nommément autorisées, par des liens que le programme peut désactiver à tout moment.',
+    corps: [
+      'Pas de dossier partagé ouvert à qui en a l’adresse. Pas de lien qui traîne dans une conversation de groupe. Chaque accès est accordé à une personne, pour un motif, et se retire d’un geste.',
+      'Un lien révoqué cesse de fonctionner pour tout le monde, y compris pour celui qui l’avait mis de côté. C’est toute la différence entre confier un fichier et le perdre de vue.'
+    ]
+  },
+  {
+    n: '06',
+    titre: 'Un adulte nommé répond, et le retrait se fait sous 48 heures',
+    cle: 'Une demande de retrait est exécutée sous 48 heures, sans justification à fournir, et un adulte identifié en répond nommément.',
+    corps: [
+      'Le programme désigne un référent protection de l’enfance : une personne, pas une boîte aux lettres. Son nom et le moyen de le joindre sont publiés sur cette page, et pas seulement remis aux familles.',
+      'Un parent qui demande le retrait d’une image n’a rien à expliquer. On ne discute pas une demande de retrait : on l’exécute, puis on confirme par écrit qu’elle a été exécutée et sur quels supports.'
+    ]
+  },
+  {
+    n: '07',
+    titre: 'Le consentement se retire aussi facilement qu’il se donne',
+    cle: 'Un consentement peut être retiré à tout moment, sans condition, et son retrait vaut pour l’avenir sur tous les supports que le programme contrôle.',
+    corps: [
+      'Un accord signé à l’inscription n’engage pas une famille pour toujours. Le retrait s’applique au site, aux documents en circulation, aux rapports envoyés ensuite.',
+      'Pour ce qui a déjà été imprimé, ou déjà partagé par un tiers, nous le disons franchement : cela ne se rappelle pas. C’est exactement la raison d’être de l’engagement numéro un.'
+    ]
+  }
+];
+
+/* Les six questions à poser à n'importe quel club. Cible directement une
+   requête réelle des parents, et chaque réponse est la nôtre, vérifiable
+   plus haut sur la même page. */
+const aDemander: { q: string; r: string }[] = [
+  {
+    q: 'Qui est votre référent protection de l’enfance, et comment je le joins ?',
+    r: 'Une personne nommée doit répondre à cette question, pas un service. Le nom du nôtre est publié sur cette page.'
+  },
+  {
+    q: 'Le consentement à l’image est-il demandé par écrit, et avant ?',
+    r: 'Avant. Un accord obtenu après la publication n’est pas un consentement, c’est une régularisation.'
+  },
+  {
+    q: 'Publiez-vous le lieu et les horaires d’entraînement en ligne ?',
+    r: 'Nous ne les publions pas. Ils sont envoyés par écrit aux familles inscrites, et à elles seules.'
+  },
+  {
+    q: 'Combien de temps prend le retrait d’une image, et faut-il se justifier ?',
+    r: '48 heures, et non.'
+  },
+  {
+    q: 'Qui a accès aux fichiers, et cet accès se retire-t-il ?',
+    r: 'Des personnes nommées, par des liens que le programme peut fermer à tout moment.'
+  },
+  {
+    q: 'Que se passe-t-il si je change d’avis dans six mois ?',
+    r: 'Le consentement se retire à tout moment, sans condition et sans frais.'
+  }
+];
+---
+
+<Base
+  titre="Protection des mineurs"
+  description="Sept engagements écrits sur la protection des mineurs à The Upgrade Lab : consentement parental, aucun nom complet, aucun lieu publié, retrait sous 48 heures."
+  fond="papier"
+  fil={[{ nom: 'Protection des mineurs', href: '/protection-des-mineurs/' }]}
+>
+
+  <!-- ══ 1 · l'accroche, sur le noir de la marque ══════════════════════ -->
+  <section class="section tete sur-noir">
+    <div class="conteneur">
+      <p class="etiquette tete__oeil">Annexe A · engagements publics</p>
+
+      <h1 class="tete__titre">Protection<br />des mineurs</h1>
+
+      <p class="chapo tete__chapo">
+        Sept engagements écrits. Ils s’appliquent avant la première séance,
+        et ils s’appliquent à nous.
+      </p>
+
+      <p class="tete__texte mesure">
+        The Upgrade Lab entraîne des jeunes de {FAITS.ageMin} à {FAITS.ageMax} ans,
+        {FAITS.mixite}, à {SITE.ville}. Un programme qui accueille des mineurs doit
+        pouvoir dire, avant qu’on le lui demande, ce qu’il fait de leur image, de
+        leur nom et de leur emploi du temps. Voici ce que nous faisons — en entier,
+        sur cette page, sans document à réclamer.
+      </p>
+
+      <ul class="tete__resume" role="list">
+        {PROTECTION.map((e) => (
+          <li class="tete__puce">
+            <span class="chev" aria-hidden="true"></span>
+            <span>{e}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ 2 · la règle appliquée avant d'être décrite ═══════════════════ -->
+  <section class="section serree">
+    <div class="conteneur etroit">
+      <h2>Ce site ne montre aucun visage d’enfant</h2>
+      <div class="prose">
+        <p>
+          Le site raconte le programme avec du trait, de la couleur et de la
+          typographie. C’est une contrainte que nous nous sommes donnée avant la
+          première maquette, et elle a produit un meilleur site : quand on ne peut
+          pas montrer un enfant qui sourit, il faut écrire ce qu’on fait.
+        </p>
+        <p>
+          Une image d’enfant publiée sur le web ouvert circule ensuite sans nous.
+          Elle se copie, se recadre, atterrit dans un contexte que personne n’a
+          choisi, et ne se rappelle pas. Des images sont bien produites — pour les
+          familles, pour les partenaires, pour les dossiers de joueurs — mais elles
+          suivent le circuit décrit ci-dessous, jamais la page d’accueil.
+        </p>
+        <p>
+          La protection de l’enfance dans le sport au Cameroun ne se prouve pas par une phrase
+          rassurante en bas de page. Elle se prouve par des règles qu’on peut nous
+          opposer. Les voici.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3 · les sept engagements ══════════════════════════════════════ -->
+  <section class="section serree" id="engagements">
+    <div class="conteneur">
+      <h2 class="eng__chapeau">Les sept engagements</h2>
+
+      <ol class="eng" role="list">
+        {engagements.map((e) => (
+          <li class="eng__item">
+            <p class="eng__num obl" aria-hidden="true">{e.n}</p>
+            <div class="eng__bloc">
+              <h3 class="eng__titre">{e.titre}</h3>
+              <p class="eng__cle">{e.cle}</p>
+              {e.corps.map((t) => <p class="eng__texte" set:html={t} />)}
+
+              {e.n === '06' && (
+                <div class="fente eng__fente">
+                  <span class="etiquette">En attente</span>
+                  <p>
+                    Référent protection de l’enfance — nom, fonction et moyen de
+                    le joindre : en attente du questionnaire d’entrée. Le rôle,
+                    lui, est un engagement pris : une personne, nommée
+                    publiquement, répond des demandes de retrait.
+                  </p>
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══ 4 · pourquoi le lieu n'est pas publié ═════════════════════════ -->
+  <section class="section serree" id="pourquoi">
+    <div class="conteneur">
+      <h2>Pourquoi le lieu n’est jamais publié</h2>
+
+      <p class="mesure trio__intro">
+        Trois informations, prises séparément, ne mènent nulle part. Réunies sur
+        une même page, elles désignent un enfant précis, à un endroit précis, à
+        une heure connue d’avance. C’est la combinaison à éviter, et c’est la
+        raison d’être des engagements 03 et 04.
+      </p>
+
+      <ul class="trio" role="list">
+        <li class="trio__item">
+          <div class="carte-trait trio__carte">
+            <div class="dedans">
+              <svg class="trio__signe" viewBox="0 0 32 32" width="34" height="34" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+                <path d="M7 5H30V22L25 27H2V10Z" />
+                <circle cx="11" cy="13" r="2.4" />
+                <path d="M3 24l8-7 5 5 4-4 6 6" />
+                <line class="trio__barre" x1="3" y1="29" x2="29" y2="3" />
+              </svg>
+              <p class="etiquette trio__nom">Un visage</p>
+              <p class="trio__dit">Reconnaissable par n’importe qui, indéfiniment.</p>
+            </div>
+          </div>
+        </li>
+        <li class="trio__item">
+          <div class="carte-trait trio__carte">
+            <div class="dedans">
+              <svg class="trio__signe" viewBox="0 0 32 32" width="34" height="34" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+                <path d="M16 29s9-9.4 9-16A9 9 0 1 0 7 13c0 6.6 9 16 9 16Z" />
+                <circle cx="16" cy="13" r="3.2" />
+                <line class="trio__barre" x1="3" y1="29" x2="29" y2="3" />
+              </svg>
+              <p class="etiquette trio__nom">Un lieu</p>
+              <p class="trio__dit">Une adresse, un quartier, ou une photo qui les trahit.</p>
+            </div>
+          </div>
+        </li>
+        <li class="trio__item">
+          <div class="carte-trait trio__carte">
+            <div class="dedans">
+              <svg class="trio__signe" viewBox="0 0 32 32" width="34" height="34" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <circle cx="16" cy="16" r="11.5" />
+                <path d="M16 9v7.6l5 3" />
+                <line class="trio__barre" x1="3" y1="29" x2="29" y2="3" />
+              </svg>
+              <p class="etiquette trio__nom">Une heure</p>
+              <p class="trio__dit">Un jour et un créneau, répétés toute la saison.</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <p class="trio__loi cut">
+        <span class="chevs" aria-hidden="true">
+          <span class="chev"></span><span class="chev"></span><span class="chev"></span>
+        </span>
+        Aucune des trois n’est publiée sur ce site. Pas la moins dangereuse,
+        pas « seulement le quartier » : aucune des trois.
+      </p>
+
+      <p class="mesure trio__note">
+        C’est aussi pour cette raison qu’une photographie n’est jamais une preuve
+        de rien ici : un panier, un mur, un bout de bitume suffisent à situer un
+        terrain quand on connaît la ville. Le trafic de recherche que cette
+        discipline nous coûte n’est pas un arbitrage que nous acceptons de faire.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ 5 · demander un retrait ═══════════════════════════════════════ -->
+  <section class="section retrait sur-noir" id="retrait">
+    <div class="conteneur">
+      <div class="retrait__grille">
+
+        <div class="retrait__chiffre">
+          <p class="d0 obl t-rose retrait__48">48<span class="retrait__h">h</span></p>
+          <p class="retrait__legende">
+            Le délai maximum entre une demande de retrait et son exécution.
+            Sans justification à fournir, sans frais, sans condition.
+          </p>
+        </div>
+
+        <div class="retrait__marche">
+          <h2 class="retrait__titre">Demander un retrait</h2>
+          <ol class="retrait__etapes" role="list">
+            <li>
+              <span class="retrait__rang" aria-hidden="true">1</span>
+              <p>
+                <strong>Écrire au programme</strong> en indiquant le support
+                concerné : la page, le document ou l’image. Un lien ou une
+                description suffit — inutile de motiver la demande.
+              </p>
+            </li>
+            <li>
+              <span class="retrait__rang" aria-hidden="true">2</span>
+              <p>
+                <strong>Le référent accuse réception</strong> et retire le
+                support. Le retrait passe avant l’examen : on rétablit ensuite
+                s’il y a lieu, jamais l’inverse.
+              </p>
+            </li>
+            <li>
+              <span class="retrait__rang" aria-hidden="true">3</span>
+              <p>
+                <strong>Le programme confirme par écrit</strong> ce qui a été
+                retiré et sur quels supports, dans les 48 heures suivant la
+                demande.
+              </p>
+            </li>
+          </ol>
+
+          <div class="fente">
+            <span class="etiquette">En attente</span>
+            <p>
+              {fenteEmail
+                ? `${fenteEmail.libelle} — ${fenteEmail.source}. Tant qu’elle n’est pas ouverte, une demande de retrait passe par le fondateur du programme.`
+                : 'Adresse de contact du référent — en attente du questionnaire d’entrée.'}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 6 · la liste à emporter ═══════════════════════════════════════ -->
+  <section class="section serree" id="a-demander">
+    <div class="conteneur etroit">
+      <h2>Ce qu’il faut demander à un club avant d’y inscrire son enfant</h2>
+      <p class="mesure">
+        Ces six questions valent pour n’importe quelle structure sportive, ici
+        comme ailleurs. Nos réponses sont à droite, et chacune est vérifiable
+        plus haut sur cette page.
+      </p>
+
+      <dl class="demande">
+        {aDemander.map((d) => (
+          <div class="demande__paire">
+            <dt class="demande__q">« {d.q} »</dt>
+            <dd class="demande__r">{d.r}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <p class="mesure demande__fin">
+        Un club qui ne sait pas répondre à ces six questions n’a pas encore écrit
+        sa politique. Ce n’est pas forcément de la mauvaise foi — c’est une raison
+        suffisante d’insister.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ 7 · l'argument partenaire ═════════════════════════════════════ -->
+  <section class="section serree" id="partenaires">
+    <div class="conteneur">
+      <h2>Ce que ça change pour un partenaire</h2>
+      <div class="grille-2" style="--gap:2.5rem">
+        <div class="mesure">
+          <p>
+            Un partenaire du programme reçoit des documents, pas des fichiers
+            bruts : un rapport de saison, des chiffres, des textes, des visuels
+            produits par le programme. Toute image d’un mineur qui lui parvient
+            porte un consentement écrit, arrive à une personne nommée, et transite
+            par un lien que nous pouvons fermer.
+          </p>
+          <p>
+            Aucun visuel de campagne ne montre le visage d’un enfant sans que la
+            famille ait accepté ce support-là. « On avait signé au début de
+            l’année » n’est pas une réponse acceptable, et ne le sera pas.
+          </p>
+        </div>
+        <div class="mesure">
+          <p>
+            Une entreprise qui a besoin d’un visage d’enfant pour sa campagne de
+            la semaine prochaine trouvera plus rapide ailleurs. Une entreprise qui
+            tient à ne pas être rattrapée, dans trois ans, par une image qu’elle
+            n’aurait pas dû diffuser est exactement au bon endroit.
+          </p>
+          <p>
+            C’est aussi la meilleure garantie qu’un directeur RSE puisse
+            emporter en comité : une politique écrite, publique, datée, et la
+            même pour tous les paliers.
+          </p>
+          <p class="partenaire__lien">
+            <a class="bouton fantome" href="/sponsors/">
+              <span>Les paliers de partenariat</span>
+              <span class="chev" aria-hidden="true"></span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 8 · la portée de ce texte, et la suite ════════════════════════ -->
+  <section class="section serree sur-noir" id="suite">
+    <div class="conteneur">
+      <div class="fin__grille">
+        <div class="mesure">
+          <h2 class="fin__titre">La portée de ce texte</h2>
+          <p>
+            Ces engagements sont ceux du programme. Ils ne remplacent aucune
+            obligation légale et n’en dépendent pas : ils s’appliquent parce
+            qu’ils sont écrits ici, et parce qu’une famille peut les opposer au
+            programme le jour où il les oublierait.
+          </p>
+          <p class="petit t-sourd">
+            Toute modification de cette page change la date de mise à jour portée
+            en bas du site. Une règle qui disparaît se voit.
+          </p>
+        </div>
+
+        <nav class="fin__liens" aria-label="Pages liées">
+          <a class="fin__lien cut" href="/encadrement/">
+            <span class="etiquette">L’encadrement</span>
+            <span class="fin__lien-txt">Qui encadre les séances, et selon quelle méthode.</span>
+          </a>
+          <a class="fin__lien cut" href="/questions/">
+            <span class="etiquette">Questions fréquentes</span>
+            <span class="fin__lien-txt">Âge, détection, coût, parrainage — les réponses en entier.</span>
+          </a>
+          <a class="fin__lien cut" href="/rejoindre/">
+            <span class="etiquette">Rejoindre</span>
+            <span class="fin__lien-txt">Comment un jeune entre dans le programme.</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* ── 1 · l'accroche ─────────────────────────────────────────────── */
+  .tete{padding-bottom:calc(var(--e9) * .8)}
+  .tete__oeil{color:var(--t-ambre);margin:0 0 var(--e4)}
+  .tete__titre{margin-bottom:var(--e5)}
+  .tete__chapo{margin-bottom:var(--e5)}
+  .tete__texte{color:var(--fg-dim);margin-bottom:var(--e6)}
+
+  .tete__resume{
+    list-style:none;margin:0;padding:var(--e5) 0 0;
+    border-top:1px solid var(--trait);
+    display:grid;gap:var(--e3) var(--e5);
+    grid-template-columns:1fr;
+  }
+  @media (min-width:48em){
+    .tete__resume{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (min-width:70em){
+    .tete__resume{grid-template-columns:repeat(4,minmax(0,1fr))}
+  }
+  .tete__puce{
+    display:flex;gap:.6em;align-items:flex-start;
+    font-size:var(--t-petit);line-height:1.45;
+  }
+  .tete__puce .chev{color:var(--t-rose);margin-top:.32em;width:.6em;height:.6em}
+
+  /* ── 3 · les engagements ────────────────────────────────────────── */
+  .eng__chapeau{margin-bottom:var(--e6)}
+  .eng{list-style:none;margin:0;padding:0;display:grid;gap:0}
+  .eng__item{
+    display:grid;
+    gap:var(--e2) var(--e5);
+    grid-template-columns:1fr;
+    padding:var(--e6) 0;
+    border-top:1px solid var(--trait);
+  }
+  .eng__item:last-child{border-bottom:1px solid var(--trait)}
+  @media (min-width:48em){
+    .eng__item{grid-template-columns:5.5rem minmax(0,1fr)}
+  }
+  .eng__num{
+    font-family:var(--f-titre);font-weight:900;
+    font-size:clamp(2.5rem,1.6rem + 3vw,3.75rem);
+    line-height:.8;letter-spacing:-.02em;
+    color:var(--t-bleu);margin:0;
+  }
+  .eng__bloc{max-width:var(--l-mesure)}
+  .eng__titre{margin-bottom:var(--e3)}
+  /* La phrase citable : c'est elle qu'un moteur de réponse prélève. */
+  .eng__cle{
+    font-size:var(--t-chapo);line-height:1.4;
+    color:var(--fg);text-wrap:pretty;
+    margin-bottom:var(--e4);
+  }
+  .eng__texte{color:var(--fg-dim);margin-bottom:var(--e4)}
+  .eng__texte:last-child{margin-bottom:0}
+  .eng__texte :global(a){color:var(--t-bleu);text-decoration:underline}
+  .eng__texte :global(a:hover){color:var(--fg)}
+  .eng__fente{margin-top:var(--e5)}
+
+  /* ── 4 · la combinaison à éviter ────────────────────────────────── */
+  .trio__intro{margin-bottom:var(--e6)}
+  .trio{
+    list-style:none;margin:0 0 var(--e5);padding:0;
+    display:grid;gap:var(--e4);
+    grid-template-columns:1fr;
+  }
+  @media (min-width:44em){
+    .trio{grid-template-columns:repeat(3,1fr)}
+  }
+  .trio__carte{height:100%}
+  .trio__carte .dedans{height:100%}
+  .trio__signe{display:block;margin-bottom:var(--e4);color:var(--fg-dim)}
+  /* La barre est un TRAIT, pas du texte : elle prend quand même la valeur de
+     rampe, parce qu'un aplat de logo posé en 2 px sur du papier n'atteint pas
+     le seuil de contraste non textuel. */
+  .trio__barre{stroke:var(--t-rose);stroke-width:2.4}
+  .trio__nom{color:var(--fg);margin:0 0 .5em}
+  .trio__dit{font-size:var(--t-petit);color:var(--fg-dim);margin:0}
+
+  .trio__loi{
+    --c:10px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:.75em;
+    background:var(--bloc);padding:var(--e4) var(--e5);
+    font-weight:600;margin-bottom:var(--e5);
+    max-width:none;
+  }
+  .trio__loi .chevs{color:var(--t-rose)}
+  .trio__note{color:var(--fg-dim);font-size:var(--t-petit)}
+
+  /* ── 5 · le retrait ─────────────────────────────────────────────── */
+  .retrait__grille{
+    display:grid;gap:var(--e7);
+    grid-template-columns:1fr;
+    align-items:start;
+  }
+  @media (min-width:56em){
+    .retrait__grille{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:var(--e8)}
+  }
+  .retrait__48{line-height:.78}
+  .retrait__h{font-size:.42em;margin-left:.06em}
+  .retrait__legende{
+    margin-top:var(--e4);color:var(--fg-dim);
+    font-size:var(--t-petit);max-width:26ch;
+  }
+  .retrait__titre{margin-bottom:var(--e5)}
+  .retrait__etapes{list-style:none;margin:0 0 var(--e5);padding:0;display:grid;gap:var(--e4)}
+  .retrait__etapes li{display:grid;grid-template-columns:2.1rem minmax(0,1fr);gap:var(--e3)}
+  .retrait__etapes p{margin:0;color:var(--fg-dim);max-width:52ch}
+  .retrait__rang{
+    font-family:var(--f-titre);font-weight:900;font-size:1.5rem;
+    line-height:1.1;color:var(--t-ambre);
+  }
+
+  /* ── 6 · la liste à emporter ────────────────────────────────────── */
+  .demande{margin:var(--e6) 0 var(--e5);display:grid;gap:0}
+  .demande__paire{
+    padding:var(--e4) 0;
+    border-top:1px solid var(--trait);
+    display:grid;gap:var(--e2);
+    grid-template-columns:1fr;
+  }
+  .demande__paire:last-child{border-bottom:1px solid var(--trait)}
+  @media (min-width:52em){
+    .demande__paire{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--e5)}
+  }
+  .demande__q{font-weight:700;color:var(--fg);text-wrap:pretty}
+  .demande__r{margin:0;color:var(--fg-dim);font-size:var(--t-petit);line-height:1.55}
+  .demande__fin{color:var(--fg-dim);font-size:var(--t-petit)}
+
+  /* ── 7 · partenaires ────────────────────────────────────────────── */
+  .partenaire__lien{margin-top:var(--e5)}
+
+  /* ── 8 · la fin ─────────────────────────────────────────────────── */
+  .fin__grille{
+    display:grid;gap:var(--e7);
+    grid-template-columns:1fr;
+  }
+  @media (min-width:56em){
+    .fin__grille{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:var(--e8)}
+  }
+  .fin__titre{margin-bottom:var(--e4)}
+  .fin__liens{display:grid;gap:.4rem;align-content:start}
+  .fin__lien{
+    --c:10px;
+    display:block;background:var(--bloc);
+    padding:var(--e4) var(--e5);text-decoration:none;
+    transition:transform .4s var(--ease),background-color .3s var(--ease);
+  }
+  .fin__lien:hover{transform:translateY(-2px);background:#12151B}
+  .fin__lien .etiquette{color:var(--t-bleu);display:block;margin-bottom:.4em}
+  .fin__lien-txt{display:block;font-size:var(--t-petit);color:var(--fg-dim)}
+
+  @media (prefers-reduced-motion:reduce){
+    .fin__lien:hover{transform:none}
+  }
+</style>

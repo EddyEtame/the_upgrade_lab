@@ -13,3 +13,6 @@ Thumbs.db
 
 # veille et recherche — jamais sur GitHub
 .recherche/
+
+# cache de types Astro, régénéré à chaque build
+.astro/

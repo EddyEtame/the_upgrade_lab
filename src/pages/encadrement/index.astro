@@ -1,0 +1,144 @@
+---
+/**
+ * /encadrement/ — qui encadre, et selon quelle méthode.
+ *
+ * Aucun nom, aucun diplôme, aucune certification inventés : ils sont
+ * EN_ATTENTE et prendront leur place ici avec la date de vérification. La page
+ * ne s'ouvre pas là-dessus. Elle s'ouvre sur ce qui est vrai et décidé : la
+ * méthode, la posture, et ce qu'un parent est en droit d'exiger d'un adulte
+ * qui entraîne son enfant.
+ */
+
+import Base from '../../layouts/Base.astro';
+import { FAITS, PROTECTION, attente } from '../../data/site';
+import { PARCOURS } from '../../data/site';
+import Silhouette from '../../components/mecanismes/Silhouette.astro';
+
+const methode = [
+  { titre: 'On corrige une action, jamais une personne', texte: '« Ton appui gauche est en retard » se travaille. « Tu es lent » ne se travaille pas. Un entraîneur du programme parle du geste, et le jeune repart avec quelque chose à faire, pas avec quelque chose à être.' },
+  { titre: 'Le niveau décide du contenu, pas l’âge', texte: 'Deux groupes de treize ans peuvent faire deux séances différentes. Le parcours en cinq niveaux existe pour ça, et l’entraîneur le suit plutôt que de le contourner.' },
+  { titre: 'Peu d’exercices, beaucoup de répétitions', texte: 'Un geste qui ne résiste ni à la fatigue ni à un défenseur n’existe pas encore. On répète propre, et la vitesse vient après.' },
+  { titre: 'Un adulte présent, du début à la fin', texte: 'Un groupe de mineurs n’est jamais laissé seul sur un terrain, ni à l’échauffement, ni au rangement. C’est une règle, pas une intention.' },
+  { titre: 'On dit les choses, aux deux', texte: 'Le retour de fin de séance est dit au jeune dans ses mots, et redit au parent dans les siens. Personne ne repart en se demandant ce qu’on a pensé de lui.' },
+  { titre: 'La scolarité passe avant', texte: 'Un entraîneur qui apprend qu’un jeune décroche en classe en parle à la famille avant de parler de basket. Le programme produit des athlètes ; il produit d’abord des élèves.' }
+];
+
+const exigences = [
+  'Que l’adulte qui encadre son enfant soit identifiable, joignable, et présent à chaque séance.',
+  'Que les règles de protection des mineurs soient écrites, et qu’il puisse les lire avant d’inscrire son enfant.',
+  'Qu’un retour honnête lui soit fait après la séance d’essai, dans ses mots à lui.',
+  'Que les qualifications des entraîneurs soient publiées, avec leur date de vérification — et pas seulement affirmées.'
+];
+
+const fenteEncadrants = attente('encadrants');
+
+const faq = [
+  { q: 'Qui encadre les entraînements et avec quels diplômes ?', a: 'Des entraîneurs adultes, présents à chaque séance, qui suivent le parcours en cinq niveaux et corrigent une action, jamais une personne. Leurs noms, diplômes et certifications seront publiés sur cette page le jour où ils sont confirmés, avec la date de vérification.' },
+  { q: 'Un mineur est-il toujours accompagné d’un adulte ?', a: 'Oui, du début à la fin de la séance, échauffement et rangement compris. Un groupe de mineurs n’est jamais laissé seul sur le terrain.' },
+  { q: 'Que fait l’entraîneur si un jeune décroche à l’école ?', a: 'Il en parle à la famille avant de parler de basket. Le suivi de la scolarité fait partie du programme, et la progression sur le terrain ne compense jamais un recul en classe.' }
+];
+---
+
+<Base
+  titre="L’encadrement"
+  description="Qui encadre les jeunes de The Upgrade Lab à Douala et selon quelle méthode : six règles de coaching, ce qu’un parent est en droit d’exiger, et les engagements de protection des mineurs."
+  fil={[{ nom: 'L’encadrement', href: '/encadrement/' }]}
+  faq={faq}
+>
+  <section class="section">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem;align-items:center">
+        <div>
+          <p class="balise"><span class="chev" aria-hidden="true"></span>L’encadrement</p>
+          <h1><span class="obl">Des entraîneurs de basket à Douala</span><br />qui corrigent le geste, pas la personne</h1>
+          <p class="chapo">
+            Un parent confie un enfant de {FAITS.ageMin} à {FAITS.ageMax} ans à un
+            adulte qu’il ne connaît pas. Cette page dit comment cet adulte
+            travaille, et ce qu’on est en droit d’exiger de lui.
+          </p>
+        </div>
+        <figure class="figure">
+          <Silhouette taille="100%" />
+          <figcaption class="micro t-sourd">Le geste du tir, en seize positions. Une figure dessinée — jamais une photographie de mineur.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sur-bloc" aria-labelledby="t-methode">
+    <div class="conteneur">
+      <h2 id="t-methode">Six règles, <span class="obl">tenues à chaque séance</span></h2>
+      <ol class="regles" role="list">
+        {methode.map((m, i) => (
+          <li class="carte" style="--c:12px">
+            <p class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+            <h3>{m.titre}</h3>
+            <p>{m.texte}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-exiger">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div>
+          <h2 id="t-exiger">Ce qu’un parent est en droit d’exiger</h2>
+          <ol class="exigences" role="list">
+            {exigences.map((e) => <li><span class="chev t-rose" aria-hidden="true"></span><span>{e}</span></li>)}
+          </ol>
+        </div>
+        <div>
+          <h2>Ce que le programme s’engage à publier ici</h2>
+          <p class="mesure t-sourd">
+            Le quatrième point ci-contre est un engagement de cette page. Il
+            prend sa place avec la date à laquelle il aura été vérifié.
+          </p>
+          {fenteEncadrants && <p class="fente"><b>{fenteEncadrants.libelle}</b><span>{fenteEncadrants.source}</span></p>}
+          <ul class="engagements" role="list">
+            {PROTECTION.map((e) => <li><span class="chev" aria-hidden="true"></span><span>{e}</span></li>)}
+          </ul>
+          <a class="bouton fantome" href="/protection-des-mineurs/">Les engagements, en entier <span class="chev" aria-hidden="true"></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section serree sur-bloc" aria-labelledby="t-niveaux">
+    <div class="conteneur">
+      <h2 id="t-niveaux">L’entraîneur suit le parcours</h2>
+      <ol class="bande" role="list">
+        {PARCOURS.map((n) => (
+          <li style={`--fill:${n.fill};--txt:${n.texteSurNoir}`}><a href={n.href}><b>{n.label}</b><span>{n.resume}</span></a></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .figure{margin:0;padding:var(--e4);background:var(--bloc);clip-path:var(--chanfrein);--c:18px}
+  .figure figcaption{margin-top:var(--e3)}
+
+  .regles{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+  .regles .num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}
+  .regles h3{margin:0 0 .4em;font-size:var(--t-h4)}
+  .regles p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+
+  .exigences{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px}
+  .exigences li{display:flex;gap:.8em;align-items:flex-start;background:var(--bg);padding:var(--e4);font-weight:600;line-height:1.45}
+  .exigences .chev{flex:none;width:.6em;height:.6em;margin-top:.35em}
+
+  .engagements{list-style:none;margin:var(--e4) 0 var(--e4);padding:0;display:grid;gap:.6em}
+  .engagements li{display:flex;gap:.7em;align-items:flex-start;line-height:1.4;font-size:var(--t-petit)}
+  .engagements .chev{flex:none;width:.5em;height:.5em;margin-top:.4em;color:var(--t-rose)}
+
+  .bande{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);
+    grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));clip-path:var(--chanfrein);--c:12px}
+  .bande li{background:var(--bg);border-top:6px solid var(--fill)}
+  .bande a{display:grid;gap:.2em;padding:var(--e4);text-decoration:none;color:var(--fg)}
+  .bande a:hover{background:var(--bloc)}
+  .bande b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;color:var(--txt);line-height:1;font-size:var(--t-h4)}
+  .bande span{font-size:var(--t-petit);color:var(--fg-dim);line-height:1.4}
+</style>

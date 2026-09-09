@@ -1,0 +1,98 @@
+---
+/**
+ * Silhouette.astro — une figure humaine qui tire, dessinée à la main.
+ *
+ * Seize positions du geste de tir, écrites comme seize tracés SVG et
+ * enchaînées en SMIL (`<animate attributeName="d">`). Aucune capture de
+ * mouvement, aucune photographie, aucune personne identifiable : une figure
+ * bâton, et c'est voulu — dessiner les poses à la main supprime la séance de
+ * tournage, le formulaire de consentement et toute la gouvernance qui mènerait
+ * à filmer des mineurs.
+ *
+ * ~2 Ko, zéro JavaScript. Si SMIL n'est pas supporté, ou si l'utilisateur
+ * préfère moins de mouvement, la pose de tir finale reste affichée : le dessin
+ * est lisible immobile.
+ *
+ * Repère : 100 x 140, le sol à y=130, tête à droite = regard vers le panier.
+ * Chaque pose = tronc (hanche->épaule), bras tireur (épaule->coude->poignet),
+ * bras guide, deux jambes. Le ballon est un cercle animé séparément.
+ */
+
+export interface Props { taille?: string; couleur?: string }
+const { taille = '260px', couleur = 'currentColor' } = Astro.props;
+
+/* Les seize poses : [hanche, épaule, coude, poignet, coude2, poignet2, genou, pied, genou2, pied2, ballon]
+   Une pose = le corps en un seul chemin ouvert, le ballon en (cx,cy). */
+type P = [number, number];
+type Pose = { corps: string; ballon: P; tete: P };
+
+function corps(h: P, e: P, c: P, p: P, c2: P, p2: P, g: P, f: P, g2: P, f2: P): string {
+  return `M${f[0]} ${f[1]} L${g[0]} ${g[1]} L${h[0]} ${h[1]} L${g2[0]} ${g2[1]} L${f2[0]} ${f2[1]} M${h[0]} ${h[1]} L${e[0]} ${e[1]} M${e[0]} ${e[1]} L${c[0]} ${c[1]} L${p[0]} ${p[1]} M${e[0]} ${e[1]} L${c2[0]} ${c2[1]} L${p2[0]} ${p2[1]}`;
+}
+
+const poses: Pose[] = [
+  /* 1-4 : réception et descente — genoux fléchis, ballon devant la poitrine */
+  { tete: [52, 44], corps: corps([50, 84], [52, 52], [64, 66], [66, 78], [40, 66], [42, 78], [46, 108], [40, 130], [58, 108], [64, 130]), ballon: [54, 80] },
+  { tete: [52, 46], corps: corps([50, 86], [52, 54], [64, 66], [66, 76], [40, 66], [42, 76], [44, 110], [38, 130], [60, 110], [66, 130]), ballon: [54, 78] },
+  { tete: [52, 49], corps: corps([50, 89], [52, 57], [64, 66], [66, 74], [40, 66], [42, 74], [42, 112], [36, 130], [62, 112], [68, 130]), ballon: [54, 76] },
+  { tete: [52, 52], corps: corps([50, 92], [52, 60], [64, 66], [66, 72], [40, 66], [42, 72], [40, 114], [34, 130], [64, 114], [70, 130]), ballon: [54, 74] },
+  /* 5-8 : le ballon monte au-dessus du front, les jambes poussent */
+  { tete: [52, 49], corps: corps([50, 88], [52, 57], [66, 54], [68, 42], [40, 56], [44, 44], [42, 112], [36, 130], [62, 112], [68, 130]), ballon: [56, 40] },
+  { tete: [52, 45], corps: corps([50, 84], [52, 53], [67, 46], [68, 32], [40, 48], [45, 36], [45, 108], [39, 130], [59, 108], [65, 130]), ballon: [57, 30] },
+  { tete: [52, 41], corps: corps([50, 80], [52, 49], [68, 38], [68, 22], [41, 40], [46, 28], [47, 105], [42, 128], [57, 105], [62, 128]), ballon: [58, 20] },
+  { tete: [52, 37], corps: corps([50, 76], [52, 45], [69, 30], [69, 13], [42, 32], [47, 20], [48, 102], [44, 124], [56, 102], [60, 124]), ballon: [59, 11] },
+  /* 9-12 : l'extension — corps tendu, le ballon quitte la main, décollage */
+  { tete: [52, 33], corps: corps([50, 72], [52, 41], [70, 22], [72, 6], [43, 26], [48, 14], [49, 99], [46, 120], [55, 99], [58, 120]), ballon: [66, 2] },
+  { tete: [52, 31], corps: corps([50, 70], [52, 39], [71, 18], [76, 4], [43, 24], [48, 12], [49, 97], [47, 118], [55, 97], [57, 118]), ballon: [74, -4] },
+  { tete: [52, 31], corps: corps([50, 70], [52, 39], [71, 17], [78, 4], [43, 24], [48, 12], [49, 97], [47, 118], [55, 97], [57, 118]), ballon: [84, -10] },
+  { tete: [52, 32], corps: corps([50, 71], [52, 40], [71, 17], [78, 5], [43, 25], [48, 13], [49, 98], [47, 119], [55, 98], [57, 119]), ballon: [94, -14] },
+  /* 13-16 : le poignet retombe, atterrissage, retour au calme */
+  { tete: [52, 35], corps: corps([50, 74], [52, 43], [70, 22], [76, 12], [43, 28], [48, 18], [48, 101], [45, 124], [56, 101], [59, 124]), ballon: [104, -16] },
+  { tete: [52, 39], corps: corps([50, 78], [52, 47], [68, 30], [72, 24], [42, 34], [46, 26], [46, 105], [42, 128], [58, 105], [62, 128]), ballon: [112, -14] },
+  { tete: [52, 43], corps: corps([50, 82], [52, 51], [66, 40], [68, 38], [41, 44], [44, 38], [44, 108], [40, 130], [60, 108], [64, 130]), ballon: [118, -8] },
+  { tete: [52, 44], corps: corps([50, 84], [52, 52], [64, 46], [66, 44], [40, 48], [42, 44], [46, 108], [40, 130], [58, 108], [64, 130]), ballon: [122, 0] }
+];
+
+/* SMIL : on boucle sur les seize poses, en revenant à la première. */
+const valuesCorps = [...poses.map((p) => p.corps), poses[0].corps].join(';');
+const valuesTeteY = [...poses.map((p) => p.tete[1]), poses[0].tete[1]].join(';');
+const valuesBallonX = [...poses.map((p) => p.ballon[0]), poses[0].ballon[0]].join(';');
+const valuesBallonY = [...poses.map((p) => p.ballon[1]), poses[0].ballon[1]].join(';');
+const duree = '2.4s';
+/* Pose de repos affichée si l'animation ne tourne pas : la 9e, le corps tendu. */
+const repos = poses[8];
+---
+
+<svg
+  class="silhouette"
+  viewBox="0 -24 130 160"
+  width={taille}
+  height="auto"
+  role="img"
+  aria-label="Figure dessinée d’un tir au basket, en seize positions"
+  style={`color:${couleur}`}
+>
+  <line class="sol" x1="0" y1="130" x2="130" y2="130" />
+  <circle class="tete" cx={repos.tete[0]} cy={repos.tete[1]} r="6">
+    <animate attributeName="cy" values={valuesTeteY} dur={duree} repeatCount="indefinite" calcMode="linear" />
+  </circle>
+  <path class="corps" d={repos.corps}>
+    <animate attributeName="d" values={valuesCorps} dur={duree} repeatCount="indefinite" calcMode="linear" />
+  </path>
+  <circle class="ballon" cx={repos.ballon[0]} cy={repos.ballon[1]} r="5">
+    <animate attributeName="cx" values={valuesBallonX} dur={duree} repeatCount="indefinite" calcMode="linear" />
+    <animate attributeName="cy" values={valuesBallonY} dur={duree} repeatCount="indefinite" calcMode="linear" />
+  </circle>
+</svg>
+
+<style>
+  .silhouette{display:block;max-width:100%;height:auto}
+  .silhouette .sol{stroke:var(--steel);stroke-width:1.2;opacity:.5}
+  .silhouette .tete{fill:currentColor}
+  .silhouette .corps{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+  /* Le ballon est un APLAT de marque : le seul orange du dessin. */
+  .silhouette .ballon{fill:var(--ball)}
+  @media (prefers-reduced-motion:reduce){
+    .silhouette animate{display:none}
+  }
+</style>

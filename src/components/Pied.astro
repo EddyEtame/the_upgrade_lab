@@ -1,0 +1,300 @@
+---
+/**
+ * Pied.astro — le pied de page.
+ *
+ * Trois choses, dans cet ordre d'importance :
+ *
+ *   1. LA BANDE DU PARCOURS. Cinq niveaux, cinq aplats, dans l'ordre du
+ *      programme. C'est la structure du site rendue visible sur chaque page :
+ *      un parent arrivé par n'importe quelle URL voit d'un coup d'œil qu'il
+ *      existe un chemin, et où il mène.
+ *   2. LE PLAN. Toutes les URL réelles, aucune inventée. Un lien mort dans un
+ *      pied de page est vu par le crawler avant d'être vu par nous.
+ *   3. LES ENGAGEMENTS. Quatre lignes de l'Annexe A, sur chaque page, parce
+ *      qu'un parent ne lit pas toujours la page dédiée.
+ *
+ * Les couleurs des bandes : l'aplat vient du logo, le texte posé dessus est du
+ * blanc ou du noir, et le ratio est mesuré dans src/data/site.ts, pas supposé.
+ * L'ambre inverse en noir parce que c'est la teinte claire du jeu — c'est
+ * exactement la raison pour laquelle les deux rampes existent.
+ *
+ * Le bloc de contact est piloté par les données : tant que CONTACT.email vaut
+ * null, une FENTE marquée s'affiche à la place. On ne devine pas une adresse,
+ * et on ne la cache pas non plus — on la dessine pour qu'elle se remplisse.
+ */
+
+import {
+  SITE, NAV, PARCOURS, CONTACT, PROTECTION, attente,
+  EDITE_LE, EDITE_LE_FR, EDITE_LE_EN, ANNEE, langueDuChemin, type CodeLangue
+} from '../data/site';
+
+export interface Props {
+  lang?: CodeLangue;
+}
+
+const lang: CodeLangue = Astro.props.lang ?? langueDuChemin(Astro.url.pathname);
+const fr = lang === 'fr';
+
+const fenteEmail = attente('email');
+const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
+---
+
+<footer class="pied sur-noir">
+
+  <!-- 1 · le parcours, en cinq bandes -->
+  <nav class="parcours-bande" aria-label={fr ? 'Le parcours en cinq niveaux' : 'The five-level pathway'}>
+    <p class="etiquette parcours-bande__titre">
+      {fr ? 'Le parcours' : 'The pathway'} — {fr ? 'cinq niveaux' : 'five levels'}
+    </p>
+    <ol class="parcours-bande__liste" role="list">
+      {PARCOURS.map((n) => (
+        <li>
+          <a
+            class="bande-parcours"
+            href={n.href}
+            style={`background:${n.fill};color:${n.surFill}`}
+          >
+            <span class="bande-parcours__rang">
+              <span class="chevs" aria-hidden="true">
+                {Array.from({ length: n.chevrons }).map(() => <span class="chev"></span>)}
+              </span>
+              <span class="vh">{fr ? 'Niveau' : 'Level'} {n.rang}</span>
+            </span>
+            <span class="bande-parcours__nom">{n.label}</span>
+            <span class="bande-parcours__promesse">{n.promesse}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <div class="conteneur pied__corps">
+    <div class="pied__grille">
+
+      <!-- 2 · le plan du site -->
+      <nav class="pied__plan" aria-label={fr ? 'Plan du site' : 'Site map'}>
+        {NAV.map((l) => (
+          <div class="pied__colonne">
+            <a class="pied__tete" href={l.href}>{fr ? l.libelle : l.en}</a>
+            {l.enfants && (
+              <ul class="pied__sous" role="list">
+                {l.enfants.map((e) => (
+                  <li><a href={e.href}>{fr ? e.libelle : e.en}</a></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </nav>
+
+      <!-- 3 · contact et engagements -->
+      <div class="pied__bloc">
+        <h2 class="pied__h">{fr ? 'Écrire au programme' : 'Contact the programme'}</h2>
+
+        {CONTACT.email ? (
+          <p class="pied__contact">
+            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </p>
+        ) : (
+          <div class="fente">
+            <span class="etiquette">{fr ? 'En attente' : 'Pending'}</span>
+            <p>
+              {fenteEmail
+                ? `${fenteEmail.libelle} — ${fenteEmail.source}.`
+                : 'Adresse de contact en attente du questionnaire d’entrée.'}
+            </p>
+          </div>
+        )}
+
+        <p class="pied__lieu">
+          {SITE.lieuPhrase}.
+          <span class="pied__note">
+            {fr
+              ? 'Le lieu et les horaires des séances sont communiqués par écrit aux familles inscrites. Ils ne sont pas publiés ici, et c’est délibéré.'
+              : 'Training venue and times are sent in writing to registered families. They are not published here, and that is deliberate.'}
+          </span>
+        </p>
+
+        <h2 class="pied__h pied__h--second">
+          {fr ? 'Protection des mineurs' : 'Safeguarding'}
+        </h2>
+        <ul class="liste-fleche pied__engagements" role="list">
+          {PROTECTION.map((e) => <li>{e}</li>)}
+        </ul>
+        <p class="pied__lien-fort">
+          <a href="/protection-des-mineurs/">
+            {fr ? 'Lire les engagements en entier' : 'Read the full commitments'}
+          </a>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- 4 · la ligne du bas -->
+    <div class="pied__bas">
+      <p class="pied__marque">
+        <span class="obl pied__nom">{SITE.nom}</span>
+        <span class="pied__devise">{SITE.devise}</span>
+      </p>
+      <p class="micro pied__legal">
+        © {ANNEE} {SITE.nom}. {fr ? 'Programme de développement de basket, ' : 'Youth basketball development programme, '}
+        {SITE.ville}, {fr ? SITE.pays : SITE.paysEN}. {SITE.fondateur}, {fr ? 'fondateur' : 'founder'}.
+      </p>
+      <p class="micro pied__date">
+        {fr ? 'Page mise à jour le ' : 'Page updated '}
+        <time datetime={EDITE_LE}>{dateLisible}</time>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .pied{
+    border-top:1px solid var(--trait);
+    margin-top:auto;
+  }
+
+  /* --- 1 · la bande du parcours --- */
+  .parcours-bande{
+    padding:var(--e5) var(--marge) var(--e6);
+    max-width:var(--l-page);
+    margin-inline:auto;
+  }
+  .parcours-bande__titre{margin:0 0 var(--e3)}
+  .parcours-bande__liste{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    gap:.4rem;
+    grid-template-columns:1fr;
+  }
+  @media (min-width:34em){
+    .parcours-bande__liste{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (min-width:62em){
+    .parcours-bande__liste{grid-template-columns:repeat(5,1fr)}
+  }
+  .bande-parcours{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:.45rem;
+  }
+  .bande-parcours__rang{display:block;opacity:.85}
+  .bande-parcours__rang .chev{width:.5rem;height:.5rem}
+  .bande-parcours__nom{display:block}
+  .bande-parcours__promesse{
+    display:block;
+    font-family:var(--f-corps);
+    font-weight:600;
+    font-size:.8125rem;
+    letter-spacing:0;
+    text-transform:none;
+    line-height:1.3;
+    opacity:.92;
+  }
+
+  /* --- 2 et 3 · le corps --- */
+  .pied__corps{padding-bottom:var(--e6)}
+  .pied__grille{
+    display:grid;
+    gap:var(--e6);
+    grid-template-columns:1fr;
+    padding-top:var(--e6);
+    border-top:1px solid var(--trait);
+  }
+  @media (min-width:62em){
+    .pied__grille{grid-template-columns:1.35fr 1fr;gap:var(--e8)}
+  }
+
+  .pied__plan{
+    display:grid;
+    gap:var(--e5);
+    grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+    align-content:start;
+  }
+  .pied__tete{
+    display:block;
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:1.0625rem;
+    letter-spacing:.02em;
+    text-decoration:none;
+    color:var(--fg);
+    margin-bottom:.5em;
+  }
+  .pied__tete:hover{color:var(--t-bleu)}
+  .pied__sous{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+  .pied__sous a{
+    font-size:var(--t-petit);
+    color:var(--fg-dim);
+    text-decoration:none;
+  }
+  .pied__sous a:hover{color:var(--t-bleu)}
+
+  .pied__bloc{max-width:38rem}
+  .pied__h{
+    font-size:1.0625rem;
+    letter-spacing:.02em;
+    margin-bottom:var(--e3);
+  }
+  .pied__h--second{margin-top:var(--e6)}
+  .pied__contact a{
+    font-family:var(--f-titre);
+    font-weight:700;
+    font-size:1.25rem;
+    color:var(--t-bleu);
+    text-decoration:none;
+  }
+  .pied__contact a:hover{color:var(--fg)}
+  .pied__lieu{
+    margin-top:var(--e4);
+    font-size:var(--t-petit);
+    color:var(--fg);
+  }
+  .pied__note{display:block;color:var(--fg-dim);margin-top:.35em}
+  .pied__engagements li{font-size:var(--t-petit);color:var(--fg-dim);margin-bottom:.45em}
+  .pied__engagements li::before{background:var(--t-rose)}
+  .pied__lien-fort a{
+    font-size:var(--t-petit);
+    font-weight:700;
+    color:var(--t-bleu);
+  }
+
+  /* --- 4 · la ligne du bas --- */
+  .pied__bas{
+    margin-top:var(--e6);
+    padding-top:var(--e4);
+    border-top:1px solid var(--trait);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:var(--e2) var(--e5);
+  }
+  .pied__marque{
+    display:flex;
+    align-items:baseline;
+    gap:.7rem;
+    flex-wrap:wrap;
+    margin:0;
+    flex:1 1 16rem;
+  }
+  .pied__nom{
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:1.125rem;
+    line-height:1;
+  }
+  .pied__devise{
+    font-size:var(--t-micro);
+    font-weight:700;
+    letter-spacing:var(--l-etiquette);
+    text-transform:uppercase;
+    color:var(--t-ambre);
+  }
+  .pied__legal,.pied__date{margin:0;color:var(--fg-dim)}
+  .pied__legal{flex:1 1 22rem}
+</style>
