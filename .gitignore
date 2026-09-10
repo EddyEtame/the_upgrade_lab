@@ -16,3 +16,6 @@ Thumbs.db
 
 # cache de types Astro, régénéré à chaque build
 .astro/
+
+# configuration locale de l’aperçu
+.claude/launch.json
