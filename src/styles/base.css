@@ -1,4 +1,5 @@
 @import './brand.css';
+@import './polices.css';
 
 /* ============================================================================
    The Upgrade Lab — couche de base.
@@ -374,4 +375,42 @@ main:focus{outline:none}
   .entete,.parcours-bande,.pied__plan,.saut,.bouton{display:none!important}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:.8em;color:#555}
   .carte,.cut,.balise{clip-path:none;border:1px solid #bbb}
+}
+
+/* =========================================================================
+   L'IMPRESSION — la page Sponsors sort en dossier de comité. Papier, encre
+   des rampes claires, ni menu ni boutons, rien ne se coupe au milieu.
+   ====================================================================== */
+@media print{
+  :root{
+    --bg:#ffffff;--bloc:#f3f4f2;--panel:#f3f4f2;--paper:#ffffff;
+    --fg:#08090B;--fg-dim:#3a4048;--trait:#c9ccd2;
+    --t-bleu:#005DC9;--t-rose:#B90043;--t-ambre:#8D5400;
+  }
+  body{background:#fff;color:var(--fg)}
+  .entete,.pied,.bouton,.parcours-bande,.voisins,.skip{display:none!important}
+  .section{padding-block:1.1rem}
+  .sur-noir,.sur-bloc,.sur-papier{background:transparent}
+  .carte,.carte-trait,.niveau,.palier,.parrainage,.phase,.faq__item,.tv tr,.step,.regle,.etape{break-inside:avoid}
+  h1,h2,h3{break-after:avoid}
+  a{color:inherit;text-decoration:none}
+  @page{size:A4;margin:16mm}
+}
+
+/* =========================================================================
+   LE MOUVEMENT — zéro octet de script. Chaque bloc arrive en montant de
+   dix pixels quand il entre dans la fenêtre, piloté par le défilement lui-même.
+   Au repos il est entier : rien n'attend un observateur. Sans prise en charge,
+   ou si l'utilisateur préfère moins de mouvement, tout est simplement là.
+   ====================================================================== */
+@keyframes apparait{from{opacity:.35;transform:translateY(10px)}to{opacity:1;transform:none}}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .carte,.carte-trait,.niveau,.secteur,.palier,.parrainage,.phase,.faq__item,.step,
+    .regle,.composante,.valeur,.engagement,.exclusion,.etape,.tv tbody tr{
+      animation:apparait linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 35%;
+    }
+  }
 }

@@ -11,6 +11,8 @@
 import Base from '../../layouts/Base.astro';
 import { attente } from '../../data/site';
 import { NIVEAUX, voisins, type NiveauComplet } from '../../data/parcours';
+import AngleEntree from '../../components/mecanismes/AngleEntree.astro';
+import SerieRebonds from '../../components/mecanismes/SerieRebonds.astro';
 
 export function getStaticPaths() {
   return NIVEAUX.map((n) => ({ params: { niveau: n.key }, props: { n } }));
@@ -114,6 +116,45 @@ const PHRASE: Record<string, string> = {
         <p class="mesure">{n.terrain}</p>
       </div>
     </section>
+
+    {n.key === 'discover' && (
+      <section class="section serree sur-bloc" aria-labelledby="t-ballon">
+        <div class="conteneur">
+          <div class="grille-2" style="--gap:2.5rem;align-items:center">
+            <div>
+              <h2 id="t-ballon">Le ballon, <span class="obl t-ambre">avant le geste</span></h2>
+              <p class="mesure">
+                Un ballon réglementaire obéit à une règle écrite : lâché de 1,80 m,
+                il doit remonter entre 1,20 et 1,40 m. C’est pour ça qu’un dribble
+                à hauteur de hanche revient toujours au même endroit — et c’est la
+                première chose que la main apprend à Discover, avant d’apprendre à
+                regarder ailleurs.
+              </p>
+            </div>
+            <SerieRebonds largeur="100%" />
+          </div>
+        </div>
+      </section>
+    )}
+
+    {n.key === 'develop' && (
+      <section class="section serree sur-bloc" aria-labelledby="t-angle">
+        <div class="conteneur">
+          <div class="grille-2" style="--gap:2.5rem;align-items:center">
+            <div>
+              <h2 id="t-angle">Pourquoi on enseigne <span class="obl t-ambre">un tir haut</span></h2>
+              <p class="mesure">
+                L’anneau fait 45 cm, le ballon 24,3 cm. Vu de haut, l’ouverture
+                est large ; vu à plat, elle se referme. À Develop, on recule le tir
+                seulement quand l’arc tient — parce qu’un tir tendu ne rate pas
+                par manque de force, il rate par manque de place.
+              </p>
+            </div>
+            <AngleEntree largeur="100%" />
+          </div>
+        </div>
+      </section>
+    )}
 
     {n.blocs.map((b) => (
       <section class="section serree sur-bloc">
