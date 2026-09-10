@@ -215,7 +215,9 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
     align-content:start;
   }
   .pied__tete{
-    display:block;
+    display:flex;
+    align-items:center;
+    min-height:2.25rem;
     font-family:var(--f-titre);
     font-weight:900;
     text-transform:uppercase;
@@ -227,10 +229,15 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
   }
   .pied__tete:hover{color:var(--t-bleu)}
   .pied__sous{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+  /* Cibles tactiles : 36 px minimum, meme dans le plan du pied. Un lien de
+     16 px de haut est en dessous du minimum WCAG (24 px), et loin du pouce. */
   .pied__sous a{
     font-size:var(--t-petit);
     color:var(--fg-dim);
     text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    min-height:2.25rem;
   }
   .pied__sous a:hover{color:var(--t-bleu)}
 
