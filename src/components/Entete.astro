@@ -213,9 +213,20 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
     .entete__rang{gap:var(--e3)}
     .marque :global(.marque__signe){height:2rem}
     .marque__nom > .obl{font-size:1.125rem}
-    .nav{flex:1 0 100%;order:3}
-    .nav__liste{gap:.3rem 1rem}
-    .nav__lien{font-size:.9375rem}
+    /* Sur téléphone la nav ne s'empile plus sur trois lignes : un seul rail,
+       qui défile au pouce, avec des cibles de 44 px. Un voile à droite dit
+       qu'il y a une suite. Zéro script — c'est du défilement natif. */
+    .nav{flex:1 0 100%;order:3;position:relative;
+      margin-inline:calc(-1 * var(--marge,1rem));padding-inline:var(--marge,1rem)}
+    .nav::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2.5rem;
+      background:linear-gradient(to right,transparent,var(--bg));pointer-events:none}
+    .nav__liste{flex-wrap:nowrap;gap:0 .25rem;overflow-x:auto;overscroll-behavior-x:contain;
+      scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+      padding-right:2.5rem}
+    .nav__liste::-webkit-scrollbar{display:none}
+    .nav__liste > li{flex:none;scroll-snap-align:start}
+    .nav__lien{font-size:.9375rem;min-height:44px;padding-block:.55em;padding-inline:.5rem;
+      white-space:nowrap;align-items:center}
     .entete__fin{gap:var(--e3)}
     .entete__action{font-size:.875rem;padding:.65em .9em .58em}
   }
