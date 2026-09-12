@@ -8,7 +8,7 @@
  *   3. TEINTE_TEXTE   une teinte du logo (#0068E0, #F0005A, #F89800) posée en `color:`
  *   4. POIDS          une page > 100 Ko gzip, ou l'accueil > 40 Ko gzip
  *   5. VENTE_NEGATIVE une ouverture sur une absence dans le premier h1 ou le premier p
- *   6. IMAGE          un <img> ou <picture> dans le HTML émis
+ *   6. IMAGE          un <img> ou <picture> hors de /brand/ (seul le logo du client passe)
  *   7. ANNEXE_A       une adresse ou un motif d'horaire d'entraînement
  *
  * Node seul, aucune dépendance. Les fichiers TypeScript du socle sont lus au
@@ -121,7 +121,8 @@ for (const p of pages) {
   }
 
   /* 6 · aucune image raster */
-  if (/<(img|picture)\b/i.test(src)) echec('IMAGE', url, '<img> ou <picture> émis — le site ne publie aucune photographie');
+  if (/<picture\b/i.test(src) || /<img\b(?![^>]*\bsrc="\/brand\/)/i.test(src))
+    echec('IMAGE', url, '<img> hors de /brand/ — le site ne publie aucune photographie, seul le logo du client passe');
 
   /* 7 · Annexe A : adresse ou horaire d'entraînement */
   if (/\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b[^.]{0,40}\b\d{1,2}\s?h(\s?\d{2})?\b/i.test(txt))

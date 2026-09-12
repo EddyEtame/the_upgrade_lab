@@ -25,13 +25,19 @@ Copier `.env.example` en `.env`. Aucune clé, aucune URL de base en dur dans le 
 | `PUBLIC_FORMULAIRE_ENDPOINT` | Canal du formulaire de séance d'essai. Vide : la page affiche la fiche à recopier. |
 | `PUBLIC_WHATSAPP` | Numéro international, chiffres seuls. Vide : pas de bouton. |
 
-## Mise en production (Cloudflare Pages)
+## Mise en production (Cloudflare)
 
-1. Créer le projet Pages depuis le dépôt GitHub `EddyEtame/the_upgrade_lab`, branche `main`.
-2. Commande de build `npm run build`, dossier de sortie `dist`. Node est fixé par `.node-version` (22).
-3. Poser les variables ci-dessus dans Pages → Settings → Environment variables. Pour une préversion : `PUBLIC_SITE_INDEXABLE=false`. Pour la mise en ligne validée : `PUBLIC_SITE_URL=https://<domaine>`, `PUBLIC_SITE_INDEXABLE=true`, `PUBLIC_RELEASE_VALIDATED=<date>`.
-4. Rattacher le domaine. `public/_headers` pose les en-têtes de sécurité et le cache immuable des polices et de la marque ; `dist/404.html` sert la page 404.
-5. Après la première mise en ligne indexable : déclarer `https://<domaine>/sitemap.xml` dans Search Console et Bing Webmaster.
+Le site est servi par Cloudflare en ressources statiques depuis `dist/` (Pages fait désormais partie de Workers). Configuration : `wrangler.jsonc`. Aucune clé dans le dépôt : l'authentification est celle de `wrangler login` sur la machine qui déploie.
+
+```bash
+npm run deploy     # build + audit, puis envoi seulement si l'audit est vert
+```
+
+- Adresse actuelle : https://the-upgrade-lab.etame-eddy01.workers.dev — préversion, indexation verrouillée.
+- Le `.env` local porte `PUBLIC_SITE_URL` ; `astro.config.mjs` le lit via `loadEnv`, et une variable posée par l'hébergeur l'emporte.
+- Déploiement automatique à chaque push : Cloudflare → Workers & Pages → `the-upgrade-lab` → Settings → Builds → Connect. Dépôt `EddyEtame/the_upgrade_lab`, branche `main`, build `npm run build`, déploiement `npx wrangler deploy`, variables `PUBLIC_*` dans les réglages de build.
+- Domaine : Settings → Domains & Routes → Add → Custom domain, une fois `theupgradelab.org` acheté.
+- Mise en ligne validée : `PUBLIC_SITE_URL=https://<domaine>`, `PUBLIC_SITE_INDEXABLE=true`, `PUBLIC_RELEASE_VALIDATED=<date>`, puis déclarer `/sitemap.xml` dans Search Console et Bing Webmaster.
 
 ## Où sont les choses
 

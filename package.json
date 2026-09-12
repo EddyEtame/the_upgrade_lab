@@ -11,7 +11,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "audit": "node scripts/audit-build.mjs",
-    "verify": "astro build && node scripts/audit-build.mjs"
+    "verify": "astro build && node scripts/audit-build.mjs",
+    "deploy": "npm run verify && npx --yes wrangler@4 deploy"
   },
   "dependencies": {
     "astro": "^5.0.0"

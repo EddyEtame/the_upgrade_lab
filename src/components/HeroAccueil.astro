@@ -112,6 +112,7 @@ const T = fr
 
       <figure class="plaque">
         <div class="plaque__cadre cut">
+          <div class="balle" aria-hidden="true"><span class="balle__ombre"></span><canvas class="balle__toile" width="220" height="220"></canvas></div>
           <svg class="terrain" viewBox="-8 -12 206 156" role="img" aria-labelledby="terrain-titre terrain-desc">
             <title id="terrain-titre">{T.svgTitre}</title>
             <desc id="terrain-desc">{T.svgDesc}</desc>
@@ -157,6 +158,58 @@ const T = fr
   </div>
 </section>
 
+<script is:inline>
+(function(){
+  var cv=document.querySelector('.balle__toile');if(!cv)return;
+  var root=document.documentElement,R=matchMedia('(prefers-reduced-motion: reduce)').matches,gl=null;
+  try{gl=cv.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false})}catch(e){}
+  if(!gl){root.classList.add('sans-balle');return}
+  var VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
+  var FS=['precision highp float;',
+  'uniform vec2 uRes;uniform float uSpin;uniform vec3 uCol;uniform vec3 uSeam;uniform vec3 uRim;uniform vec2 uPtr;',
+  'mat3 rotY(float a){float c=cos(a),s=sin(a);return mat3(c,0.0,-s,0.0,1.0,0.0,s,0.0,c);}',
+  'mat3 rotX(float a){float c=cos(a),s=sin(a);return mat3(1.0,0.0,0.0,0.0,c,-s,0.0,s,c);}',
+  'float hash(vec3 p){return fract(sin(dot(p,vec3(27.16,57.31,113.7)))*43758.5453);}',
+  'float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);',
+  'return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),',
+  'mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}',
+  'void main(){vec2 uv=(gl_FragCoord.xy-0.5*uRes)/min(uRes.x,uRes.y);vec3 ro=vec3(0.0,0.0,3.0);vec3 rd=normalize(vec3(uv*1.28,-1.7));',
+  'float b=dot(ro,rd),c=dot(ro,ro)-1.0,h=b*b-c;if(h<0.0){discard;}float t=-b-sqrt(h);vec3 n=normalize(ro+rd*t);',
+  'vec3 p=rotX(uPtr.y*0.42)*rotY(uSpin+uPtr.x*0.6)*n;float th=atan(p.z,p.x);float wave=0.46+0.155*cos(2.0*th);',
+  'float d=min(min(abs(p.x),abs(p.z)),abs(abs(p.y)-wave));float seam=1.0-smoothstep(0.011,0.028,d);',
+  'float pebble=noise(p*44.0);float grain=noise(p*150.0);vec3 L=normalize(vec3(-0.5,0.78,0.62));',
+  'float diff=max(dot(n,L),0.0);float fres=pow(1.0-max(dot(n,-rd),0.0),3.0);',
+  'vec3 base=mix(uCol,uCol*0.60,pebble*0.6);base=mix(base,uSeam,seam);vec3 col=base*(0.19+0.95*diff);',
+  'col+=vec3(1.0)*pow(max(dot(reflect(-L,n),-rd),0.0),36.0)*0.40*(1.0-seam);col+=fres*0.85*uRim;col*=0.90+0.18*grain;',
+  'gl_FragColor=vec4(col,smoothstep(0.0,0.022,h));}'].join('\n');
+  function sh(t,src){var s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null}
+  var vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs){root.classList.add('sans-balle');return}
+  var pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){root.classList.add('sans-balle');return}
+  gl.useProgram(pr);var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  var u={};['uRes','uSpin','uCol','uSeam','uRim','uPtr'].forEach(function(k){u[k]=gl.getUniformLocation(pr,k)});
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  gl.uniform3f(u.uCol,.863,.275,0);gl.uniform3f(u.uSeam,.035,.04,.055);gl.uniform3f(u.uRim,0,.408,.878);
+  var spin=0,t0=0,last=0,ptr=[0,0],cible=[0,0],vu=true,raf=0;
+  function taille(){var k=Math.min(window.devicePixelRatio||1,2),w=Math.max(1,Math.round(cv.clientWidth*k)),h=Math.max(1,Math.round(cv.clientHeight*k));
+    if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,cv.width,cv.height)}
+  function dessine(){taille();gl.uniform2f(u.uRes,cv.width,cv.height);gl.uniform1f(u.uSpin,spin);gl.uniform2f(u.uPtr,ptr[0],ptr[1]);
+    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}
+  function image(now){raf=0;if(!t0)t0=now;var dt=last?Math.min((now-last)/1000,.05):.016;last=now;
+    var age=(now-t0)/1000;spin+=dt*(0.55+(age>1.25&&age<3.2?5.5*Math.exp(-(age-1.25)*1.6):0));
+    ptr[0]+=(cible[0]-ptr[0])*Math.min(1,dt*4);ptr[1]+=(cible[1]-ptr[1])*Math.min(1,dt*4);
+    dessine();if(vu&&!document.hidden)raf=requestAnimationFrame(image)}
+  function relance(){if(!R&&!raf&&vu&&!document.hidden){last=0;raf=requestAnimationFrame(image)}}
+  addEventListener('pointermove',function(e){cible[0]=(e.clientX/innerWidth-.5)*2;cible[1]=(e.clientY/innerHeight-.5)*2},{passive:true});
+  addEventListener('resize',function(){if(R)dessine()},{passive:true});
+  document.addEventListener('visibilitychange',relance);
+  if('IntersectionObserver' in window){new IntersectionObserver(function(es){vu=es[0].isIntersecting;relance()}).observe(cv)}
+  if(R){dessine()}else{relance()}
+})();
+</script>
+
 <style>
   .hero{position:relative;overflow:hidden;padding-block:clamp(2.5rem,1.4rem+4.4vw,5rem) 0;border-bottom:1px solid var(--trait)}
   .hero::before{content:'';position:absolute;inset:auto -20% -14rem 40%;height:28rem;
@@ -179,8 +232,8 @@ const T = fr
   .hero__entreprise a{color:var(--t-bleu);text-decoration:underline}
   .hero__entreprise a:hover{color:var(--fg)}
 
-  .plaque{margin:0}
-  .plaque__cadre{--c:24px;background:var(--bloc);padding:clamp(1rem,.4rem + 2.2vw,2.25rem)}
+  .plaque{margin:0;position:relative}
+  .plaque__cadre{position:relative;--c:24px;background:var(--bloc);padding:clamp(1rem,.4rem + 2.2vw,2.25rem)}
   .terrain{display:block;width:100%;height:auto}
   .terrain :global(.ligne){fill:none;stroke:var(--amber);stroke-width:1.3;stroke-linejoin:miter}
   .terrain :global(.ligne--fort){stroke-width:2.4}
@@ -209,6 +262,14 @@ const T = fr
     font-family:var(--f-titre);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:1rem;color:var(--fg-dim)}
   .ruban__liste .chev{width:.5em;height:.5em;color:var(--t-ambre)}
 
+  /* Le ballon : celui du logo, #DC4600, calculé dans un shader. Il tombe sur
+     le terrain, rebondit, puis tourne et suit le pointeur. Sans WebGL, il
+     n'existe pas — la page est complète sans lui. */
+  .balle{position:absolute;left:44%;top:50%;width:clamp(38px,12%,96px);aspect-ratio:1;z-index:2;pointer-events:none}
+  .balle__toile{position:absolute;inset:0;width:100%;height:100%;display:block;transform-origin:50% 100%}
+  .balle__ombre{position:absolute;left:10%;right:10%;bottom:-8%;height:14%;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent)}
+  :global(html.sans-balle) .balle{display:none}
   @media (max-width:47.99em){.hero::before{display:none}.hero__titre{font-size:clamp(2.25rem,1.3rem + 4.6vw,3.25rem)}}
 
   /* ---- L'entrée. Une seule fois, à l'ouverture, et rien n'attend. ---- */
@@ -238,6 +299,21 @@ const T = fr
     .faits li{animation:monte .8s var(--ease) both}
     .faits li:nth-child(1){animation-delay:.7s}.faits li:nth-child(2){animation-delay:.78s}.faits li:nth-child(3){animation-delay:.86s}.faits li:nth-child(4){animation-delay:.94s}
     .ruban__piste{animation:defile 38s linear infinite}
+    @keyframes rebond{
+      0%{transform:translateY(-330%);opacity:0;animation-timing-function:cubic-bezier(.55,0,1,.45)}
+      4%{opacity:1}
+      38%{transform:translateY(0) scale(1.07,.9);animation-timing-function:cubic-bezier(0,.55,.45,1)}
+      58%{transform:translateY(-95%) scale(1);animation-timing-function:cubic-bezier(.55,0,1,.45)}
+      76%{transform:translateY(0) scale(1.04,.94);animation-timing-function:cubic-bezier(0,.55,.45,1)}
+      86%{transform:translateY(-28%) scale(1);animation-timing-function:cubic-bezier(.55,0,1,.45)}
+      94%{transform:translateY(0) scale(1.02,.97);animation-timing-function:cubic-bezier(0,.55,.45,1)}
+      97%{transform:translateY(-6%) scale(1)}
+      100%{transform:translateY(0);opacity:1}}
+    @keyframes ombre{
+      0%{transform:scaleX(.25);opacity:0}38%{transform:scaleX(1);opacity:.9}58%{transform:scaleX(.55);opacity:.35}
+      76%{transform:scaleX(1);opacity:.9}86%{transform:scaleX(.8);opacity:.6}94%,100%{transform:scaleX(1);opacity:.9}}
+    .balle__toile{animation:rebond 1.9s 1.25s both}
+    .balle__ombre{animation:ombre 1.9s 1.25s both}
     .ruban:hover .ruban__piste{animation-play-state:paused}
   }
 </style>

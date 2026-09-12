@@ -70,6 +70,10 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
     </ol>
   </nav>
 
+  <div class="conteneur pied__marque">
+    <img src="/brand/ugl-badge-192.webp" srcset="/brand/ugl-badge-192.webp 1x, /brand/ugl-badge-320.webp 2x" width="186" height="192" alt="The Upgrade Lab" loading="lazy" decoding="async" />
+  </div>
+
   <div class="conteneur pied__corps">
     <div class="pied__grille">
 
@@ -309,4 +313,6 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
   }
   .pied__legal,.pied__date{margin:0;color:var(--fg-dim)}
   .pied__legal{flex:1 1 22rem}
+  .pied__marque{display:flex;justify-content:center;padding-top:var(--e7)}
+  .pied__marque img{width:clamp(7rem,5rem + 8vw,11.5rem);height:auto}
 </style>

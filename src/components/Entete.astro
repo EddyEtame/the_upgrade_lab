@@ -19,7 +19,6 @@
  */
 
 import { NAV_ENTETE, SITE, LANGUES, cheminMiroir, langueDuChemin, type CodeLangue } from '../data/site';
-import marqueBrute from '../../public/brand/ugl-mark.svg?raw';
 
 export interface Props {
   /** Langue courante. Défaut : déduite du chemin. */
@@ -31,9 +30,6 @@ const lang: CodeLangue = Astro.props.lang ?? langueDuChemin(chemin);
 
 /** Le lien porte déjà le nom accessible ; le SVG redevient décoratif pour ne
  *  pas annoncer deux fois la même chose au lecteur d'écran. */
-const marque = marqueBrute
-  .replace('role="img" aria-label="The Upgrade Lab"', 'aria-hidden="true" focusable="false"')
-  .replace('<svg ', '<svg class="marque__signe" ');
 
 const liens = NAV_ENTETE.filter((l) => !l.action);
 const action = NAV_ENTETE.find((l) => l.action);
@@ -54,7 +50,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
   <div class="conteneur entete__rang">
 
     <a class="marque" href={racineAccueil} aria-label={`${SITE.nom} — ${lang === 'fr' ? 'accueil' : 'home'}`}>
-      <span class="marque__boite" set:html={marque} />
+      <img class="marque__badge" src="/brand/ugl-badge-64.webp" srcset="/brand/ugl-badge-64.webp 1x, /brand/ugl-badge-128.webp 2x" width="62" height="64" alt="" fetchpriority="high" decoding="async" />
       <span class="marque__nom">
         <span class="obl">The&nbsp;Upgrade&nbsp;Lab</span>
         <span class="marque__lieu">{SITE.ville} · {SITE.pays}</span>
@@ -127,11 +123,8 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
     line-height:0;
     flex:none;
   }
-  .marque :global(.marque__signe){
-    display:block;
-    height:2.375rem;
-    width:auto;
-  }
+  /* Le logo entier du client — ballon, cercle, filet et nom — jamais recadré. */
+  .marque__badge{display:block;height:3.5rem;width:auto;flex:none}
   .marque__nom{
     display:flex;
     flex-direction:column;
@@ -214,7 +207,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
   /* --- petits écrans : 79 % du trafic --- */
   @media (max-width:47.99em){
     .entete__rang{gap:var(--e3)}
-    .marque :global(.marque__signe){height:2rem}
+    .marque__badge{height:2.9rem}
     .marque__nom > .obl{font-size:1.125rem}
     /* Sur téléphone la nav ne s'empile plus sur trois lignes : un seul rail,
        qui défile au pouce, avec des cibles de 44 px. Un voile à droite dit

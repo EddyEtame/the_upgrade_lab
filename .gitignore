@@ -19,3 +19,6 @@ Thumbs.db
 
 # configuration locale de l’aperçu
 .claude/launch.json
+
+# Cloudflare (état local de wrangler)
+.wrangler/

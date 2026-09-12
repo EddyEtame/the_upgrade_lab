@@ -1,0 +1,13 @@
+{
+  // Cloudflare — site statique servi depuis dist/ (Pages fait désormais partie de Workers).
+  // Déploiement : `npm run deploy` (build + audit, puis envoi). Aucune clé ici :
+  // l'authentification est celle de `wrangler login` sur la machine qui déploie.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "the-upgrade-lab",
+  "compatibility_date": "2026-09-11",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
