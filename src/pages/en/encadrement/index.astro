@@ -1,0 +1,46 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { FAITS, PARCOURS, PROTECTION_EN } from '../../../data/site';
+import { METHODE_EN, EXIGENCES_EN, PROMESSES_EN, PENDING_EN } from '../../../data/en';
+import Silhouette from '../../../components/mecanismes/Silhouette.astro';
+
+const faq = [
+  { q: 'Who coaches the sessions and with what qualifications?', a: 'Adult coaches, present at every session, who follow the five-level pathway and correct an action, never a person. Their names, diplomas and certifications will be published on this page the day they are confirmed, with the verification date.' },
+  { q: 'Is a minor always accompanied by an adult?', a: 'Yes, from the start to the end of the session, warm-up and tidying up included. A group of minors is never left alone on the court.' },
+  { q: 'What does the coach do if a player is slipping at school?', a: 'They talk to the family before talking about basketball. Following schooling is part of the programme, and progress on the court never compensates for going backwards in class.' }
+];
+---
+
+<Base titre="Coaching" description="Who coaches the young players of The Upgrade Lab in Douala and by what method: six coaching rules, what a parent is entitled to demand, and the safeguarding commitments." lang="en" fil={[{ nom: 'Coaching', href: '/en/encadrement/' }]} faq={faq}>
+  <section class="section"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem;align-items:center">
+    <div>
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Coaching</p>
+      <h1><span class="obl">Basketball coaching in Douala</span><br />that corrects the movement, not the person</h1>
+      <p class="chapo">A parent hands a child aged {FAITS.ageMin} to {FAITS.ageMax} to an adult they do not know. This page says how that adult works, and what you are entitled to demand of them.</p>
+    </div>
+    <figure class="figure"><Silhouette taille="100%" /><figcaption class="micro t-sourd">The shooting motion, in sixteen positions. A drawn figure — never a photograph of a minor.</figcaption></figure>
+  </div></div></section>
+
+  <section class="section sur-bloc" aria-labelledby="t-m"><div class="conteneur">
+    <h2 id="t-m">Six rules, <span class="obl">kept at every session</span></h2>
+    <ol class="regles" role="list">{METHODE_EN.map((m, i) => <li class="carte" style="--c:12px"><p class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p><h3>{m.titre}</h3><p>{m.texte}</p></li>)}</ol>
+  </div></section>
+
+  <section class="section" aria-labelledby="t-x"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem">
+    <div><h2 id="t-x">What a parent is entitled to demand</h2><ol class="exigences" role="list">{EXIGENCES_EN.map((e) => <li><span class="chev t-rose" aria-hidden="true"></span><span>{e}</span></li>)}</ol></div>
+    <div><h2>What the programme commits to publish here</h2><p class="mesure t-sourd">The fourth point opposite is a commitment of this page. It takes its place with the date it was verified.</p><p class="fente"><b>{PENDING_EN.encadrants.label}</b><span>{PENDING_EN.encadrants.source}</span></p><ul class="engagements" role="list">{PROTECTION_EN.map((e) => <li><span class="chev" aria-hidden="true"></span><span>{e}</span></li>)}</ul><a class="bouton fantome" href="/en/protection-des-mineurs/">The commitments, in full <span class="chev" aria-hidden="true"></span></a></div>
+  </div></div></section>
+
+  <section class="section serree sur-bloc" aria-labelledby="t-n"><div class="conteneur">
+    <h2 id="t-n">The coach follows the pathway</h2>
+    <ol class="bande" role="list">{PARCOURS.map((n) => <li style={`--fill:${n.fill};--txt:${n.texteSurNoir}`}><a href={`/en${n.href}`}><b>{n.label}</b><span>{PROMESSES_EN[n.key].resume}</span></a></li>)}</ol>
+  </div></section>
+</Base>
+
+<style>
+  .figure{margin:0;padding:var(--e4);background:var(--bloc);clip-path:var(--chanfrein);--c:18px}.figure figcaption{margin-top:var(--e3)}
+  .regles{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}.regles .num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}.regles h3{margin:0 0 .4em;font-size:var(--t-h4)}.regles p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .exigences{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px}.exigences li{display:flex;gap:.8em;align-items:flex-start;background:var(--bg);padding:var(--e4);font-weight:600;line-height:1.45}.exigences .chev{flex:none;width:.6em;height:.6em;margin-top:.35em}
+  .engagements{list-style:none;margin:var(--e4) 0 var(--e4);padding:0;display:grid;gap:.6em}.engagements li{display:flex;gap:.7em;align-items:flex-start;line-height:1.4;font-size:var(--t-petit)}.engagements .chev{flex:none;width:.5em;height:.5em;margin-top:.4em;color:var(--t-rose)}
+  .bande{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));clip-path:var(--chanfrein);--c:12px}.bande li{background:var(--bg);border-top:6px solid var(--fill)}.bande a{display:grid;gap:.2em;padding:var(--e4);text-decoration:none;color:var(--fg)}.bande a:hover{background:var(--bloc)}.bande b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;color:var(--txt);line-height:1;font-size:var(--t-h4)}.bande span{font-size:var(--t-petit);color:var(--fg-dim);line-height:1.4}
+</style>

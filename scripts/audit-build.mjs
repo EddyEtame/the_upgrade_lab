@@ -53,7 +53,8 @@ const urlDe = (p) => '/' + relative(DIST, p).replace(/\\/g, '/').replace(/index\
  * visible, en tolérant jusqu'à quatre mots-outils entre deux d'entre eux et le
  * pluriel. Ce que ça refuse toujours : un mot manquant, ou l'ordre inversé.
  */
-const OUTILS = new Set(['a', 'au', 'aux', 'de', 'du', 'des', 'd', 'l', 'le', 'la', 'les', 'un', 'une', 'en', 'et', 'pour', 'qu', 'on', 'sur']);
+const OUTILS = new Set(['a', 'au', 'aux', 'de', 'du', 'des', 'd', 'l', 'le', 'la', 'les', 'un', 'une', 'en', 'et', 'pour', 'qu', 'on', 'sur',
+  'the', 'an', 'of', 'in', 'for', 'to', 'and', 'at', 'is', 'are', 'with', 'that', 'this', 'your']);
 const racine = (w) => w.replace(/(s|x)$/, '');
 function contientIntention(txt, intention) {
   const cible = intention.split(' ').filter((w) => w && !OUTILS.has(w)).map(racine);
@@ -114,7 +115,8 @@ for (const p of pages) {
   const h1 = norm((src.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || ['', ''])[1].replace(/<[^>]+>/g, ' '));
   const mainHtml = (src.match(/<main[\s\S]*?<\/main>/i) || [src])[0];
   const p1 = norm((mainHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i) || ['', ''])[1].replace(/<[^>]+>/g, ' '));
-  for (const neg of ['nous n avons pas', 'il n y a pas de', 'pas encore de', 'n existe pas encore', 'ne propose pas']) {
+  for (const neg of ['nous n avons pas', 'il n y a pas de', 'pas encore de', 'n existe pas encore', 'ne propose pas',
+                     'we do not have', 'we don t have', 'there is no', 'not yet available', 'does not yet', 'we do not offer']) {
     if (h1.includes(neg) || p1.includes(neg)) echec('VENTE_NEGATIVE', url, `ouverture sur une absence : « ${neg} »`);
   }
 

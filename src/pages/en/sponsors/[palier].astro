@@ -1,0 +1,80 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { FAITS, PARCOURS } from '../../../data/site';
+import { PALIER_EXCLUSIVITE, fcfa } from '../../../data/offre';
+import { OFFRE_EN, MENTION_GRILLE_EN, ETAPES_EN, PROMESSES_EN } from '../../../data/en';
+
+export function getStaticPaths() { return OFFRE_EN.map((p) => ({ params: { palier: p.cle }, props: { p } })); }
+const { p } = Astro.props as { p: (typeof OFFRE_EN)[number] };
+const autres = OFFRE_EN.filter((x) => x.cle !== p.cle);
+const estBourse = p.cle === 'bourse';
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const NOMS: Record<string, string> = { friend: 'Friend of the Lab', bronze: 'Bronze Partner', silver: 'Silver Partner', gold: 'Gold · Principal Partner', bourse: 'Sponsor an athlete' };
+const nom = NOMS[p.cle];
+const intentions: Record<string, string> = {
+  friend: 'become the local sponsor of a basketball club',
+  bronze: 'a sports partnership in Douala',
+  silver: 'sponsor a youth basketball category',
+  gold: 'become the principal partner of a sports programme in Cameroon',
+  bourse: 'sponsor a young athlete in Cameroon'
+};
+const description = estBourse
+  ? 'Sponsor a young athlete in Cameroon: a full season for one named player at The Upgrade Lab, two written reports a year, an invitation to the end-of-season event.'
+  : `${nom}: what a Douala company receives at this sports partnership tier with The Upgrade Lab, deliverable by deliverable, and how to commit.`;
+const faq = estBourse
+  ? [
+      { q: 'What does sponsoring an athlete cover?', a: 'A full season for one named young person: kit, training and competition entry. The sponsor knows the athlete’s first name and category, receives two written progress reports during the year, and an invitation to the end-of-season event.' },
+      { q: 'Can the sponsor meet the young person?', a: 'At the end-of-season event, yes. The programme does not organise direct contact outside it: it trains minors, and the relationship runs through the written reports and the coordinator.' },
+      { q: 'Can a young person without means take part?', a: 'That is precisely what sponsorship makes possible: a funded place so that a young player’s progress depends on what they do on the court and nothing else.' }
+    ]
+  : [
+      { q: `What does a ${nom} receive?`, a: `${p.contreparties.length} written deliverables, listed on this page and carried unchanged into the agreement: ${p.contreparties.slice(0, 2).join(' ')}` },
+      { q: 'Is sector exclusivity included?', a: p.exclusivite ? `Yes. From the ${cap(PALIER_EXCLUSIVITE)} tier, the partner’s sector is reserved for the season: no other company from the same sector is accepted.` : `No: sector exclusivity starts at the ${cap(PALIER_EXCLUSIVITE)} tier. This tier can coexist with another company from the same sector.` },
+      { q: 'Is the amount final?', a: p.approuve_le ? 'Yes, approved in writing by the coordinator.' : 'The amount is a working grid awaiting written approval. The deliverables are settled.' }
+    ];
+---
+
+<Base titre={nom} description={description} lang="en" fil={[{ nom: 'Sponsors', href: '/en/sponsors/' }, { nom, href: p.href }]} faq={faq}>
+  <div class="palier" style={`--fill:${p.fill};--sur:${p.surFill}`}>
+    <section class="section ouverture"><div class="conteneur">
+      <p class="balise"><span class="chevs" aria-hidden="true">{Array.from({ length: p.chevrons }).map(() => <i class="chev"></i>)}</span>{estBourse ? 'Outside the tiers' : `Tier ${p.chevrons} of 4`}{p.exclusivite ? ' · sector exclusivity' : ''}</p>
+      <h1><span class="obl">{nom}</span></h1>
+      <p class="chapo mesure">{p.accroche}</p><p class="mesure">{p.pour}</p>
+      <div class="montant cut" style="--c:14px"><b>{fcfa(p.montantFCFA)}</b><span>per year</span>{!p.approuve_le && <em>{MENTION_GRILLE_EN.etiquette} — awaiting written approval.</em>}</div>
+    </div></section>
+
+    <section class="section sur-bloc" aria-labelledby="t-c"><div class="conteneur">
+      <h2 id="t-c">What you receive, <span class="obl">line by line</span></h2>
+      <p class="mesure t-sourd">These deliverables are settled. They are carried unchanged into the agreement, and each one can be delivered by a launching structure — with no invented headcount and no image of a minor.</p>
+      <ol class="contreparties" role="list">{p.contreparties.map((c, i) => <li><span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><span>{c}</span></li>)}</ol>
+      {p.cle === 'silver' && <p class="note mesure"><b>Your own page is a real address.</b> A Silver partner receives a page of this site at a URL of its own — its story, its logo, a link to its website — indexed like the rest of the site and cited in both season reports.</p>}
+      {p.cle === 'gold' && <p class="note mesure"><b>On the filmed feature.</b> It is produced by a video supplier and funded from the partnership amount, so that the deliverable is held by someone whose profession it is. The programme is not a video producer and does not claim to be.</p>}
+      {estBourse && <p class="note mesure"><b>The amount has to be exact.</b> It corresponds to the real cost of one athlete over a season, computed from the programme’s budget. Above it, an attentive sponsor would notice; below it, the promise would not last the year. It is the one line in the offer that must be right to the franc.</p>}
+    </div></section>
+
+    {estBourse ? (
+      <section class="section" aria-labelledby="t-f"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem">
+        <div><h2 id="t-f">The only deliverable <span class="obl t-ambre">with a face</span></h2><p class="mesure">A company that hesitates in front of an abstract tier often says yes to one specific young person. Sponsorship is told in one sentence: one sponsor, one young athlete aged {FAITS.ageMin} to {FAITS.ageMax}, one season.</p><p class="mesure">What the sponsor knows: the athlete’s first name, age category and level in the pathway. What they will not know, and this is a commitment: full name, school, neighbourhood, training venue and times. The two written reports speak of progress, not private life.</p></div>
+        <ol class="niveaux-mini" role="list">{PARCOURS.map((n) => <li style={`--f:${n.fill};--t:${n.texteSurNoir}`}><a href={`/en${n.href}`}><b>{n.label}</b><span>{PROMESSES_EN[n.key].promesse}</span></a></li>)}</ol>
+      </div></div></section>
+    ) : (
+      <section class="section" aria-labelledby="t-e"><div class="conteneur"><h2 id="t-e">How you commit</h2><ol class="etapes" role="list">{ETAPES_EN.map((e) => <li class="carte" style="--c:12px"><p class="etape__num" aria-hidden="true">{String(e.rang).padStart(2, '0')}</p><h3>{e.titre}</h3><p>{e.texte}</p></li>)}</ol></div></section>
+    )}
+
+    <section class="section serree sur-bloc" aria-labelledby="t-o"><div class="conteneur">
+      <h2 id="t-o">The other tiers</h2>
+      <ul class="autres" role="list">{autres.map((a) => <li style={`--f:${a.fill};--s:${a.surFill}`}><a href={a.href}><span class="chevs" aria-hidden="true">{Array.from({ length: a.chevrons }).map(() => <i class="chev"></i>)}</span><b>{NOMS[a.cle]}</b><span>{fcfa(a.montantFCFA)} per year</span></a></li>)}</ul>
+      <p class="petit t-sourd" style="margin-top:var(--e4)">This page is for a company that wants to {intentions[p.cle]}. <a href="/en/sponsors/">See sector availability.</a></p>
+    </div></section>
+  </div>
+</Base>
+
+<style>
+  .ouverture{border-top:10px solid var(--fill)}.ouverture .chev{width:.55em;height:.55em}
+  .montant{display:inline-grid;gap:.15em;margin-top:var(--e5);padding:var(--e4) var(--e5);background:var(--fill);color:var(--sur)}.montant b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1;font-variant-numeric:tabular-nums}.montant span{font-size:var(--t-micro);font-weight:700;letter-spacing:.12em;text-transform:uppercase}.montant em{font-style:normal;font-size:var(--t-petit);margin-top:.5em;opacity:.9}
+  .contreparties{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px;max-width:var(--l-mesure)}.contreparties li{display:grid;grid-template-columns:3rem 1fr;gap:var(--e3);background:var(--bg);padding:var(--e4);line-height:1.5}.contreparties .num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h3);line-height:1;color:var(--t-bleu)}
+  .note{margin-top:var(--e5);padding:var(--e4);background:var(--bg);border-left:4px solid var(--amber);line-height:1.55}.note b{color:var(--t-ambre)}
+  .niveaux-mini{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px;align-self:start}.niveaux-mini li{background:var(--bg);border-left:6px solid var(--f)}.niveaux-mini a{display:grid;gap:.1em;padding:var(--e3) var(--e4);text-decoration:none;color:var(--fg)}.niveaux-mini b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;color:var(--t);line-height:1}.niveaux-mini span{font-size:var(--t-petit);color:var(--fg-dim)}
+  .etapes{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}.etape__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}.etapes h3{margin:0 0 .4em;font-size:var(--t-h4)}.etapes p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .autres{list-style:none;margin:var(--e5) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));clip-path:var(--chanfrein);--c:12px}.autres a{display:grid;gap:.2em;padding:var(--e4);background:var(--bg);border-top:6px solid var(--f);text-decoration:none;color:var(--fg)}.autres a:hover{background:var(--bloc)}.autres .chev{width:.5em;height:.5em;background:var(--fg-dim)}.autres b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;line-height:1;font-size:var(--t-h4)}.autres span:last-child{font-size:var(--t-petit);color:var(--fg-dim);font-variant-numeric:tabular-nums}.autres + p a{color:var(--t-bleu);text-decoration:underline}
+</style>

@@ -1,0 +1,36 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { FAITS } from '../../../data/site';
+import { QUESTIONS_EN, ATTENTE_QUESTIONS_EN, PENDING_EN } from '../../../data/en';
+---
+
+<Base titre="Parents’ and partners’ questions" description="The questions parents ask a youth basketball club in Douala — entry age, girls, trials, the court, safeguarding, sponsorship — answered in one sentence first, then in full." lang="en" fil={[{ nom: 'Questions', href: '/en/questions/' }]} faq={QUESTIONS_EN}>
+  <section class="section"><div class="conteneur etroit">
+    <p class="balise"><span class="chev" aria-hidden="true"></span>Questions</p>
+    <h1><span class="obl">The questions we are asked,</span><br />and the answers as we give them</h1>
+    <p class="chapo">The questions parents ask a youth basketball club in Douala: a parent, a young person aged {FAITS.ageMin} to {FAITS.ageMax}, a company. Each answer fits in one sentence first, then unfolds.</p>
+  </div></section>
+
+  <section class="section sur-bloc" aria-label="Answers"><div class="conteneur etroit">
+    <dl class="faq">{QUESTIONS_EN.map((e, i) => <div class="faq__item" id={`q${i + 1}`}><dt><a href={`#q${i + 1}`} class="faq__ancre" aria-label="Link to this question">#</a>{e.q}</dt><dd>{e.a}</dd></div>)}</dl>
+  </div></section>
+
+  <section class="section serree" aria-labelledby="t-a"><div class="conteneur etroit">
+    <h2 id="t-a">Two answers on their way</h2>
+    <p class="mesure t-sourd">These two questions have a precise answer; it is being established, and it will take its place here with the date it was verified. In the meantime the question is asked and the source is named — which is more honest than an estimate.</p>
+    <dl class="attente">{ATTENTE_QUESTIONS_EN.map((r) => <div class="attente__item"><dt>{r.q}</dt><dd class="fente"><b>{PENDING_EN[r.cle].label}</b><span>{PENDING_EN[r.cle].source}</span></dd></div>)}</dl>
+  </div></section>
+
+  <section class="section serree sur-bloc"><div class="conteneur etroit rangee" style="--gap:.75rem">
+    <a class="bouton primaire" href="/en/rejoindre/">Ask for a trial session <span class="chev" aria-hidden="true"></span></a>
+    <a class="bouton fantome" href="/en/sponsors/">Become a partner</a>
+  </div></section>
+</Base>
+
+<style>
+  .faq{margin:0;display:grid;gap:1px;background:var(--trait)}.faq__item{background:var(--bg);padding:var(--e5) 0}
+  .faq dt{position:relative;font-weight:700;font-size:var(--t-h4);margin:0 0 .5em;padding-left:1.4em;line-height:1.3}
+  .faq__ancre{position:absolute;left:0;top:0;color:var(--t-bleu);text-decoration:none;opacity:.55}.faq__ancre:hover,.faq__item:target .faq__ancre{opacity:1}
+  .faq dd{margin:0;padding-left:1.4em;color:var(--fg-dim);line-height:1.6}.faq__item:target{background:var(--bloc);padding-inline:var(--e4);margin-inline:calc(-1 * var(--e4))}
+  .attente{margin:var(--e5) 0 0;display:grid;gap:var(--e4)}.attente dt{font-weight:700;margin:0 0 .5em}.attente dd{margin:0}
+</style>

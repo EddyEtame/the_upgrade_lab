@@ -1,0 +1,44 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { FAITS } from '../../../data/site';
+import { REGLES_PROTECTION_EN, PENDING_EN } from '../../../data/en';
+
+const faq = [
+  { q: 'Can I enrol my child and refuse any photograph?', a: 'Yes. Image consent is a separate document from enrolment. A family can refuse all photography without explanation, and it changes nothing about the child’s place in the group.' },
+  { q: 'How do I have an image of my child removed?', a: 'You ask the named media contact, by any channel, and the file is taken down within 48 hours. No reason has to be given, and consent can be withdrawn at any time.' },
+  { q: 'Why is the training venue not on the site?', a: 'Because the programme trains minors. A face, a place and a time are the combination that lets a stranger find a child. The venue and schedule are sent in writing to registered families only.' },
+  { q: 'Who is responsible for safeguarding in the programme?', a: 'One named adult, published on this page with a way to reach them, is responsible for media and takedowns. That name will appear here the day it is confirmed, with the date.' }
+];
+---
+
+<Base titre="Safeguarding" description="Safeguarding in youth sport, written down before anyone asks: seven commitments The Upgrade Lab makes to families in Douala on consent, names, venues, downloads and takedowns." lang="en" fil={[{ nom: 'Safeguarding', href: '/en/protection-des-mineurs/' }]} faq={faq}>
+  <section class="section"><div class="conteneur etroit">
+    <p class="balise"><span class="chev" aria-hidden="true"></span>Commitments · ages {FAITS.ageMin} to {FAITS.ageMax}</p>
+    <h1><span class="obl">Safeguarding</span><br />in youth sport, written down</h1>
+    <p class="chapo">Most of the faces in this programme belong to children. That single fact imposes rules, and here they are — before anyone asks for them. Safeguarding in youth sport is not proven by a sentence; it is proven by what a programme refuses to publish.</p>
+  </div></section>
+
+  <section class="section sur-bloc" aria-label="The seven commitments"><div class="conteneur etroit">
+    <ol class="regles" role="list">{REGLES_PROTECTION_EN.map((r, i) => <li class="regle"><span class="regle__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><div><h2>{r.titre}</h2><p>{r.texte}</p></div></li>)}</ol>
+  </div></section>
+
+  <section class="section" aria-labelledby="t-w"><div class="conteneur etroit">
+    <h2 id="t-w">Why this is also good business</h2>
+    <p class="mesure">Every school, every serious company and every international partner will ask what your child-protection arrangements are. Very few youth programmes in the region can answer in writing. This one can — and a partner who signs with it is signing next to that answer.</p>
+    <h2>The named adult</h2>
+    <p class="mesure t-sourd">One person, not a mailbox, is responsible for media and takedowns. Their name and a way to reach them will be published here the day they are confirmed, with the date of verification.</p>
+    <p class="fente"><b>Media and takedown contact</b><span>{PENDING_EN.email.source}</span></p>
+  </div></section>
+
+  <section class="section serree sur-bloc"><div class="conteneur etroit rangee" style="--gap:.75rem">
+    <a class="bouton primaire" href="/en/rejoindre/">Ask for a trial session <span class="chev" aria-hidden="true"></span></a>
+    <a class="bouton fantome" href="/en/questions/">Parents’ questions</a>
+  </div></section>
+</Base>
+
+<style>
+  .regles{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:14px}
+  .regle{display:grid;grid-template-columns:3.5rem 1fr;gap:var(--e4);background:var(--bg);padding:var(--e5) var(--e4)}
+  .regle__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1;color:var(--t-rose)}
+  .regle h2{margin:0 0 .35em;font-size:var(--t-h4)}.regle p{margin:0;color:var(--fg-dim);line-height:1.55}
+</style>

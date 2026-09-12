@@ -1,0 +1,51 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { FAITS } from '../../../data/site';
+import { NIVEAUX_EN, REGLES_EN, FAQ_PARCOURS_EN, EN } from '../../../data/en';
+---
+
+<Base titre="The five-level pathway" description="Discover, Develop, Compete, Perform, Progress: The Upgrade Lab's basketball development programme in Cameroon, level by level, with the observable criteria that move a player to the next." lang="en" typePage="CollectionPage" fil={[{ nom: 'The pathway', href: '/en/le-parcours/' }]} faq={FAQ_PARCOURS_EN}>
+  <section class="section"><div class="conteneur">
+    <p class="balise"><span class="chev" aria-hidden="true"></span>The pathway · {FAITS.nombreNiveaux} levels</p>
+    <h1><span class="obl">Discover, Develop,</span><br />Compete, Perform, Progress</h1>
+    <p class="chapo mesure">A basketball development programme in Cameroon that says, at every level, what happens, what you learn there, and what moves you up. Five pages, one road, and never any doubt about the next step.</p>
+  </div></section>
+
+  <section class="section sur-bloc" aria-label="The five levels"><div class="conteneur">
+    <ol class="niveaux" role="list">{NIVEAUX_EN.map((n) => (
+      <li class="niveau" style={`--fill:${n.fill};--txt:${n.texteSurNoir}`}>
+        <a href={n.href} class="niveau__lien cut" style="--c:16px">
+          <div class="niveau__tete"><span class="chevs" aria-hidden="true">{Array.from({ length: n.chevrons }).map(() => <i class="chev"></i>)}</span><span class="etiquette">Level {n.rang}</span></div>
+          <h2 class="niveau__nom">{n.label}</h2>
+          <p class="niveau__accroche">{n.accroche}</p>
+          <p class="niveau__signal"><b>{n.signal.valeur}</b> <span>{n.signal.libelle}</span></p>
+          <span class="niveau__aller">The level in detail <i class="chev" aria-hidden="true"></i></span>
+        </a>
+      </li>))}</ol>
+  </div></section>
+
+  <section class="section" aria-labelledby="t-r"><div class="conteneur">
+    <h2 id="t-r">Four rules, <span class="obl">valid at all five levels</span></h2>
+    <div class="grille" style="--min:18rem;--gap:var(--e4)">{REGLES_EN.map((r, i) => <article class="carte regle" style="--c:14px"><p class="regle__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p><h3>{r.titre}</h3><p>{r.texte}</p></article>)}</div>
+  </div></section>
+
+  <section class="section serree sur-bloc" aria-labelledby="t-t"><div class="conteneur"><h2 id="t-t">And all of it on <span class="obl t-ambre">a regulation court</span></h2><p class="mesure">{EN.terrain}</p></div></section>
+
+  <section class="section" aria-labelledby="t-f"><div class="conteneur etroit">
+    <h2 id="t-f">Questions we are asked about the pathway</h2>
+    <dl class="faq">{FAQ_PARCOURS_EN.map((e) => <div class="faq__item"><dt>{e.q}</dt><dd>{e.a}</dd></div>)}</dl>
+  </div></section>
+</Base>
+
+<style>
+  .niveaux{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+  .niveau__lien{display:grid;gap:.6em;align-content:start;min-height:100%;background:var(--bg);padding:var(--e5);text-decoration:none;color:var(--fg);border-top:8px solid var(--fill);transition:background .5s var(--ease)}
+  .niveau__lien:hover,.niveau__lien:focus-visible{background:var(--panel)}
+  .niveau__tete{display:flex;justify-content:space-between;align-items:center;gap:.6em}.niveau__tete .chev{width:.55em;height:.55em;color:var(--txt)}
+  .niveau__nom{margin:0;font-size:var(--t-h2);color:var(--txt)}.niveau__accroche{margin:0;font-weight:600;line-height:1.35}
+  .niveau__signal{margin:.4em 0 0;font-size:var(--t-petit);color:var(--fg-dim);line-height:1.45}
+  .niveau__signal b{display:block;font-family:var(--f-titre);font-weight:900;font-size:var(--t-h3);color:var(--fg);line-height:1;margin-bottom:.2em}
+  .niveau__aller{margin-top:auto;padding-top:var(--e3);font-size:var(--t-petit);font-weight:700;color:var(--txt);display:inline-flex;gap:.4em;align-items:center}.niveau__aller .chev{width:.6em;height:.6em}
+  .regle{--c:14px}.regle__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}.regle h3{margin:0 0 .4em;font-size:var(--t-h4)}.regle p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .faq{margin:var(--e6) 0 0;display:grid;gap:1px;background:var(--trait)}.faq__item{background:var(--bg);padding:var(--e5) 0}.faq dt{font-weight:700;font-size:var(--t-h4);margin:0 0 .4em}.faq dd{margin:0;color:var(--fg-dim);line-height:1.55;max-width:var(--l-mesure)}
+</style>

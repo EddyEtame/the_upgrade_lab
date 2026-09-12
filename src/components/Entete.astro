@@ -41,6 +41,8 @@ const action = NAV_ENTETE.find((l) => l.action);
 /** Une section est active si l'URL est dedans, pas seulement égale à elle :
  *  /le-parcours/develop/ allume « Le parcours ». */
 const actif = (href: string) => chemin === href || chemin.startsWith(href);
+/** Chaque lien du chrome vit dans la langue de la page : /en/ ne renvoie jamais vers le français. */
+const lien = (href: string) => cheminMiroir(href, lang);
 
 const autre: CodeLangue = lang === 'fr' ? 'en' : 'fr';
 const bascule = LANGUES[autre];
@@ -63,10 +65,10 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
         {liens.map((l) => (
           <li>
             <a
-              class:list={['nav__lien', { actif: actif(l.href) }]}
-              href={l.href}
+              class:list={['nav__lien', { actif: actif(lien(l.href)) }]}
+              href={lien(l.href)}
               title={l.note}
-              aria-current={actif(l.href) ? 'page' : undefined}
+              aria-current={actif(lien(l.href)) ? 'page' : undefined}
             >
               <span class="chev nav__chev" aria-hidden="true"></span>
               <span>{lang === 'fr' ? l.libelle : l.en}</span>
@@ -86,7 +88,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
         </a>
       )}
       {action && (
-        <a class="bouton primaire entete__action" href={action.href}>
+        <a class="bouton primaire entete__action" href={lien(action.href)}>
           <span>{lang === 'fr' ? action.libelle : action.en}</span>
           <span class="chev" aria-hidden="true"></span>
         </a>

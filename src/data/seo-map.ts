@@ -211,7 +211,27 @@ export const PAGE_INTENTS = [
   { url: '/encadrement/',            intent: 'entraineurs basket Douala' },
   { url: '/protection-des-mineurs/', intent: 'protection de l enfance sport Cameroun' },
   { url: '/rejoindre/',              intent: 'inscription basket Douala' },
-  { url: '/questions/',              intent: 'questions club de basket Douala' }
+  { url: '/questions/',              intent: 'questions club de basket Douala' },
+  /* The English mirror. Same pages, the queries an anglophone parent, a scout
+     abroad or a diaspora donor actually types. */
+  { url: '/en/',                        intent: 'basketball club Douala' },
+  { url: '/en/le-programme/',           intent: 'basketball academy Douala' },
+  { url: '/en/le-parcours/',            intent: 'basketball development programme Cameroon' },
+  { url: '/en/le-parcours/discover/',   intent: 'basketball for kids Douala' },
+  { url: '/en/le-parcours/develop/',    intent: 'basketball training Douala' },
+  { url: '/en/le-parcours/compete/',    intent: 'youth basketball competition Cameroon' },
+  { url: '/en/le-parcours/perform/',    intent: 'basketball conditioning Africa' },
+  { url: '/en/le-parcours/progress/',   intent: 'basketball scholarship Africa' },
+  { url: '/en/sponsors/',               intent: 'youth sport sponsorship Africa' },
+  { url: '/en/sponsors/friend/',        intent: 'local sponsor basketball club' },
+  { url: '/en/sponsors/bronze/',        intent: 'sports partnership Douala' },
+  { url: '/en/sponsors/silver/',        intent: 'sponsor youth basketball category' },
+  { url: '/en/sponsors/gold/',          intent: 'principal partner sports programme Cameroon' },
+  { url: '/en/sponsors/bourse/',        intent: 'sponsor a young athlete Cameroon' },
+  { url: '/en/encadrement/',            intent: 'basketball coaching Douala' },
+  { url: '/en/protection-des-mineurs/', intent: 'safeguarding in youth sport' },
+  { url: '/en/rejoindre/',              intent: 'join basketball team Douala' },
+  { url: '/en/questions/',              intent: 'questions youth basketball Douala' }
 ] as const;
 
 export const AREA_SENTENCE = `${LOCATION.city}, region du ${LOCATION.region}, ${LOCATION.country}`;

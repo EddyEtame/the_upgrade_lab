@@ -1,0 +1,844 @@
+---
+/**
+ * /en/rejoindre/ — the athlete conversion page, English mirror of /rejoindre/.
+ *
+ * Same three readers, same order: the fifteen-year-old who wants to know what
+ * a first session looks like, the parent who wants to know who coaches, what
+ * it commits them to and what it costs, and the partner checking that a
+ * programme which asks for money can say what it does with it.
+ *
+ * Annex A drew this page: no training address, no schedule, no photograph of
+ * a minor, no child's full name. Venue and time go IN WRITING to the parent or
+ * guardian after the first exchange. The court is drawn, never photographed.
+ *
+ * The form: zero JavaScript, native <form method="post">. Endpoint from env:
+ *   PUBLIC_FORMULAIRE_ENDPOINT   collection URL
+ *   PUBLIC_WHATSAPP              international number, digits only
+ * Three real states: endpoint set → posts; else CONTACT.email → mailto:;
+ * else the SHEET — the same seven lines, to copy into a message.
+ */
+import Base from '../../../layouts/Base.astro';
+import { SITE, FAITS, TERRAIN_3X3, CONTACT } from '../../../data/site';
+import { LOCATION } from '../../../data/seo-map';
+import { PENDING_EN } from '../../../data/en';
+
+const endpoint = (import.meta.env.PUBLIC_FORMULAIRE_ENDPOINT as string | undefined)?.trim() || '';
+const whatsapp = (import.meta.env.PUBLIC_WHATSAPP as string | undefined)?.replace(/\D/g, '') || '';
+
+const actionForm = endpoint || (CONTACT.email ? `mailto:${CONTACT.email}` : '');
+const formulaireActif = Boolean(actionForm);
+const parMailto = !endpoint && Boolean(CONTACT.email);
+
+const quartiers = [...LOCATION.districts];
+
+const champs = [
+  'The athlete’s first name, and their age.',
+  'The age category, if you know it — U10 to U20. “I don’t know” is an accepted answer.',
+  'The Douala neighbourhood the young person comes from, so transport can be discussed from the first reply.',
+  'The name of a parent or guardian, and a number that can be reached.',
+  'An email address, if the family uses one.',
+  'Two lines on what the young person has already played — “nothing, ever” is a complete answer.',
+  'Confirmation that a parent or guardian knows about the request.'
+];
+
+const faq = [
+  { q: 'From what age can a young person join The Upgrade Lab?', a: 'The programme takes young people aged 10 to 20, in six categories: U10, U12, U14, U16, U18 and U20.' },
+  { q: 'Are girls accepted?', a: 'Yes. The programme develops boys’ and girls’ groups across the six age categories, and plans sponsor-funded places so that lack of means excludes no one.' },
+  { q: 'How does a trial work?', a: 'There is no stopwatch trial: there is a trial session. The young person does a full session with the group of their age, and receives direct feedback at the end on their category, their starting level and what to work on first.' },
+  { q: 'Where does the programme train in Douala?', a: 'In Douala, Littoral region. The exact venue and the schedule are sent in writing to the parent or guardian after the first exchange, and are not published on this site: the programme trains minors.' },
+  { q: 'What does a season cost for a young player?', a: 'The amount is being computed from the programme’s real budget. It will be published here as a figure, and given in writing to a family before any commitment. Sponsor-funded places exist alongside it.' },
+  { q: 'Can a young person without means take part?', a: 'Yes, it is written into the partnership offer: a sponsor can cover a full season for a named athlete, kit, training and competition entry included.' },
+  { q: 'Do you need to know how to play already?', a: 'No. The first level of the pathway, Discover, starts at first contact with the ball: dribbling, footwork and shooting close to the basket.' }
+];
+---
+
+<Base
+  titre="Join the programme"
+  description="How a young person aged 10 to 20 joins The Upgrade Lab in Douala: the trial session, what to bring, what it costs, and who to write to."
+  lang="en"
+  fil={[{ nom: 'Join', href: '/en/rejoindre/' }]}
+  faq={faq}
+>
+
+  <section class="section ouverture">
+    <div class="conteneur">
+      <p class="balise ouverture__balise">
+        <span class="chev" aria-hidden="true"></span>
+        Join · ages {FAITS.ageMin} to {FAITS.ageMax} · boys and girls
+      </p>
+
+      <h1 class="ouverture__titre">
+        <span class="obl">It all starts</span><br />with a trial session
+      </h1>
+
+      <p class="chapo">
+        You write, we answer, you come and play. Level, category and what comes
+        next are decided on the court, ball in hand — not on a form. To join a
+        basketball team in Douala takes five steps, and none of them asks for
+        money before the trial session.
+      </p>
+
+      <p class="ouverture__adresse mesure">
+        This page is written for two readers at once. The young player, who
+        wants to know what a first session looks like and whether they will
+        feel they belong. The parent, who wants to know who coaches, what the
+        step commits them to and what it costs. Both answers are here, one
+        after the other, without detours.
+      </p>
+
+      <div class="rangee ouverture__actions" style="--gap:.75rem">
+        <a class="bouton primaire" href="#essai">
+          Ask for a trial session
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+        <a class="bouton fantome" href="/en/le-parcours/">
+          See the five-level pathway
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section serree">
+    <div class="conteneur">
+      <h2>How you get in</h2>
+      <p class="mesure t-sourd etapes__intro">
+        Five steps. None asks for money, and none asks for a decision before
+        the trial session.
+      </p>
+
+      <ol class="etapes" role="list">
+        <li class="carte etape">
+          <p class="etape__num" aria-hidden="true">01</p>
+          <h3 class="etape__titre">You write</h3>
+          <p>
+            The form at the bottom of this page, or a message. It needs the
+            athlete’s first name, their age, the neighbourhood they come from,
+            and two lines on what they have already played — even if the honest
+            answer is “nothing, ever”. That is a complete answer, and it is the
+            one the first level of the pathway was written for.
+          </p>
+        </li>
+
+        <li class="carte etape">
+          <p class="etape__num" aria-hidden="true">02</p>
+          <h3 class="etape__titre">We answer in writing</h3>
+          <p>
+            A date, a time, and the exact venue of the session. Those three
+            pieces of information go to the parent or guardian, by message, by
+            name. They are written nowhere on this site.
+          </p>
+          <p class="etape__note">
+            It is not an oversight and it is not withholding: the programme
+            trains minors, and publishing an address and a time amounts to
+            publishing where to find children on a Tuesday at five. It is the
+            first commitment of the safeguarding charter, and it holds on every
+            page.
+          </p>
+        </li>
+
+        <li class="carte etape">
+          <p class="etape__num" aria-hidden="true">03</p>
+          <h3 class="etape__titre">You come and play</h3>
+          <p>
+            A full session, with the group of your age. Not a test in front of
+            a stopwatch, not a queue in front of a panel: the normal session,
+            the one the others do every week. You learn far more from a young
+            person who plays than from one you assess.
+          </p>
+        </li>
+
+        <li class="carte etape">
+          <p class="etape__num" aria-hidden="true">04</p>
+          <h3 class="etape__titre">We say it straight</h3>
+          <p>
+            At the end, direct feedback: the category, the starting level in
+            the pathway, and the two or three things to work on first. Said to
+            the young player, in their words. Said again to the parent, in
+            theirs. Nobody leaves wondering what we thought of them.
+          </p>
+        </li>
+
+        <li class="carte etape">
+          <p class="etape__num" aria-hidden="true">05</p>
+          <h3 class="etape__titre">Enrolment</h3>
+          <p>
+            A parent or guardian signs. A minor does not enrol alone here, and
+            that rule is not negotiable. Image consent is a separate document:
+            a family can enrol a child and refuse all photography, without
+            explanation, and it changes nothing about their place in the group.
+          </p>
+          <p class="etape__note">
+            The documents required are listed in writing in the reply.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section sur-bloc">
+    <div class="conteneur">
+      <h2>What a first session looks like</h2>
+
+      <div class="grille seance" style="--min:15rem;--gap:1.25rem">
+        <div class="seance__bloc">
+          <p class="etiquette t-bleu">Arrival</p>
+          <p>
+            You get a ball in your hands before anyone asks you anything. That
+            is deliberate: the way someone holds a ball when they think nobody
+            is watching yet already says a lot.
+          </p>
+        </div>
+
+        <div class="seance__bloc">
+          <p class="etiquette t-bleu">Warm-up</p>
+          <p>
+            Running, footwork, mobility. This is where the body learns to stop
+            — and in basketball, knowing how to stop is rarer, and more useful,
+            than knowing how to run.
+          </p>
+        </div>
+
+        <div class="seance__bloc">
+          <p class="etiquette t-bleu">Fundamentals</p>
+          <p>
+            Weak-hand dribbling, footwork, shooting close to the basket. Few
+            drills, many repetitions, and a coach who corrects an action —
+            never a person.
+          </p>
+        </div>
+
+        <div class="seance__bloc">
+          <p class="etiquette t-bleu">The game</p>
+          <p>
+            We play. In small numbers, on the whole court, so the ball comes
+            back often to the same hands. A session where you touch the ball
+            thirty times teaches more than one where you wait your turn
+            twenty-nine times.
+          </p>
+        </div>
+      </div>
+
+      <p class="seance__chute">
+        You leave with an opinion, not a score.
+      </p>
+
+      <div class="terrain">
+        <div class="terrain__texte">
+          <h3>The court you will play on</h3>
+          <p>
+            Fifteen metres by eleven, one basket, a regulation key, a regulation
+            free-throw line, and the 6.75 m arc that serves as the two-point
+            line. It is not half a court: it is the FIBA 3x3 format, and 3x3
+            has been an Olympic discipline since the {TERRAIN_3X3.premiereOlympiade} Games.
+          </p>
+          <p>
+            And it is not a teaching compromise. {TERRAIN_3X3.etude.auteurs},
+            in <cite>{TERRAIN_3X3.etude.revue}</cite> ({TERRAIN_3X3.etude.annee}),
+            reviewed {TERRAIN_3X3.etude.etudesRevues} studies covering
+            {' '}{TERRAIN_3X3.etude.enfants} children: scaling the equipment and
+            the playing area improves skill acquisition. For a child, a shorter
+            court is not a lesser court — it is a better one.
+          </p>
+        </div>
+
+        <figure class="terrain__plan">
+          <svg
+            class="plan"
+            viewBox="-60 -60 1220 1620"
+            role="img"
+            aria-labelledby="plan-titre plan-desc"
+          >
+            <title id="plan-titre">Plan of a FIBA 3x3 court</title>
+            <desc id="plan-desc">
+              A 15 by 11 metre court, a single basket, a regulation key, a
+              free-throw line and a two-point arc 6.75 metres from the hoop.
+            </desc>
+
+            <g class="plan__lignes">
+              <rect x="0" y="0" width="1100" height="1500" />
+              <rect x="305" y="0" width="490" height="580" />
+              <circle cx="550" cy="580" r="180" />
+              <path d="M 90 0 L 90 651.5 A 675 675 0 0 0 1010 651.5 L 1010 0" />
+              <path d="M 425 157.5 A 125 125 0 0 0 675 157.5" />
+              <line x1="460" y1="120" x2="640" y2="120" />
+            </g>
+
+            <circle class="plan__cercle" cx="550" cy="157.5" r="45" />
+
+            <g class="plan__cotes">
+              <line x1="-30" y1="0" x2="-30" y2="1500" />
+              <line x1="0" y1="1545" x2="1100" y2="1545" />
+            </g>
+
+            <g class="plan__texte">
+              <text x="-46" y="750" transform="rotate(-90 -46 750)" text-anchor="middle">15 m</text>
+              <text x="550" y="1596" text-anchor="middle">11 m</text>
+              <text x="550" y="900" text-anchor="middle">6.75 m</text>
+            </g>
+          </svg>
+          <figcaption class="micro t-sourd">
+            FIBA 3x3 court, to scale. An Olympic discipline since
+            {' '}{TERRAIN_3X3.premiereOlympiade}.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section serree">
+    <div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div>
+          <h2>What to bring</h2>
+          <ul class="liste-fleche" role="list">
+            <li>
+              <strong>Water.</strong> Real water, and more than you think.
+              Douala does not forgive a half-full bottle.
+            </li>
+            <li>
+              <strong>Closed shoes that hold the ankle.</strong>
+              {' '}If you have no basketball shoes, come with what you have: a
+              pair of shoes has never said who could play.
+            </li>
+            <li>
+              <strong>Clothes you can sweat in</strong> and wash the same
+              evening.
+            </li>
+            <li>
+              <strong>Your ball, if you have one.</strong> It is not required,
+              and nobody counts balls at the door.
+            </li>
+            <li>
+              <strong>A parent’s number that can be reached that day.</strong>
+              {' '}It is the only item on the list that is not negotiable.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>What not to bring</h2>
+          <ul class="liste-fleche liste-fleche--rose" role="list">
+            <li>
+              <strong>A file.</strong> Nothing to sign, nothing to pay, nothing
+              to prove before the trial session.
+            </li>
+            <li>
+              <strong>An excuse.</strong> Starting late is not one: the pathway
+              begins at first contact with the ball, not at the first basket.
+            </li>
+            <li>
+              <strong>The fear of getting it wrong.</strong> A trial session
+              eliminates nobody. It exists to find out where someone starts,
+              not to decide whether they are allowed to start.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section serree">
+    <div class="conteneur">
+      <div class="carte-trait cout">
+        <div class="dedans">
+          <h2>What it costs</h2>
+
+          <p class="mesure">
+            The question comes up straight away, and it deserves a straight
+            answer rather than a “contact us”.
+          </p>
+
+          <p class="mesure">
+            The cost of a season is being computed from the programme’s real
+            budget: coaching, balls, kit, competition entries, travel. It will
+            be published here, as a figure, in plain sight — and it will be
+            given in writing to a family before they commit to anything. No
+            family will discover a price after the first session.
+          </p>
+
+          <p class="mesure">
+            There is a second door. The programme plans sponsor-funded places,
+            so that lack of means excludes no one. A sponsor covers a full
+            season for a named athlete — kit, training and competition entry —
+            and receives two written reports a year. That is not a verbal
+            promise: it is a line of the partnership offer.
+          </p>
+
+          <div class="fente cout__fente">
+            <span class="etiquette">Pending</span>
+            <p>
+              {PENDING_EN.cotisation.label} — {PENDING_EN.cotisation.source}.
+              {' '}This slot is public on purpose: until there is a verified
+              figure, there is no figure.
+            </p>
+          </div>
+
+          <p class="cout__lien">
+            <a href="/en/sponsors/bourse/">
+              How sponsoring an athlete works
+              <span class="chev" aria-hidden="true"></span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sur-papier" id="essai">
+    <div class="conteneur etroit">
+      <p class="balise demande__balise">The request</p>
+      <h2>Ask for a trial session</h2>
+
+      <p class="chapo">
+        A written reply, addressed to the parent or guardian, with the date,
+        the time and the venue.
+      </p>
+
+      {formulaireActif ? (
+        <form
+          class="carte formulaire"
+          action={actionForm}
+          method="post"
+          {...(parMailto ? { enctype: 'text/plain' } : {})}
+        >
+          <input type="hidden" name="_subject" value="Trial session request — The Upgrade Lab" />
+
+          <p class="vh" aria-hidden="true">
+            <label for="ref-site">Leave this empty</label>
+            <input id="ref-site" type="text" name="ref_site" tabindex="-1" autocomplete="off" />
+          </p>
+
+          <div class="champs">
+            <p class="champ">
+              <label for="prenom">Athlete’s first name <span class="req">required</span></label>
+              <input id="prenom" type="text" name="prenom_athlete" required autocomplete="given-name" />
+            </p>
+
+            <p class="champ champ--court">
+              <label for="age">Age <span class="req">required</span></label>
+              <input id="age" type="number" name="age" min={FAITS.ageMin} max={FAITS.ageMax} required inputmode="numeric" />
+            </p>
+
+            <p class="champ champ--court">
+              <label for="categorie">Category</label>
+              <select id="categorie" name="categorie">
+                <option value="">I don’t know</option>
+                {FAITS.categories.map((c) => <option value={c}>{c}</option>)}
+              </select>
+            </p>
+
+            <p class="champ">
+              <label for="quartier">Neighbourhood</label>
+              <select id="quartier" name="quartier">
+                <option value="">Choose a neighbourhood</option>
+                {quartiers.map((q) => <option value={q}>{q}</option>)}
+                <option value="Autre">Another neighbourhood, or outside Douala</option>
+              </select>
+            </p>
+
+            <p class="champ">
+              <label for="parent">Parent’s or guardian’s name <span class="req">required</span></label>
+              <input id="parent" type="text" name="parent" required autocomplete="name" />
+            </p>
+
+            <p class="champ">
+              <label for="telephone">Phone or WhatsApp <span class="req">required</span></label>
+              <input id="telephone" type="tel" name="telephone" required autocomplete="tel" inputmode="tel" />
+            </p>
+
+            <p class="champ champ--large">
+              <label for="courriel">Email address <span class="opt">if you use one</span></label>
+              <input id="courriel" type="email" name="_replyto" autocomplete="email" />
+            </p>
+
+            <p class="champ champ--large">
+              <label for="experience">What the young person has already played</label>
+              <textarea id="experience" name="experience" rows="4" placeholder="Two lines are enough. “Nothing, ever” is a complete answer."></textarea>
+            </p>
+          </div>
+
+          <p class="accord">
+            <input id="accord" type="checkbox" name="accord_parent" value="oui" required />
+            <label for="accord">
+              I am this athlete’s parent or guardian, or I am writing with their
+              agreement. <span class="req">required</span>
+            </label>
+          </p>
+
+          <p class="formulaire__envoi">
+            <button class="bouton primaire" type="submit">
+              Send the request
+              <span class="chev" aria-hidden="true"></span>
+            </button>
+          </p>
+
+          <p class="micro formulaire__note">
+            The information sent is used to organise the trial session and to
+            reach the family. It is neither published nor passed to a partner.
+          </p>
+        </form>
+      ) : (
+        <div class="carte-trait fiche">
+          <div class="dedans">
+            <h3 class="fiche__titre">The sheet to copy</h3>
+            <p class="mesure">
+              The programme’s public channel opens on this page, at this exact
+              spot, the day the official address exists. Until then, a complete
+              request fits in seven lines. Copy them into a message and keep
+              them to hand: they will not change.
+            </p>
+
+            <ol class="fiche__liste" role="list">
+              {champs.map((c) => <li>{c}</li>)}
+            </ol>
+
+            <div class="fente fiche__fente">
+              <span class="etiquette">Pending</span>
+              <p>{PENDING_EN.email.label} — {PENDING_EN.email.source}.</p>
+              <p>{PENDING_EN.telephone.label} — {PENDING_EN.telephone.source}.</p>
+            </div>
+
+            <p class="micro fiche__note">
+              Only a programme contact will ever be published here. The
+              founder’s personal line exists; it is a private line, and
+              publishing it in the programme’s place would be deciding in his
+              place.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {whatsapp && (
+        <p class="demande__wa">
+          <a class="bouton fantome" href={`https://wa.me/${whatsapp}`} rel="noopener">
+            Write on WhatsApp
+            <span class="chev" aria-hidden="true"></span>
+          </a>
+        </p>
+      )}
+
+      <p class="demande__annexe">
+        <strong>The exact venue and the time are given by return message</strong>,
+        in writing, to the parent or guardian. They are not published on this site.
+        {' '}<a href="/en/protection-des-mineurs/">Read the safeguarding commitments</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="conteneur">
+      <h2>The questions we are asked</h2>
+      <div class="qr">
+        {faq.map((item) => (
+          <div class="qr__bloc">
+            <h3 class="qr__q">{item.q}</h3>
+            <p class="qr__a">{item.a}</p>
+          </div>
+        ))}
+      </div>
+
+      <p class="qr__suite">
+        <a href="/en/questions/">
+          All the questions
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section serree sur-bloc">
+    <div class="conteneur">
+      <div class="rangee entre sortie" style="--gap:1.5rem">
+        <p class="sortie__mot mesure">
+          {SITE.devise} — and in {SITE.ville}, it starts with a session.
+        </p>
+        <span class="rangee" style="--gap:.75rem">
+          <a class="bouton primaire" href="#essai">
+            Ask for a trial session
+            <span class="chev" aria-hidden="true"></span>
+          </a>
+          <a class="bouton fantome" href="/en/encadrement/">Who coaches</a>
+        </span>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* --- 1 · l'accroche --- */
+  .ouverture__balise{color:var(--t-ambre);margin-bottom:var(--e5)}
+  .ouverture__balise .chev{width:.6em;height:.6em;vertical-align:-.02em}
+  .ouverture__titre{margin-bottom:var(--e5)}
+  .ouverture__adresse{margin-top:var(--e5);color:var(--fg-dim)}
+  .ouverture__actions{margin-top:var(--e6)}
+
+  /* --- 2 · les étapes --- */
+  .etapes__intro{margin-bottom:var(--e6)}
+  .etapes{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    gap:var(--e4);
+    grid-template-columns:1fr;
+  }
+  @media (min-width:48em){
+    .etapes{grid-template-columns:repeat(2,1fr)}
+    .etapes > li:first-child{grid-column:1 / -1}
+  }
+  @media (min-width:70em){
+    .etapes{grid-template-columns:repeat(3,1fr)}
+    .etapes > li:first-child{grid-column:auto}
+  }
+  .etape{position:relative;padding-top:var(--e6)}
+  .etape__num{
+    position:absolute;
+    top:var(--e4);
+    right:var(--e5);
+    margin:0;
+    font-family:var(--f-titre);
+    font-weight:900;
+    font-size:2.25rem;
+    line-height:1;
+    color:var(--trait);
+  }
+  .etape__titre{font-size:var(--t-h4);margin-bottom:var(--e3);color:var(--t-bleu)}
+  .etape p{font-size:var(--t-petit)}
+  .etape__note{
+    margin-top:var(--e3);
+    padding-top:var(--e3);
+    border-top:1px solid var(--trait);
+    color:var(--fg-dim);
+  }
+
+  /* --- 3 · la séance et le terrain --- */
+  .seance__bloc p:not(.etiquette){font-size:var(--t-petit);margin-bottom:0}
+  .seance__bloc .etiquette{margin-bottom:.55em}
+  .seance__chute{
+    margin-top:var(--e6);
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:var(--t-h3);
+    line-height:1;
+    color:var(--fg);
+  }
+
+  .terrain{
+    margin-top:var(--e8);
+    padding-top:var(--e6);
+    border-top:1px solid var(--trait);
+    display:grid;
+    gap:var(--e6);
+    grid-template-columns:1fr;
+    align-items:start;
+  }
+  @media (min-width:56em){
+    .terrain{grid-template-columns:1.4fr 1fr;gap:var(--e8)}
+  }
+  .terrain__texte p{max-width:56ch}
+  .terrain__texte cite{font-style:italic}
+
+  .terrain__plan{margin:0}
+  .plan{
+    display:block;
+    width:100%;
+    max-width:22rem;
+    height:auto;
+    margin-inline:auto;
+  }
+  .plan__lignes rect,
+  .plan__lignes circle,
+  .plan__lignes path,
+  .plan__lignes line{
+    fill:none;
+    stroke:var(--t-ambre);
+    stroke-width:9;
+  }
+  .plan__cercle{fill:none;stroke:var(--t-rose);stroke-width:12}
+  .plan__cotes line{stroke:var(--fg-dim);stroke-width:4}
+  .plan__texte text{
+    fill:var(--fg-dim);
+    font-family:var(--f-corps);
+    font-size:62px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+  .terrain__plan figcaption{margin-top:var(--e3);text-align:center}
+
+  /* --- 4 · apporter --- */
+  .liste-fleche--rose li::before{background:var(--t-rose)}
+
+  /* --- 5 · le coût --- */
+  .cout .dedans{padding:clamp(1.5rem,1rem + 2.4vw,3rem)}
+  .cout__fente{margin:var(--e5) 0}
+  .cout__lien a{
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:1.0625rem;
+    letter-spacing:.02em;
+    color:var(--t-bleu);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:.5em;
+  }
+  .cout__lien a:hover{color:var(--fg)}
+
+  /* --- 6 · le formulaire --- */
+  .demande__balise{margin-bottom:var(--e4);color:var(--t-rose)}
+  .formulaire,.fiche{margin-top:var(--e6)}
+  .formulaire{padding:clamp(1.5rem,1rem + 2.4vw,2.5rem)}
+
+  .champs{
+    display:grid;
+    gap:var(--e4);
+    grid-template-columns:1fr;
+  }
+  @media (min-width:38em){
+    .champs{grid-template-columns:repeat(4,1fr)}
+    .champ{grid-column:span 4}
+    .champ--court{grid-column:span 2}
+    .champ--large{grid-column:span 4}
+  }
+  @media (min-width:52em){
+    .champ{grid-column:span 2}
+    .champ--court{grid-column:span 1}
+    .champ--large{grid-column:span 4}
+  }
+
+  .champ{margin:0;display:flex;flex-direction:column;gap:.4rem}
+  .champ label{
+    font-size:var(--t-petit);
+    font-weight:700;
+    line-height:1.3;
+  }
+  .req,.opt{
+    font-weight:400;
+    font-size:var(--t-micro);
+    text-transform:uppercase;
+    letter-spacing:var(--l-etiquette);
+    margin-left:.5em;
+  }
+  .req{color:var(--t-rose)}
+  .opt{color:var(--fg-dim)}
+
+  .champ input,
+  .champ select,
+  .champ textarea{
+    font-family:var(--f-corps);
+    font-size:1rem;            /* 16 px : en dessous, iOS zoome sur le champ */
+    line-height:1.4;
+    color:var(--fg);
+    background:var(--bg);
+    border:1.5px solid var(--trait);
+    border-radius:0;
+    padding:.7em .8em;
+    width:100%;
+    transition:border-color .25s var(--ease);
+  }
+  .champ textarea{resize:vertical;min-height:6rem}
+  .champ input:hover,
+  .champ select:hover,
+  .champ textarea:hover{border-color:var(--fg-dim)}
+  .champ input:focus-visible,
+  .champ select:focus-visible,
+  .champ textarea:focus-visible{border-color:var(--focus)}
+
+  .accord{
+    display:flex;
+    gap:.7rem;
+    align-items:flex-start;
+    margin:var(--e5) 0 0;
+    font-size:var(--t-petit);
+  }
+  .accord input{
+    margin-top:.25em;
+    width:1.15rem;
+    height:1.15rem;
+    flex:none;
+    accent-color:var(--rose);
+  }
+  .accord label{line-height:1.45}
+
+  .formulaire__envoi{margin:var(--e5) 0 0}
+  .formulaire__note{margin:var(--e4) 0 0;color:var(--fg-dim)}
+
+  .fiche .dedans{padding:clamp(1.5rem,1rem + 2.4vw,2.5rem)}
+  .fiche__titre{font-size:var(--t-h4);margin-bottom:var(--e3)}
+  .fiche__liste{
+    counter-reset:fiche;
+    list-style:none;
+    margin:var(--e5) 0;
+    padding:0;
+    display:grid;
+    gap:var(--e3);
+  }
+  .fiche__liste li{
+    counter-increment:fiche;
+    position:relative;
+    padding-left:2.4rem;
+    font-size:var(--t-petit);
+  }
+  .fiche__liste li::before{
+    content:counter(fiche,decimal-leading-zero);
+    position:absolute;
+    left:0;
+    top:.05em;
+    font-family:var(--f-titre);
+    font-weight:900;
+    font-size:1.1rem;
+    line-height:1.2;
+    color:var(--t-rose);
+  }
+  .fiche__fente{margin-bottom:var(--e4)}
+  .fiche__fente p + p{margin-top:.4em}
+  .fiche__note{color:var(--fg-dim);margin:0}
+
+  .demande__wa{margin-top:var(--e5)}
+  .demande__annexe{
+    margin-top:var(--e6);
+    padding-top:var(--e4);
+    border-top:1px solid var(--trait);
+    font-size:var(--t-petit);
+    max-width:var(--l-mesure);
+  }
+  .demande__annexe a{color:var(--t-bleu);text-decoration:underline}
+
+  /* --- 7 · les questions --- */
+  .qr{
+    display:grid;
+    gap:var(--e5);
+    grid-template-columns:1fr;
+    border-top:1px solid var(--trait);
+    padding-top:var(--e5);
+  }
+  @media (min-width:52em){
+    .qr{grid-template-columns:repeat(2,1fr);gap:var(--e5) var(--e7)}
+  }
+  .qr__q{font-size:1.0625rem;letter-spacing:.02em;margin-bottom:var(--e2);color:var(--t-ambre)}
+  .qr__a{font-size:var(--t-petit);color:var(--fg);margin:0;max-width:56ch}
+  .qr__suite{margin-top:var(--e6)}
+  .qr__suite a{
+    font-weight:700;
+    color:var(--t-bleu);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:.45em;
+  }
+
+  /* --- 8 · la sortie --- */
+  .sortie{align-items:center}
+  .sortie__mot{
+    margin:0;
+    font-family:var(--f-titre);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:var(--t-h3);
+    line-height:1.05;
+    flex:1 1 20rem;
+  }
+</style>

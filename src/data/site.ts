@@ -91,7 +91,7 @@ export const SITE = {
  *  L'agent qui livre la version anglaise bascule ce seul booléen. */
 export const LANGUES = {
   fr: { code: 'fr', etiquette: 'Français', abrege: 'FR', racine: '/', actif: true },
-  en: { code: 'en', etiquette: 'English', abrege: 'EN', racine: '/en/', actif: false }
+  en: { code: 'en', etiquette: 'English', abrege: 'EN', racine: '/en/', actif: true }
 } as const;
 
 export type CodeLangue = 'fr' | 'en';
@@ -427,6 +427,14 @@ export const PROTECTION = [
   'Jamais un nom complet à côté du visage d’un enfant.',
   'Ni adresse ni horaire d’entraînement publiés.',
   'Retrait sous 48 heures, sur simple demande, sans justification.'
+] as const;
+
+/** The same four commitments, for the /en/ pages. Same facts, same order. */
+export const PROTECTION_EN = [
+  'Written parental consent before any image.',
+  'Never a full name beside a child’s face.',
+  'No training address or schedule published.',
+  'Taken down within 48 hours on request, no reason required.'
 ] as const;
 
 /* -------------------------------------------------------------------------

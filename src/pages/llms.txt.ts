@@ -19,7 +19,7 @@ export const GET: APIRoute = () => {
   L();
   L(`> ${SITE.description}`);
   L();
-  L(`Dernière mise à jour éditoriale : ${EDITE_LE}. Langue principale : français ; anglais en préparation.`);
+  L(`Dernière mise à jour éditoriale : ${EDITE_LE}. Langue principale : français ; miroir anglais sous ${URL_SITE}/en/ (mêmes faits, mêmes pages).`);
   L();
   L('## Faits confirmés');
   L();

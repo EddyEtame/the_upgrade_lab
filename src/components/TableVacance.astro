@@ -1,59 +1,66 @@
 ---
 /**
- * TableVacance.astro — les huit secteurs, ouverts ou pris.
+ * TableVacance.astro — the eight sectors, open or taken. Bilingual.
  *
- * Le mécanisme commercial du site : un directeur RSE à qui l'on propose un
- * secteur qu'un concurrent peut prendre arbitre contre ses concurrents, pas
- * contre les autres demandes de dons. Le tableau ne ment jamais dans le sens
- * qui arrangerait — la donnée vit dans offre.ts, un seul champ à changer le
- * jour d'une signature.
+ * The site's commercial mechanism: a CSR director offered a sector a
+ * competitor could take decides against competitors, not against every other
+ * donation request. The table never lies in the convenient direction — the
+ * data lives in offre.ts, one field to change on the day of a signature.
  *
- * Un vrai <table> : un secteur, un statut, un argument, une réserve. Lisible
- * par un robot de réponse comme par un humain, et il s'imprime.
+ * A real <table>: readable by an answer engine and by a human, and it prints.
  */
 
 import { SECTEURS, VACANCE_A_JOUR_LE, VACANCE_A_JOUR_LE_FR, NB_OUVERTS, NB_SECTEURS, PALIER_EXCLUSIVITE } from '../data/offre';
+import { SECTEURS_EN } from '../data/en';
 
-export interface Props { compact?: boolean }
-const { compact = false } = Astro.props;
+export interface Props { compact?: boolean; lang?: 'fr' | 'en' }
+const { compact = false, lang = 'fr' } = Astro.props;
+const fr = lang === 'fr';
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const dateEN = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(VACANCE_A_JOUR_LE + 'T00:00:00Z'));
+const T = fr
+  ? { legende: `Vacance des ${NB_SECTEURS} secteurs de partenariat, vérifiée le ${VACANCE_A_JOUR_LE_FR}`, secteur: 'Secteur', statut: 'Statut', pourquoi: 'Pourquoi ce secteur', ouvert: 'Ouvert', pris: 'Pris', depuis: 'depuis', reserve: 'Réserve écrite au contrat.',
+      pied: `${NB_OUVERTS} secteurs sur ${NB_SECTEURS} ouverts au ${VACANCE_A_JOUR_LE_FR}. L’exclusivité de secteur est acquise à partir du palier ${cap(PALIER_EXCLUSIVITE)}. Un secteur passe à « pris » le jour d’une signature, jamais avant.` }
+  : { legende: `Availability of the ${NB_SECTEURS} partnership sectors, checked on ${dateEN}`, secteur: 'Sector', statut: 'Status', pourquoi: 'Why this sector', ouvert: 'Open', pris: 'Taken', depuis: 'since', reserve: 'Written into the contract.',
+      pied: `${NB_OUVERTS} of ${NB_SECTEURS} sectors open on ${dateEN}. Sector exclusivity applies from the ${cap(PALIER_EXCLUSIVITE)} tier. A sector switches to “taken” on the day a contract is signed, never before.` };
+const lignes = SECTEURS.map((s) => {
+  const en = SECTEURS_EN[s.cle];
+  return fr ? { ...s, nomAff: s.nom, ex: s.exemples, arg: s.argument, res: s.reserve } : { ...s, nomAff: s.nomEn, ex: en.examples, arg: en.argument, res: en.reserve };
+});
 ---
 
 <div class="vacance">
   <table class="tv">
-    <caption class="vh">Vacance des {NB_SECTEURS} secteurs de partenariat, vérifiée le {VACANCE_A_JOUR_LE_FR}</caption>
+    <caption class="vh">{T.legende}</caption>
     <thead>
       <tr>
-        <th scope="col">Secteur</th>
-        <th scope="col">Statut</th>
-        {!compact && <th scope="col">Pourquoi ce secteur</th>}
+        <th scope="col">{T.secteur}</th>
+        <th scope="col">{T.statut}</th>
+        {!compact && <th scope="col">{T.pourquoi}</th>}
       </tr>
     </thead>
     <tbody>
-      {SECTEURS.map((s) => (
+      {lignes.map((s) => (
         <tr class={`tv__ligne tv__ligne--${s.statut}`}>
           <th scope="row">
-            <span class="tv__nom">{s.nom}</span>
-            {!compact && <span class="tv__ex">{s.exemples}</span>}
+            <span class="tv__nom">{s.nomAff}</span>
+            {!compact && <span class="tv__ex">{s.ex}</span>}
           </th>
           <td class="tv__statut">
-            <span class="tv__pastille">{s.statut === 'ouvert' ? 'Ouvert' : 'Pris'}</span>
-            {s.statut === 'pris' && s.depuis && <span class="tv__depuis">depuis <time datetime={s.depuis}>{s.depuis}</time></span>}
+            <span class="tv__pastille">{s.statut === 'ouvert' ? T.ouvert : T.pris}</span>
+            {s.statut === 'pris' && s.depuis && <span class="tv__depuis">{T.depuis} <time datetime={s.depuis}>{s.depuis}</time></span>}
           </td>
           {!compact && (
             <td class="tv__arg">
-              <p>{s.argument}</p>
-              {s.reserve && <p class="tv__reserve"><b>Réserve écrite au contrat.</b> {s.reserve}</p>}
+              <p>{s.arg}</p>
+              {s.res && <p class="tv__reserve"><b>{T.reserve}</b> {s.res}</p>}
             </td>
           )}
         </tr>
       ))}
     </tbody>
   </table>
-  <p class="petit t-sourd tv__pied">
-    {NB_OUVERTS} secteurs sur {NB_SECTEURS} ouverts au <time datetime={VACANCE_A_JOUR_LE}>{VACANCE_A_JOUR_LE_FR}</time>.
-    L’exclusivité de secteur est acquise à partir du palier {PALIER_EXCLUSIVITE.charAt(0).toUpperCase() + PALIER_EXCLUSIVITE.slice(1)}.
-    Un secteur passe à « pris » le jour d’une signature, jamais avant.
-  </p>
+  <p class="petit t-sourd tv__pied">{T.pied}</p>
 </div>
 
 <style>

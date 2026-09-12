@@ -1,0 +1,93 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { NIVEAUX_EN, voisinsEN, PENDING_EN, type NiveauEN } from '../../../data/en';
+import AngleEntree from '../../../components/mecanismes/AngleEntree.astro';
+import SerieRebonds from '../../../components/mecanismes/SerieRebonds.astro';
+
+export function getStaticPaths() { return NIVEAUX_EN.map((n) => ({ params: { niveau: n.key }, props: { n } })); }
+const { n } = Astro.props as { n: NiveauEN };
+const { precedent, suivant } = voisinsEN(n.key);
+const fentes = n.fentes.map((k) => PENDING_EN[k]).filter(Boolean);
+---
+
+<Base titre={n.titre} description={n.description} lang="en" fil={[{ nom: 'The pathway', href: '/en/le-parcours/' }, { nom: n.label, href: n.href }]} faq={n.faq}>
+  <div class="niveau" style={`--fill:${n.fill};--sur:${n.surFill};--txt:${n.texteSurNoir}`}>
+    <section class="section ouverture"><div class="conteneur">
+      <p class="balise"><span class="chevs" aria-hidden="true">{Array.from({ length: n.chevrons }).map(() => <i class="chev"></i>)}</span>Level {n.rang} of 5</p>
+      <h1 class="ouverture__titre"><span class="obl">{n.label}</span></h1>
+      <p class="chapo mesure">{n.accroche}</p>
+      <div class="ouverture__corps prose">{n.ouverture.map((p) => <p>{p}</p>)}</div>
+      <p class="signal cut" style="--c:14px"><b>{n.signal.valeur}</b><span>{n.signal.libelle}</span></p>
+    </div></section>
+
+    <section class="section sur-bloc" aria-labelledby="t-s"><div class="conteneur">
+      <h2 id="t-s">{n.seance.titre}</h2><p class="mesure t-sourd">{n.seance.intro}</p>
+      <ol class="phases" role="list">{n.seance.phases.map((ph, i) => <li class="phase"><span class="phase__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><div><h3>{ph.titre}</h3><p>{ph.texte}</p></div></li>)}</ol>
+    </div></section>
+
+    <section class="section" aria-labelledby="t-a"><div class="conteneur">
+      <h2 id="t-a">{n.apprentissages.titre}</h2><p class="mesure t-sourd">{n.apprentissages.intro}</p>
+      <div class="grille" style="--min:16rem;--gap:var(--e4)">{n.apprentissages.liste.map((a) => <article class="carte" style="--c:12px"><h3 class="apprend__titre">{a.titre}</h3><p class="apprend__texte">{a.texte}</p></article>)}</div>
+    </div></section>
+
+    <section class="section sur-bloc" aria-labelledby="t-p"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem">
+      <div><h2 id="t-p">{n.passage.titre}</h2><p class="mesure">{n.passage.intro}</p><p class="petit t-sourd mesure">{n.passage.note}</p></div>
+      <ol class="criteres" role="list">{n.passage.criteres.map((c) => <li><span class="chev" aria-hidden="true"></span><span>{c}</span></li>)}</ol>
+    </div></div></section>
+
+    <section class="section serree" aria-labelledby="t-t"><div class="conteneur"><h2 id="t-t">The court, <span class="obl t-ambre">at this level</span></h2><p class="mesure">{n.terrain}</p></div></section>
+
+    {n.key === 'discover' && (
+      <section class="section serree sur-bloc" aria-labelledby="t-b"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem;align-items:center">
+        <div><h2 id="t-b">The ball, <span class="obl t-ambre">before the movement</span></h2><p class="mesure">A regulation ball obeys a written rule: dropped from 1.80 m, it must rebound to between 1.20 and 1.40 m. That is why a hip-height dribble always comes back to the same place — and it is the first thing the hand learns at Discover, before learning to look elsewhere.</p></div>
+        <SerieRebonds largeur="100%" />
+      </div></div></section>
+    )}
+    {n.key === 'develop' && (
+      <section class="section serree sur-bloc" aria-labelledby="t-g"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem;align-items:center">
+        <div><h2 id="t-g">Why we teach <span class="obl t-ambre">a high shot</span></h2><p class="mesure">The rim is 45 cm across, the ball 24.3 cm. Seen from above the opening is wide; seen flat, it closes. At Develop the shot moves back only when the arc holds — because a flat shot does not miss for lack of strength, it misses for lack of room.</p></div>
+        <AngleEntree largeur="100%" />
+      </div></div></section>
+    )}
+
+    {n.blocs.map((b) => (
+      <section class="section serree sur-bloc"><div class="conteneur">
+        <h2>{b.titre}</h2><div class="prose">{b.paragraphes.map((p) => <p>{p}</p>)}</div>
+        {b.portes && <div class="grille" style="--min:16rem;--gap:var(--e4);margin-top:var(--e5)">{b.portes.map((po) => <article class="carte-trait" style="--c:12px"><div class="dedans"><h3 class="porte__titre">{po.titre}</h3><p class="porte__texte">{po.texte}</p></div></article>)}</div>}
+      </div></section>
+    ))}
+
+    <section class="section" aria-label="For families and partners"><div class="conteneur">
+      <div class="grille-2" style="--gap:2.5rem">
+        <div><p class="etiquette t-rose">To families</p><h2>{n.parents.titre}</h2><div class="prose">{n.parents.paragraphes.map((p) => <p>{p}</p>)}</div></div>
+        <div><p class="etiquette t-ambre">To companies</p><h2>{n.partenaire.titre}</h2><div class="prose">{n.partenaire.paragraphes.map((p) => <p>{p}</p>)}</div><a class="bouton fantome" href="/en/sponsors/" style="margin-top:var(--e4)">Become a partner <span class="chev" aria-hidden="true"></span></a></div>
+      </div>
+      {fentes.length > 0 && <div class="grille" style="--min:16rem;--gap:1px;margin-top:var(--e6)">{fentes.map((f) => <p class="fente"><b>{f.label}</b><span>{f.source}</span></p>)}</div>}
+    </div></section>
+
+    <section class="section serree sur-bloc" aria-labelledby="t-f"><div class="conteneur etroit">
+      <h2 id="t-f">Questions about {n.label}</h2>
+      <dl class="faq">{n.faq.map((e) => <div class="faq__item"><dt>{e.q}</dt><dd>{e.a}</dd></div>)}</dl>
+    </div></section>
+
+    <nav class="section serree voisins" aria-label="Previous and next level"><div class="conteneur rangee entre">
+      {precedent ? <a href={precedent.href} class="voisin" style={`--txt:${precedent.texteSurNoir}`}><span class="etiquette">Level {precedent.rang}</span><b>{precedent.label}</b></a> : <a href="/en/le-parcours/" class="voisin"><span class="etiquette">Overview</span><b>The pathway</b></a>}
+      {suivant ? <a href={suivant.href} class="voisin voisin--suiv" style={`--txt:${suivant.texteSurNoir}`}><span class="etiquette">Level {suivant.rang}</span><b>{suivant.label} <i class="chev" aria-hidden="true"></i></b></a> : <a href="/en/rejoindre/" class="voisin voisin--suiv"><span class="etiquette">And then</span><b>Join the programme <i class="chev" aria-hidden="true"></i></b></a>}
+    </div></nav>
+  </div>
+</Base>
+
+<style>
+  .ouverture{border-top:10px solid var(--fill)}.ouverture .chev{width:.55em;height:.55em;color:var(--txt)}.ouverture__titre{color:var(--txt);font-size:var(--t-geant)}.ouverture__corps{margin-top:var(--e5)}
+  .signal{display:inline-grid;gap:.25em;margin:var(--e6) 0 0;padding:var(--e4) var(--e5);background:var(--fill);color:var(--sur);max-width:var(--l-mesure)}
+  .signal b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1}.signal span{font-size:var(--t-petit);line-height:1.45;font-weight:600}
+  .phases{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px}
+  .phase{display:grid;grid-template-columns:3.5rem 1fr;gap:var(--e4);background:var(--bg);padding:var(--e4)}.phase__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--txt)}
+  .phase h3{margin:0 0 .3em;font-size:var(--t-h4)}.phase p{margin:0;color:var(--fg-dim);line-height:1.5;font-size:var(--t-petit)}
+  .apprend__titre{margin:0 0 .4em;font-size:var(--t-h4);color:var(--txt)}.apprend__texte{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .criteres{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px;align-self:start}
+  .criteres li{display:flex;gap:.8em;align-items:flex-start;background:var(--bg);padding:var(--e4);font-weight:600;line-height:1.4}.criteres .chev{flex:none;width:.6em;height:.6em;margin-top:.35em;color:var(--txt)}
+  .porte__titre{margin:0 0 .4em;font-size:var(--t-h4);color:var(--t-ambre)}.porte__texte{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .faq{margin:var(--e5) 0 0;display:grid;gap:1px;background:var(--trait)}.faq__item{background:var(--bloc);padding:var(--e4) 0}.faq dt{font-weight:700;margin:0 0 .4em}.faq dd{margin:0;color:var(--fg-dim);line-height:1.55}
+  .voisin{display:grid;gap:.2em;text-decoration:none;color:var(--fg)}.voisin b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h3);line-height:1;color:var(--txt,var(--fg));display:inline-flex;gap:.3em;align-items:center}.voisin .chev{width:.5em;height:.5em}.voisin--suiv{text-align:right;justify-items:end}
+</style>

@@ -24,8 +24,8 @@
  */
 
 import {
-  SITE, NAV, PARCOURS, CONTACT, PROTECTION, attente,
-  EDITE_LE, EDITE_LE_FR, EDITE_LE_EN, ANNEE, langueDuChemin, type CodeLangue
+  SITE, NAV, PARCOURS, CONTACT, PROTECTION, PROTECTION_EN, attente,
+  EDITE_LE, EDITE_LE_FR, EDITE_LE_EN, ANNEE, langueDuChemin, cheminMiroir, type CodeLangue
 } from '../data/site';
 
 export interface Props {
@@ -34,6 +34,8 @@ export interface Props {
 
 const lang: CodeLangue = Astro.props.lang ?? langueDuChemin(Astro.url.pathname);
 const fr = lang === 'fr';
+/** Chaque lien du pied vit dans la langue de la page : /en/ ne renvoie jamais vers le français. */
+const lien = (href: string) => cheminMiroir(href, lang);
 
 const fenteEmail = attente('email');
 const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
@@ -51,7 +53,7 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
         <li>
           <a
             class="bande-parcours"
-            href={n.href}
+            href={lien(n.href)}
             style={`background:${n.fill};color:${n.surFill}`}
           >
             <span class="bande-parcours__rang">
@@ -75,11 +77,11 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
       <nav class="pied__plan" aria-label={fr ? 'Plan du site' : 'Site map'}>
         {NAV.map((l) => (
           <div class="pied__colonne">
-            <a class="pied__tete" href={l.href}>{fr ? l.libelle : l.en}</a>
+            <a class="pied__tete" href={lien(l.href)}>{fr ? l.libelle : l.en}</a>
             {l.enfants && (
               <ul class="pied__sous" role="list">
                 {l.enfants.map((e) => (
-                  <li><a href={e.href}>{fr ? e.libelle : e.en}</a></li>
+                  <li><a href={lien(e.href)}>{fr ? e.libelle : e.en}</a></li>
                 ))}
               </ul>
             )}
@@ -119,10 +121,10 @@ const dateLisible = fr ? EDITE_LE_FR : EDITE_LE_EN;
           {fr ? 'Protection des mineurs' : 'Safeguarding'}
         </h2>
         <ul class="liste-fleche pied__engagements" role="list">
-          {PROTECTION.map((e) => <li>{e}</li>)}
+          {(fr ? PROTECTION : PROTECTION_EN).map((e) => <li>{e}</li>)}
         </ul>
         <p class="pied__lien-fort">
-          <a href="/protection-des-mineurs/">
+          <a href={lien('/protection-des-mineurs/')}>
             {fr ? 'Lire les engagements en entier' : 'Read the full commitments'}
           </a>
         </p>

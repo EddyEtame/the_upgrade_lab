@@ -17,7 +17,7 @@ Type: youth basketball development programme (SportsOrganization)
 Locality: ${SITE.ville}, ${SITE.region} Region, ${SITE.paysEN}
 Status: programme launching
 Audience: girls and boys aged ${FAITS.ageMin} to ${FAITS.ageMax}, categories ${FAITS.categories.join(', ')}
-Languages: French (primary), English (in preparation)
+Languages: French (primary, at /), English (mirror at /en/, same facts)
 Last editorial update: ${EDITE_LE}
 Canonical summary: ${URL_SITE}/llms.txt
 

@@ -1,0 +1,74 @@
+---
+import Base from '../../../layouts/Base.astro';
+import TableVacance from '../../../components/TableVacance.astro';
+import { FAITS, PROTECTION_EN } from '../../../data/site';
+import { GRILLE_APPROUVEE, NB_OUVERTS, fcfa } from '../../../data/offre';
+import { OFFRE_EN, MENTION_GRILLE_EN, EXCLUSIONS_EN, ETAPES_EN } from '../../../data/en';
+
+const paliers = OFFRE_EN.filter((p) => !p.horsRang);
+const parrainage = OFFRE_EN.find((p) => p.cle === 'bourse')!;
+const faq = [
+  { q: 'How does a company become a sponsor of the programme?', a: 'By choosing one of the eight business sectors offered and a partnership tier, then signing a one-season agreement that lists the deliverables one by one. The availability table on this page says which sectors are still open.' },
+  { q: 'What does a company that sponsors an age category receive?', a: 'From the Silver tier, a company becomes the official sponsor of one age category, receives its own page on this site at its own address, and two written reports per season — the impact report it takes back to its board.' },
+  { q: 'How do you sponsor a single athlete for a season?', a: 'Athlete sponsorship covers a full season for one named young person: kit, training and competition entry. The sponsor receives two written progress reports during the year and an invitation to the end-of-season event.' },
+  { q: 'Are the amounts final?', a: GRILLE_APPROUVEE ? 'Yes: the grid has been approved in writing by the programme coordinator.' : 'The amounts shown are a working grid awaiting the coordinator’s written approval. The deliverables, on the other hand, are settled and will not move.' }
+];
+---
+
+<Base titre="Sponsors and partners" description="Youth sport sponsorship in Africa, done as a sector deal: eight business sectors in Douala with seasonal exclusivity, five partnership tiers with written deliverables, and the sponsorship of one athlete for a season." lang="en" fil={[{ nom: 'Sponsors', href: '/en/sponsors/' }]} faq={faq}>
+  <section class="section"><div class="conteneur">
+    <p class="balise"><span class="chev" aria-hidden="true"></span>To companies in Douala</p>
+    <h1><span class="obl">Eight sectors,</span><br />{NB_OUVERTS} still open</h1>
+    <p class="chapo mesure">Youth sport sponsorship in Africa usually asks for a donation. This asks for something else: a sector, exclusive for the season, that a competitor could take instead of you. It is the same money, and it is not the same decision.</p>
+    <p class="mesure">You fund a mechanism — a five-level pathway, published promotion criteria, two written reports a season — not a team. Sports sponsorship in Cameroon is defensible to a board when it can be measured; here, everything promised is deliverable by a launching structure, with no invented headcount and no image of a child.</p>
+  </div></section>
+
+  <section class="section sur-bloc" aria-labelledby="t-v"><div class="conteneur">
+    <h2 id="t-v">Availability, <span class="obl">sector by sector</span></h2>
+    <p class="mesure t-sourd">The table never lies in the convenient direction. No sector is declared taken to manufacture scarcity.</p>
+    <TableVacance lang="en" />
+  </div></section>
+
+  <section class="section" aria-labelledby="t-p"><div class="conteneur">
+    <h2 id="t-p">Four tiers, <span class="obl">and one sponsorship</span></h2>
+    {!GRILLE_APPROUVEE && <aside class="grille-note carte-trait" style="--c:14px" aria-label={MENTION_GRILLE_EN.etiquette}><div class="dedans"><p class="etiquette t-ambre">{MENTION_GRILLE_EN.etiquette}</p><p>{MENTION_GRILLE_EN.texte}</p><p class="petit t-sourd">{MENTION_GRILLE_EN.consequence}</p></div></aside>}
+    <ol class="paliers" role="list">{paliers.map((p) => (
+      <li class="palier cut" style={`--fill:${p.fill};--sur:${p.surFill};--c:16px`}>
+        <div class="palier__tete"><span class="chevs" aria-hidden="true">{Array.from({ length: p.chevrons }).map(() => <i class="chev"></i>)}</span><h3 class="palier__nom">{p.nom}</h3><p class="palier__montant"><b>{fcfa(p.montantFCFA)}</b><span>per year{p.exclusivite ? ' · sector exclusivity' : ''}</span></p></div>
+        <div class="palier__corps"><p class="palier__pour">{p.pour}</p><p class="palier__accroche">{p.accroche}</p><ul class="liste-fleche" role="list">{p.contreparties.map((c) => <li>{c}</li>)}</ul><a class="bouton fantome" href={p.href}>The tier in detail <span class="chev" aria-hidden="true"></span></a></div>
+      </li>))}</ol>
+    <article class="parrainage cut" style="--c:20px">
+      <div class="parrainage__tete"><p class="etiquette">Outside the tiers</p><h3 class="parrainage__nom">Sponsor an athlete</h3><p class="parrainage__montant"><b>{fcfa(parrainage.montantFCFA)}</b><span>per year</span></p></div>
+      <div class="parrainage__corps"><p class="parrainage__accroche">{parrainage.accroche}</p><p>{parrainage.pour}</p><ul class="liste-fleche" role="list">{parrainage.contreparties.map((c) => <li>{c}</li>)}</ul><a class="bouton primaire" href={parrainage.href}>Sponsor a young athlete <span class="chev" aria-hidden="true"></span></a></div>
+    </article>
+  </div></section>
+
+  <section class="section sur-bloc" aria-labelledby="t-e"><div class="conteneur">
+    <h2 id="t-e">How you commit, <span class="obl">in three steps</span></h2>
+    <ol class="etapes" role="list">{ETAPES_EN.map((e) => <li class="carte etape" style="--c:12px"><p class="etape__num" aria-hidden="true">{String(e.rang).padStart(2, '0')}</p><h3>{e.titre}</h3><p>{e.texte}</p></li>)}</ol>
+  </div></section>
+
+  <section class="section" aria-labelledby="t-x"><div class="conteneur"><div class="grille-2" style="--gap:2.5rem">
+    <div><h2 id="t-x">What cannot become a partner</h2><p class="mesure t-sourd">Clauses, not morality on display. The programme is for young people aged {FAITS.ageMin} to {FAITS.ageMax}, and these limits also protect the brand of the partner sitting next to it.</p><ul class="engagements" role="list">{PROTECTION_EN.map((e) => <li><span class="chev t-rose" aria-hidden="true"></span><span>{e}</span></li>)}</ul></div>
+    <dl class="exclusions">{EXCLUSIONS_EN.map((x) => <div class="exclusion"><dt>{x.titre}</dt><dd>{x.detail}</dd></div>)}</dl>
+  </div></div></section>
+</Base>
+
+<style>
+  .grille-note{margin:var(--e5) 0 var(--e6);max-width:var(--l-mesure)}.grille-note p{margin:0 0 .5em}.grille-note p:last-child{margin:0}
+  .paliers{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(17rem,1fr))}
+  .palier{display:grid;grid-template-rows:auto 1fr;background:var(--bloc)}.palier__tete{background:var(--fill);color:var(--sur);padding:var(--e5) var(--e5) var(--e4)}.palier__tete .chev{width:.55em;height:.55em;background:var(--sur)}
+  .palier__nom{margin:.4em 0 .3em;font-size:var(--t-h3);color:var(--sur);line-height:1}.palier__montant{margin:0;display:grid;gap:.1em}
+  .palier__montant b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;font-variant-numeric:tabular-nums}.palier__montant span{font-size:var(--t-micro);font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  .palier__corps{padding:var(--e5);display:grid;gap:var(--e3);align-content:start}.palier__pour{margin:0;font-size:var(--t-petit);color:var(--fg-dim);line-height:1.45}.palier__accroche{margin:0;font-weight:700;line-height:1.35}
+  .palier__corps .liste-fleche{margin:0;font-size:var(--t-petit)}.palier__corps .bouton{justify-self:start;margin-top:auto}
+  .parrainage{margin-top:var(--e6);display:grid;background:var(--bloc)}@media (min-width:52em){.parrainage{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}}
+  .parrainage__tete{background:var(--black);padding:var(--e6) var(--e5);border-top:8px solid var(--amber)}.parrainage__tete .etiquette{color:var(--t-ambre)}
+  .parrainage__nom{margin:.3em 0 .4em;font-size:var(--t-h2);color:var(--t-ambre);line-height:1}.parrainage__montant{margin:0;display:grid;gap:.1em}
+  .parrainage__montant b{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h1);line-height:1;font-variant-numeric:tabular-nums}.parrainage__montant span{font-size:var(--t-micro);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim)}
+  .parrainage__corps{padding:var(--e6) var(--e5);display:grid;gap:var(--e3);align-content:start}.parrainage__accroche{margin:0;font-weight:700;font-size:var(--t-h4);line-height:1.3}.parrainage__corps .liste-fleche{margin:0}.parrainage__corps .bouton{justify-self:start;margin-top:var(--e3)}
+  .etapes{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:var(--e4);grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+  .etape__num{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h2);line-height:1;color:var(--t-bleu);margin:0 0 .3em}.etape h3{margin:0 0 .4em;font-size:var(--t-h4)}.etape p{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+  .engagements{list-style:none;margin:var(--e4) 0 0;padding:0;display:grid;gap:.6em}.engagements li{display:flex;gap:.7em;align-items:flex-start;font-weight:600;line-height:1.4}.engagements .chev{flex:none;width:.55em;height:.55em;margin-top:.35em}
+  .exclusions{margin:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:12px;align-self:start}.exclusion{background:var(--bloc);padding:var(--e4)}.exclusion dt{font-weight:700;color:var(--t-rose);margin:0 0 .3em}.exclusion dd{margin:0;font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim)}
+</style>
