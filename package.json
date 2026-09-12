@@ -3,11 +3,15 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "audit": "node scripts/audit-build.mjs"
+    "audit": "node scripts/audit-build.mjs",
+    "verify": "astro build && node scripts/audit-build.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0"

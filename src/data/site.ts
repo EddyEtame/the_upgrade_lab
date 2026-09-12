@@ -82,7 +82,7 @@ export const SITE = {
   description:
     "Programme de développement de basket à Douala pour les 10-20 ans, filles et garçons : un parcours en cinq niveaux, de la découverte du ballon aux clubs supérieurs.",
   descriptionEN:
-    "Youth basketball development programme in Douala, Cameroon, for ages 10 to 20, girls and boys: a five-level pathway from first touch to higher clubs and academies."
+    "Youth basketball development programme in Douala, Cameroon, ages 10 to 20, girls and boys: a five-level pathway from first touch to higher clubs and academies."
 } as const;
 
 /** Le drapeau de langue. L'anglais existe dans la stratégie (décision D2) mais
