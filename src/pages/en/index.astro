@@ -4,9 +4,10 @@
  * Intent in visible prose: "basketball club Douala".
  */
 import Base from '../../layouts/Base.astro';
+import HeroAccueil from '../../components/HeroAccueil.astro';
 import { SITE, FAITS, PARCOURS, TERRAIN_3X3, PROTECTION_EN } from '../../data/site';
-import { NB_OUVERTS, SECTEURS, VACANCE_A_JOUR_LE } from '../../data/offre';
-import { EN, PROMESSES_EN } from '../../data/en';
+import { NB_OUVERTS, SECTEURS, VACANCE_A_JOUR_LE, GRILLE_APPROUVEE, fcfa } from '../../data/offre';
+import { EN, PROMESSES_EN, OFFRE_EN, MENTION_GRILLE_EN } from '../../data/en';
 
 const dateEN = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(VACANCE_A_JOUR_LE + 'T00:00:00Z'));
 const faits = [
@@ -24,48 +25,42 @@ const faq = [
 
 <Base titre="The Upgrade Lab — youth basketball in Douala" titreBrut description={SITE.descriptionEN} lang="en" faq={faq}>
 
-  <section class="hero sur-noir" aria-labelledby="t-hero">
-    <div class="conteneur">
-      <div class="hero__grille">
-        <div class="hero__mot">
-          <p class="etiquette hero__lieu"><span class="chev" aria-hidden="true"></span>Douala · Littoral · Cameroon</p>
-          <h1 id="t-hero" class="hero__titre">
-            <span class="hero__ligne"><span class="obl">Fifteen metres</span></span>
-            <span class="hero__ligne"><span class="obl">by eleven,</span></span>
-            <span class="hero__ligne"><span class="obl">one basket:</span></span>
-            <span class="hero__ligne hero__ligne--accent"><span class="obl">an Olympic discipline.</span></span>
-          </h1>
-          <p class="chapo hero__chapo">The Upgrade Lab trains the girls and boys of Douala, aged {FAITS.ageMin} to {FAITS.ageMax}, on the surface they already have under their feet — and that surface is a regulation court.</p>
-          <p class="hero__texte">Whether you are looking for a basketball club in Douala for your child, or a serious programme to back: the road is written in five levels, from the first touch of the ball to the door of a higher club.</p>
-          <div class="hero__actions">
-            <a class="bouton primaire" href="/en/rejoindre/"><span>Join the programme</span><span class="chev" aria-hidden="true"></span></a>
-            <a class="bouton fantome" href="/en/le-parcours/"><span>See the five levels</span><span class="chev" aria-hidden="true"></span></a>
-          </div>
-          <p class="petit hero__entreprise">Representing a company? <a href="/en/sponsors/">What a partner funds, tier by tier</a>.</p>
-        </div>
+  <HeroAccueil lang="en" />
 
-        <figure class="plaque">
-          <div class="plaque__cadre cut">
-            <svg class="terrain" viewBox="-8 -12 206 156" role="img" aria-labelledby="terrain-t terrain-d">
-              <title id="terrain-t">Plan of a FIBA 3x3 court, drawn to scale</title>
-              <desc id="terrain-d">A 15 by 11 metre rectangle, a single basket on the baseline, the regulation key and free-throw line, and the 6.75 metre arc used as the two-point line.</desc>
-              <rect class="ligne ligne--fort" x="0" y="0" width="150" height="110" />
-              <rect class="ligne" x="0" y="30.5" width="58" height="49" />
-              <path class="ligne" d="M58 37 A18 18 0 0 1 58 73" />
-              <path class="ligne ligne--fort" d="M54.9 0 A67.5 67.5 0 0 1 54.9 110" />
-              <path class="ligne ligne--fin" d="M15.75 42.5 A12.5 12.5 0 0 1 15.75 67.5" />
-              <path class="panneau" d="M12 46 V64" />
-              <circle class="anneau" cx="15.75" cy="55" r="2.3" />
-              <g class="cote"><path d="M0 124 H150 M0 120 V128 M150 120 V128" /><path d="M162 0 V110 M158 0 H166 M158 110 H166" /><path d="M15.75 55 H83.25 M83.25 51 V59" /></g>
-              <text x="75" y="138" text-anchor="middle">15 m</text>
-              <text x="170" y="55" dominant-baseline="middle">11 m</text>
-              <text x="49.5" y="49" text-anchor="middle">6.75 m</text>
-            </svg>
-          </div>
-          <figcaption class="plaque__legende"><span class="t-ambre plaque__gras">Regulation FIBA 3x3 court.</span> {TERRAIN_3X3.longueurM} by {TERRAIN_3X3.largeurM} m, one basket, arc at {TERRAIN_3X3.arcM} m. Olympic discipline since {TERRAIN_3X3.premiereOlympiade}.</figcaption>
-        </figure>
+  <section class="section sur-bloc" aria-labelledby="t-vac">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>To companies</p>
+      <h2 id="t-vac">{NB_OUVERTS === SECTEURS.length ? <><span class="obl">Every sector</span> is still up for grabs</> : <><span class="obl">{NB_OUVERTS} of {SECTEURS.length} sectors</span> still up for grabs</>}</h2>
+      <p class="chapo mesure">A sector partnership is exclusive for the season. The table says what is free, and it never lies in the convenient direction: no sector is declared taken to manufacture scarcity.</p>
+      <ul class="secteurs" role="list">{SECTEURS.map((s) => <li class={`secteur secteur--${s.statut}`}><span class="secteur__nom">{s.nomEn}</span><span class="secteur__etat">{s.statut === 'ouvert' ? 'open' : 'taken'}</span></li>)}</ul>
+      <div class="rangee entre bout" style="--gap:1.25rem">
+        <p class="petit t-sourd">Availability checked on <time datetime={VACANCE_A_JOUR_LE}>{dateEN}</time>. A sector switches to “taken” on the day of a signature, never before.</p>
+        <a class="bouton primaire" href="/en/sponsors/">Tiers and deliverables <span class="chev" aria-hidden="true"></span></a>
       </div>
-      <ul class="faits" role="list">{faits.map((f) => <li><b>{f.valeur}</b><span>{f.note}</span></li>)}</ul>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       LES PALIERS. What a company receives, five cards, before anything else.
+       ================================================================= -->
+  <section class="section" aria-labelledby="t-paliers">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>What you receive</p>
+      <h2 id="t-paliers"><span class="obl">Four tiers,</span> and the sponsorship of one athlete</h2>
+      {!GRILLE_APPROUVEE && <p class="mesure t-sourd paliers-accueil__note"><b class="t-ambre">{MENTION_GRILLE_EN.etiquette}.</b> {MENTION_GRILLE_EN.texte}</p>}
+      <ol class="paliers-accueil" role="list">
+        {OFFRE_EN.map((o) => (
+          <li style={`--f:${o.fill};--s:${o.surFill}`}>
+            <a href={o.href}>
+              <span class="chevs" aria-hidden="true">{Array.from({ length: o.chevrons }).map(() => <i class="chev"></i>)}</span>
+              <b>{o.nom}</b>
+              <span class="paliers-accueil__montant">{fcfa(o.montantFCFA)}<small> / year</small></span>
+              <span class="paliers-accueil__pour">{o.pour}</span>
+              <span class="paliers-accueil__lien">The tier in detail <span class="chev" aria-hidden="true"></span></span>
+            </a>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
@@ -125,19 +120,6 @@ const faq = [
     </div>
   </section>
 
-  <section class="section sur-bloc" aria-labelledby="t-vac">
-    <div class="conteneur">
-      <p class="balise"><span class="chev" aria-hidden="true"></span>To companies</p>
-      <h2 id="t-vac"><span class="obl">Eight sectors,</span> {NB_OUVERTS} still open</h2>
-      <p class="chapo mesure">A sector partnership is exclusive for the season. The table says what is free, and it never lies in the convenient direction: no sector is declared taken to manufacture scarcity.</p>
-      <ul class="secteurs" role="list">{SECTEURS.map((s) => <li class={`secteur secteur--${s.statut}`}><span class="secteur__nom">{s.nomEn}</span><span class="secteur__etat">{s.statut === 'ouvert' ? 'open' : 'taken'}</span></li>)}</ul>
-      <div class="rangee entre bout" style="--gap:1.25rem">
-        <p class="petit t-sourd">Availability checked on <time datetime={VACANCE_A_JOUR_LE}>{dateEN}</time>. A sector switches to “taken” on the day of a signature, never before.</p>
-        <a class="bouton primaire" href="/en/sponsors/">Tiers and deliverables <span class="chev" aria-hidden="true"></span></a>
-      </div>
-    </div>
-  </section>
-
   <section class="section" aria-labelledby="t-porte">
     <div class="conteneur etroit">
       <h2 id="t-porte" class="porte__titre"><span class="obl">It all starts</span> with a trial session</h2>
@@ -151,30 +133,7 @@ const faq = [
 </Base>
 
 <style>
-  .hero{position:relative;overflow:hidden;padding-block:clamp(2.5rem,1.4rem+4.4vw,5rem) var(--e9);border-bottom:1px solid var(--trait)}
-  .hero::before{content:'';position:absolute;inset:auto -20% -14rem 40%;height:28rem;background:linear-gradient(to right,color-mix(in srgb,var(--blue) 14%,transparent),transparent 70%);transform:skewX(calc(-1 * var(--oblique)));pointer-events:none}
-  .hero__grille{position:relative;display:grid;gap:var(--e7);align-items:center}
-  @media (min-width:62em){.hero__grille{grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:var(--e8)}}
-  .hero__lieu{display:flex;align-items:center;gap:.6em;margin:0 0 var(--e4)}
-  .hero__lieu .chev{width:.62em;height:.62em;color:var(--t-bleu)}
-  .hero__titre{font-size:clamp(2.5rem,1.15rem + 5.4vw,5rem);line-height:.93;margin:0 0 var(--e5);text-wrap:balance}
-  .hero__ligne{display:block}.hero__ligne--accent{color:var(--t-ambre)}
-  .hero__chapo{margin:0 0 var(--e4);max-width:36ch}.hero__texte{max-width:52ch;color:var(--fg-dim);margin:0}
-  .hero__actions{display:flex;flex-wrap:wrap;gap:var(--e4);margin-top:var(--e6)}
-  .hero__entreprise{margin:var(--e4) 0 0;color:var(--fg-dim)}.hero__entreprise a{color:var(--t-bleu);text-decoration:underline}
-  .plaque{margin:0}.plaque__cadre{--c:24px;background:var(--bloc);padding:clamp(1rem,.4rem + 2.2vw,2.25rem)}
-  .terrain{display:block;width:100%;height:auto}
-  .terrain :global(.ligne){fill:none;stroke:var(--amber);stroke-width:1.3;stroke-linejoin:miter}
-  .terrain :global(.ligne--fort){stroke-width:2.4}.terrain :global(.ligne--fin){stroke-width:1;opacity:.62}
-  .terrain :global(.panneau){fill:none;stroke:var(--steel);stroke-width:3}.terrain :global(.anneau){fill:none;stroke:var(--ball);stroke-width:2.2}
-  .terrain :global(.cote){fill:none;stroke:var(--fg-dim);stroke-width:.9}
-  .terrain text{font-family:var(--f-corps);font-weight:700;font-size:9px;letter-spacing:.05em;fill:var(--t-ambre)}
-  .plaque__legende{margin-top:var(--e4);font-size:var(--t-petit);line-height:1.5;color:var(--fg-dim);max-width:46ch}.plaque__gras{font-weight:700}
-  .faits{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--trait);list-style:none;margin:var(--e8) 0 0;padding:0;clip-path:var(--chanfrein);--c:12px}
   @media (min-width:52em){.faits{grid-template-columns:repeat(4,1fr)}}
-  .faits li{background:var(--bg);padding:var(--e4)}
-  .faits b{display:block;font-family:var(--f-titre);font-weight:900;text-transform:uppercase;font-size:var(--t-h4);line-height:1;color:var(--fg)}
-  .faits span{display:block;margin-top:.45em;font-size:var(--t-petit);line-height:1.45;color:var(--fg-dim)}
   @media (max-width:47.99em){.hero::before{display:none}.hero__titre{font-size:clamp(2.25rem,1.3rem + 4.6vw,3.25rem)}}
 
   .niveaux{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);clip-path:var(--chanfrein);--c:14px}
@@ -196,4 +155,22 @@ const faq = [
   .secteur__etat{font-size:var(--t-micro);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
   .secteur--ouvert .secteur__etat{color:var(--t-ambre)}.secteur--pris .secteur__etat{color:var(--fg-dim)}.secteur--pris .secteur__nom{color:var(--fg-dim);text-decoration:line-through}
   .porte__titre{text-wrap:balance}
+  .paliers-accueil__note{margin:var(--e4) 0 0}
+  .paliers-accueil{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));clip-path:var(--chanfrein);--c:14px}
+  .paliers-accueil li{background:var(--bg);border-top:8px solid var(--f)}
+  .paliers-accueil a{display:grid;gap:.5em;height:100%;padding:var(--e5) var(--e4);text-decoration:none;color:var(--fg);align-content:start;transition:background-color .3s var(--ease)}
+  .paliers-accueil a:hover{background:var(--bloc)}
+  .paliers-accueil .chevs .chev{width:.5em;height:.5em;background:var(--fg-dim)}
+  .paliers-accueil b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;line-height:1;font-size:var(--t-h4)}
+  .paliers-accueil__montant{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h3);line-height:1;font-variant-numeric:tabular-nums}
+  .paliers-accueil__montant small{font-family:var(--f-corps);font-weight:700;font-size:var(--t-micro);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim)}
+  .paliers-accueil__pour{font-size:var(--t-petit);color:var(--fg-dim);line-height:1.45}
+  .paliers-accueil__lien{margin-top:auto;padding-top:var(--e3);font-weight:700;color:var(--t-bleu);display:inline-flex;align-items:center;gap:.4em}
+  /* Téléphone : le nom au-dessus, le statut dessous — aucun mot coupé en deux. */
+  @media (max-width:39.99em){
+    .secteurs{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .secteur{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:.45em}
+    .secteur__nom{font-size:clamp(1rem,.8rem + 1.2vw,1.25rem)}
+  }
+  .secteur{min-width:0}
 </style>

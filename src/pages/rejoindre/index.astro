@@ -320,18 +320,18 @@ const faq = [
 
             <g class="plan__lignes">
               <!-- limites du terrain : 11 m x 15 m, 100 unités par mètre -->
-              <rect x="0" y="0" width="1100" height="1500" />
+              <rect pathLength="1" x="0" y="0" width="1100" height="1500" />
               <!-- la raquette : 4,90 m de large, 5,80 m depuis la ligne de fond -->
-              <rect x="305" y="0" width="490" height="580" />
+              <rect pathLength="1" x="305" y="0" width="490" height="580" />
               <!-- le cercle de lancer franc, rayon 1,80 m -->
-              <circle cx="550" cy="580" r="180" />
+              <circle pathLength="1" cx="550" cy="580" r="180" />
               <!-- l'arc à deux points : 6,75 m depuis le centre du cercle,
                    raccordé par deux droites à 0,90 m des lignes de touche -->
-              <path d="M 90 0 L 90 651.5 A 675 675 0 0 0 1010 651.5 L 1010 0" />
+              <path pathLength="1" d="M 90 0 L 90 651.5 A 675 675 0 0 0 1010 651.5 L 1010 0" />
               <!-- la zone de non-charge, rayon 1,25 m -->
-              <path d="M 425 157.5 A 125 125 0 0 0 675 157.5" />
+              <path pathLength="1" d="M 425 157.5 A 125 125 0 0 0 675 157.5" />
               <!-- le panneau, 1,80 m, à 1,20 m de la ligne de fond -->
-              <line x1="460" y1="120" x2="640" y2="120" />
+              <line pathLength="1" x1="460" y1="120" x2="640" y2="120" />
             </g>
 
             <circle class="plan__cercle" cx="550" cy="157.5" r="45" />
@@ -764,6 +764,17 @@ const faq = [
     letter-spacing:.04em;
   }
   .terrain__plan figcaption{margin-top:var(--e3);text-align:center}
+  @media (prefers-reduced-motion:no-preference){
+    @keyframes trace-plan{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+    html.js .plan__lignes *{stroke-dasharray:1;stroke-dashoffset:1}
+    html.js .terrain__plan.is-visible .plan__lignes *{animation:trace-plan 1.6s var(--ease) forwards}
+    html.js .terrain__plan.is-visible .plan__lignes *:nth-child(2){animation-delay:.25s}
+    html.js .terrain__plan.is-visible .plan__lignes *:nth-child(3){animation-delay:.4s}
+    html.js .terrain__plan.is-visible .plan__lignes *:nth-child(4){animation-delay:.15s}
+    html.js .terrain__plan.is-visible .plan__lignes *:nth-child(5){animation-delay:.55s}
+    html.js .terrain__plan.is-visible .plan__lignes *:nth-child(6){animation-delay:.7s}
+    html.js.reveal-failsafe .plan__lignes *{stroke-dashoffset:0}
+  }
 
   /* --- 4 · apporter --- */
   .liste-fleche--rose li::before{background:var(--t-rose)}

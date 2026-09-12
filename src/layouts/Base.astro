@@ -71,7 +71,7 @@ const surface = fond === 'papier' ? 'sur-papier' : 'sur-noir';
 ---
 
 <!doctype html>
-<html lang={lang === 'fr' ? 'fr-CM' : 'en-CM'}>
+<html lang={lang === 'fr' ? 'fr-CM' : 'en-CM'} class="no-js">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -80,6 +80,9 @@ const surface = fond === 'papier' ? 'sur-papier' : 'sur-noir';
       63,7 % de la toile du logo. La barre du navigateur la prolonge. */}
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="dark light" />
+  {/* Le mouvement n'existe que si le script tourne ; sinon tout est là. Si
+      l'observateur n'a pas répondu en 1,5 s, un garde-fou montre tout. */}
+  <script is:inline>document.documentElement.classList.replace('no-js','js');window.__garde=setTimeout(function(){document.documentElement.classList.add('reveal-failsafe')},1500);</script>
 
   {/* Les polices. Big Shoulders Display pour le titrage — terminaisons coupées
       à plat, ossature athlétique condensée, la correspondance la plus proche du
@@ -120,5 +123,45 @@ const surface = fond === 'papier' ? 'sur-papier' : 'sur-noir';
   </main>
 
   <Pied lang={lang} />
+
+  {/* Vingt lignes, en ligne, zéro requête : révélation des blocs à l'entrée
+      dans la fenêtre, en-tête qui se retire quand on lit et revient dès qu'on
+      remonte, barre de progression de lecture. */}
+  <script is:inline>
+  (function(){
+    var d=document,r=d.documentElement;
+    var sel='.section > .conteneur > *, .grille > *, .grille-2 > *, .grille-3 > *, .faits > li, ol[role="list"] > li, ul[role="list"] > li, .tv tbody tr, .terrain__plan';
+    var els=[].slice.call(d.querySelectorAll(sel)).filter(function(e){return !e.closest('.hero') && !e.closest('.entete') && !e.closest('.pied')});
+    els.forEach(function(e){var i=0,n=e;while((n=n.previousElementSibling)&&i<7)i++;e.classList.add('reveal');e.style.setProperty('--i',i)});
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('is-visible');io.unobserve(x.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:.08});
+      els.forEach(function(e){io.observe(e)});
+    }else{els.forEach(function(e){e.classList.add('is-visible')})}
+    clearTimeout(window.__garde);
+    var h=d.querySelector('.entete');if(!h)return;
+    var last=window.scrollY;
+    function maj(){
+      var y=window.scrollY,max=r.scrollHeight-window.innerHeight;
+      h.classList.toggle('entete--defile',y>8);
+      if(y>last+6&&y>h.offsetHeight*1.5)h.classList.add('entete--cachee');
+      else if(y<last-6||y<=8)h.classList.remove('entete--cachee');
+      h.style.setProperty('--p',max>0?Math.min(1,y/max).toFixed(4):'0');
+      last=y;
+    }
+    var reste=els.slice();
+    function filet(){var H=window.innerHeight;reste=reste.filter(function(e){if(e.classList.contains('is-visible'))return false;if(e.getBoundingClientRect().top<H*.94){e.classList.add('is-visible');return false}return true})}
+    window.addEventListener('scroll',function(){maj();filet()},{passive:true});
+    filet();
+    maj();
+    /* Les compteurs : le chiffre est dans le HTML, le script le fait monter. */
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      [].forEach.call(d.querySelectorAll('[data-compte]'),function(e){
+        var n=+e.getAttribute('data-compte'),t0=null,dl=+(e.getAttribute('data-delai')||0);e.textContent='0';
+        setTimeout(function(){requestAnimationFrame(function f(t){if(t0===null)t0=t;var k=Math.min(1,(t-t0)/1100),v=1-Math.pow(1-k,4);e.textContent=String(Math.round(n*v));if(k<1)requestAnimationFrame(f)})},dl);
+        setTimeout(function(){e.textContent=String(n)},dl+1600);
+      });
+    }
+  })();
+  </script>
 </body>
 </html>

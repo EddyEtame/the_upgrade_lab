@@ -50,6 +50,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
 ---
 
 <header class="entete sur-noir">
+  <span class="entete__progression" aria-hidden="true"></span>
   <div class="conteneur entete__rang">
 
     <a class="marque" href={racineAccueil} aria-label={`${SITE.nom} — ${lang === 'fr' ? 'accueil' : 'home'}`}>
@@ -89,7 +90,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
       )}
       {action && (
         <a class="bouton primaire entete__action" href={lien(action.href)}>
-          <span>{lang === 'fr' ? action.libelle : action.en}</span>
+          <span>{lang === 'fr' ? (action.appel ?? action.libelle) : (action.appelEn ?? action.en)}</span>
           <span class="chev" aria-hidden="true"></span>
         </a>
       )}
@@ -102,7 +103,7 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
   .entete{
     border-bottom:1px solid var(--trait);
     padding-block:var(--e3);
-    position:relative;
+    position:sticky;top:0;transition:transform .45s var(--ease),box-shadow .45s var(--ease);
     z-index:10;
   }
   .entete__rang{
@@ -218,11 +219,11 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
     /* Sur téléphone la nav ne s'empile plus sur trois lignes : un seul rail,
        qui défile au pouce, avec des cibles de 44 px. Un voile à droite dit
        qu'il y a une suite. Zéro script — c'est du défilement natif. */
-    .nav{flex:1 0 100%;order:3;position:relative;
+    .nav{flex:1 0 100%;order:3;position:relative;min-width:0;max-width:calc(100% + 2 * var(--marge,1rem));
       margin-inline:calc(-1 * var(--marge,1rem));padding-inline:var(--marge,1rem)}
     .nav::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2.5rem;
       background:linear-gradient(to right,transparent,var(--bg));pointer-events:none}
-    .nav__liste{flex-wrap:nowrap;gap:0 .25rem;overflow-x:auto;overscroll-behavior-x:contain;
+    .nav__liste{min-width:0;flex-wrap:nowrap;gap:0 .25rem;overflow-x:auto;overscroll-behavior-x:contain;
       scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;
       padding-right:2.5rem}
     .nav__liste::-webkit-scrollbar{display:none}
@@ -236,4 +237,11 @@ const racineAccueil = lang === 'fr' ? '/' : '/en/';
   @media (max-width:22.5em){
     .marque__lieu{display:none}
   }
+  /* Le chrome se retire quand on lit, revient dès qu'on remonte. Le clavier le rappelle toujours. */
+  .entete--cachee{transform:translateY(-100%)}
+  .entete:focus-within{transform:none}
+  .entete--defile{box-shadow:0 1px 0 var(--trait),0 12px 30px -18px rgba(0,0,0,.8)}
+  .entete__progression{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:var(--amber);
+    transform:scaleX(var(--p,0));transform-origin:0 50%;pointer-events:none}
+  @media (prefers-reduced-motion:reduce){.entete{transition:none}}
 </style>

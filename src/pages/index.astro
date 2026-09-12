@@ -19,7 +19,7 @@
 import Base from '../layouts/Base.astro';
 import HeroAccueil from '../components/HeroAccueil.astro';
 import { SITE, FAITS, PARCOURS, TERRAIN_3X3, PROTECTION } from '../data/site';
-import { NB_OUVERTS, NB_SECTEURS_LETTRES, SECTEURS, VACANCE_A_JOUR_LE, VACANCE_A_JOUR_LE_FR } from '../data/offre';
+import { NB_OUVERTS, NB_SECTEURS_LETTRES, SECTEURS, VACANCE_A_JOUR_LE, VACANCE_A_JOUR_LE_FR, OFFRE, GRILLE_APPROUVEE, MENTION_GRILLE, fcfa } from '../data/offre';
 
 const faq = [
   {
@@ -45,6 +45,65 @@ const faq = [
   faq={faq}
 >
   <HeroAccueil />
+
+  <!-- ====================================================================
+       4 · LA VACANCE. À une entreprise, on ne demande pas un don : on lui
+           propose un secteur qu’un concurrent peut prendre.
+       ================================================================= -->
+  <section class="section sur-bloc" aria-labelledby="t-vacance">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Aux entreprises</p>
+      <h2 id="t-vacance">{NB_OUVERTS === SECTEURS.length ? <><span class="obl">Chaque secteur</span> est encore à prendre</> : <><span class="obl">{NB_OUVERTS} secteurs sur {SECTEURS.length}</span> encore à prendre</>}</h2>
+      <p class="chapo mesure">
+        Un partenariat de secteur est exclusif pour la saison. Le tableau dit ce
+        qui est libre, et il ne ment jamais dans le sens qui arrangerait :
+        aucun secteur n’est déclaré pris pour fabriquer de la rareté.
+      </p>
+
+      <ul class="secteurs" role="list">
+        {SECTEURS.map((s) => (
+          <li class={`secteur secteur--${s.statut}`}>
+            <span class="secteur__nom">{s.court}</span>
+            <span class="secteur__etat">{s.statut === 'ouvert' ? 'ouvert' : 'pris'}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="rangee entre bout" style="--gap:1.25rem">
+        <p class="petit t-sourd">
+          Vacance vérifiée le <time datetime={VACANCE_A_JOUR_LE}>{VACANCE_A_JOUR_LE_FR}</time>.
+          Un secteur passe à « pris » le jour d’une signature, jamais avant.
+        </p>
+        <a class="bouton primaire" href="/sponsors/">
+          Les paliers et les contreparties <span class="chev" aria-hidden="true"></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       LES PALIERS. Ce qu'une entreprise reçoit, en cinq cartes, avant tout le reste.
+       ================================================================= -->
+  <section class="section" aria-labelledby="t-paliers">
+    <div class="conteneur">
+      <p class="balise"><span class="chev" aria-hidden="true"></span>Ce que vous recevez</p>
+      <h2 id="t-paliers"><span class="obl">Quatre paliers,</span> et le parrainage d’un athlète</h2>
+      {!GRILLE_APPROUVEE && <p class="mesure t-sourd paliers-accueil__note"><b class="t-ambre">{MENTION_GRILLE.etiquette}.</b> {MENTION_GRILLE.texte}</p>}
+      <ol class="paliers-accueil" role="list">
+        {OFFRE.map((o) => (
+          <li style={`--f:${o.fill};--s:${o.surFill}`}>
+            <a href={o.href}>
+              <span class="chevs" aria-hidden="true">{Array.from({ length: o.chevrons }).map(() => <i class="chev"></i>)}</span>
+              <b>{o.nom}</b>
+              <span class="paliers-accueil__montant">{fcfa(o.montantFCFA)}<small> / an</small></span>
+              <span class="paliers-accueil__pour">{o.pour}</span>
+              <span class="paliers-accueil__lien">Le palier en détail <span class="chev" aria-hidden="true"></span></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
 
   <!-- ====================================================================
        1 · LE PARCOURS. Cinq niveaux, cinq aplats, et l'on voit où l'on en est.
@@ -155,41 +214,6 @@ const faq = [
   </section>
 
   <!-- ====================================================================
-       4 · LA VACANCE. À une entreprise, on ne demande pas un don : on lui
-           propose un secteur qu’un concurrent peut prendre.
-       ================================================================= -->
-  <section class="section sur-bloc" aria-labelledby="t-vacance">
-    <div class="conteneur">
-      <p class="balise"><span class="chev" aria-hidden="true"></span>Aux entreprises</p>
-      <h2 id="t-vacance"><span class="obl">{NB_SECTEURS_LETTRES.charAt(0).toUpperCase() + NB_SECTEURS_LETTRES.slice(1)} secteurs,</span> {NB_OUVERTS} encore ouverts</h2>
-      <p class="chapo mesure">
-        Un partenariat de secteur est exclusif pour la saison. Le tableau dit ce
-        qui est libre, et il ne ment jamais dans le sens qui arrangerait :
-        aucun secteur n’est déclaré pris pour fabriquer de la rareté.
-      </p>
-
-      <ul class="secteurs" role="list">
-        {SECTEURS.map((s) => (
-          <li class={`secteur secteur--${s.statut}`}>
-            <span class="secteur__nom">{s.court}</span>
-            <span class="secteur__etat">{s.statut === 'ouvert' ? 'ouvert' : 'pris'}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div class="rangee entre bout" style="--gap:1.25rem">
-        <p class="petit t-sourd">
-          Vacance vérifiée le <time datetime={VACANCE_A_JOUR_LE}>{VACANCE_A_JOUR_LE_FR}</time>.
-          Un secteur passe à « pris » le jour d’une signature, jamais avant.
-        </p>
-        <a class="bouton primaire" href="/sponsors/">
-          Les paliers et les contreparties <span class="chev" aria-hidden="true"></span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====================================================================
        5 · LA PORTE. Une seule action, en fin de page, jamais une sortie.
        ================================================================= -->
   <section class="section" aria-labelledby="t-porte">
@@ -258,4 +282,22 @@ const faq = [
   .secteur--pris .secteur__nom{color:var(--fg-dim);text-decoration:line-through}
 
   .porte__titre{text-wrap:balance}
+  .paliers-accueil__note{margin:var(--e4) 0 0}
+  .paliers-accueil{list-style:none;margin:var(--e6) 0 0;padding:0;display:grid;gap:1px;background:var(--trait);grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));clip-path:var(--chanfrein);--c:14px}
+  .paliers-accueil li{background:var(--bg);border-top:8px solid var(--f)}
+  .paliers-accueil a{display:grid;gap:.5em;height:100%;padding:var(--e5) var(--e4);text-decoration:none;color:var(--fg);align-content:start;transition:background-color .3s var(--ease)}
+  .paliers-accueil a:hover{background:var(--bloc)}
+  .paliers-accueil .chevs .chev{width:.5em;height:.5em;background:var(--fg-dim)}
+  .paliers-accueil b{font-family:var(--f-titre);font-weight:900;text-transform:uppercase;line-height:1;font-size:var(--t-h4)}
+  .paliers-accueil__montant{font-family:var(--f-titre);font-weight:900;font-size:var(--t-h3);line-height:1;font-variant-numeric:tabular-nums}
+  .paliers-accueil__montant small{font-family:var(--f-corps);font-weight:700;font-size:var(--t-micro);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim)}
+  .paliers-accueil__pour{font-size:var(--t-petit);color:var(--fg-dim);line-height:1.45}
+  .paliers-accueil__lien{margin-top:auto;padding-top:var(--e3);font-weight:700;color:var(--t-bleu);display:inline-flex;align-items:center;gap:.4em}
+  /* Téléphone : le nom au-dessus, le statut dessous — aucun mot coupé en deux. */
+  @media (max-width:39.99em){
+    .secteurs{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .secteur{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:.45em}
+    .secteur__nom{font-size:clamp(1rem,.8rem + 1.2vw,1.25rem)}
+  }
+  .secteur{min-width:0}
 </style>

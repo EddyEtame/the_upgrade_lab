@@ -123,6 +123,9 @@ export interface LienNav {
   entete: boolean;
   /** Rendu en bouton chanfreiné plutôt qu'en lien. Un seul dans tout le site. */
   action?: boolean;
+  /** Libellé du bouton d’action, s’il diffère du libellé de navigation. */
+  appel?: string;
+  appelEn?: string;
   /** Résumé court, utilisé en `title` et par les plans de site. */
   note?: string;
   enfants?: LienNav[];
@@ -135,6 +138,23 @@ export interface LienNav {
  * avant d'être vu par nous.
  */
 export const NAV: LienNav[] = [
+  {
+    href: '/sponsors/',
+    libelle: 'Sponsors',
+    en: 'Sponsors',
+    entete: true,
+    action: true,
+    appel: 'Devenir partenaire',
+    appelEn: 'Become a partner',
+    note: 'Ce qu’une entreprise de Douala reçoit en retour, palier par palier.',
+    enfants: [
+      { href: '/sponsors/friend/', libelle: 'Friend of the Lab', en: 'Friend of the Lab', entete: false },
+      { href: '/sponsors/bronze/', libelle: 'Bronze Partner', en: 'Bronze Partner', entete: false },
+      { href: '/sponsors/silver/', libelle: 'Silver Partner', en: 'Silver Partner', entete: false },
+      { href: '/sponsors/gold/', libelle: 'Gold Partner', en: 'Gold Partner', entete: false },
+      { href: '/sponsors/bourse/', libelle: 'Parrainer un athlète', en: 'Sponsor an athlete', entete: false }
+    ]
+  },
   {
     href: '/le-programme/',
     libelle: 'Le programme',
@@ -157,25 +177,18 @@ export const NAV: LienNav[] = [
     ]
   },
   {
-    href: '/sponsors/',
-    libelle: 'Sponsors',
-    en: 'Sponsors',
-    entete: true,
-    note: 'Ce qu’une entreprise de Douala reçoit en retour, palier par palier.',
-    enfants: [
-      { href: '/sponsors/friend/', libelle: 'Friend of the Lab', en: 'Friend of the Lab', entete: false },
-      { href: '/sponsors/bronze/', libelle: 'Bronze Partner', en: 'Bronze Partner', entete: false },
-      { href: '/sponsors/silver/', libelle: 'Silver Partner', en: 'Silver Partner', entete: false },
-      { href: '/sponsors/gold/', libelle: 'Gold Partner', en: 'Gold Partner', entete: false },
-      { href: '/sponsors/bourse/', libelle: 'Parrainer un athlète', en: 'Sponsor an athlete', entete: false }
-    ]
-  },
-  {
     href: '/encadrement/',
     libelle: 'L’encadrement',
     en: 'Coaching',
     entete: true,
     note: 'Qui encadre les séances, et selon quelle méthode.'
+  },
+  {
+    href: '/rejoindre/',
+    libelle: 'Rejoindre',
+    en: 'Join',
+    entete: true,
+    note: 'Comment un jeune entre dans le programme, et comment se passe une détection.'
   },
   {
     href: '/protection-des-mineurs/',
@@ -190,14 +203,6 @@ export const NAV: LienNav[] = [
     en: 'Questions',
     entete: false,
     note: 'Les réponses aux questions que posent les parents et les partenaires.'
-  },
-  {
-    href: '/rejoindre/',
-    libelle: 'Rejoindre',
-    en: 'Join',
-    entete: true,
-    action: true,
-    note: 'Comment un jeune entre dans le programme, et comment se passe une détection.'
   }
 ];
 

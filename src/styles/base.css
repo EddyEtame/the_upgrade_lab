@@ -398,19 +398,23 @@ main:focus{outline:none}
 }
 
 /* =========================================================================
-   LE MOUVEMENT — zéro octet de script. Chaque bloc arrive en montant de
-   dix pixels quand il entre dans la fenêtre, piloté par le défilement lui-même.
-   Au repos il est entier : rien n'attend un observateur. Sans prise en charge,
-   ou si l'utilisateur préfère moins de mouvement, tout est simplement là.
+   LE MOUVEMENT — le système de révélation.
+   Un script de vingt lignes dans Base.astro pose `.reveal` sur les blocs et
+   `.is-visible` quand ils entrent dans la fenêtre ; `--i` échelonne les
+   frères. Sans script (`html.no-js`), sans observateur, ou après 1,5 s sans
+   réponse (`.reveal-failsafe`), tout est simplement là. Le mouvement réduit
+   coupe tout.
    ====================================================================== */
-@keyframes apparait{from{opacity:.35;transform:translateY(10px)}to{opacity:1;transform:none}}
-@supports (animation-timeline: view()){
-  @media (prefers-reduced-motion: no-preference){
-    .carte,.carte-trait,.niveau,.secteur,.palier,.parrainage,.phase,.faq__item,.step,
-    .regle,.composante,.valeur,.engagement,.exclusion,.etape,.tv tbody tr{
-      animation:apparait linear both;
-      animation-timeline:view();
-      animation-range:entry 0% entry 35%;
-    }
-  }
+@media (prefers-reduced-motion:no-preference){
+  html.js .reveal{opacity:0;transform:translateY(1.25rem);
+    transition:opacity .7s var(--ease),transform .9s var(--ease);
+    transition-delay:calc(var(--i,0) * 70ms)}
+  html.js .reveal.is-visible{opacity:1;transform:none}
+  html.js.reveal-failsafe .reveal{opacity:1;transform:none;transition:none}
+  /* Micro-mouvements au survol : la carte se soulève, le chevron avance. */
+  .carte,.carte-trait,.palier,.step,.etape,.regle{transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+  .carte:hover,.palier:hover,.step:hover,.etape:hover{transform:translateY(-4px)}
+  a:hover > .chev,a:hover .chev{transform:translateX(.25em)}
+  .chev{transition:transform .4s var(--ease)}
+  .tv tbody tr{transition:background-color .3s var(--ease)}
 }
